@@ -4177,7 +4177,7 @@ dependencies = [
 
 [[package]]
 name = "timbre"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "arc-swap",
  "cpal",
@@ -4195,7 +4195,7 @@ dependencies = [
 
 [[package]]
 name = "timbre-dsp"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "nnnoiseless",
  "serde",

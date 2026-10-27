@@ -1,6 +1,6 @@
 [package]
 name = "timbre"
-version = "0.1.0"
+version = "0.1.1"
 description = "Voice chain for the Fifine AM8 microphone"
 edition = "2021"
 

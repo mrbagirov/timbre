@@ -1,6 +1,6 @@
 [package]
 name = "timbre-dsp"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Voice chain for a microphone: gate, noise suppression, EQ, compressor, limiter"
 
