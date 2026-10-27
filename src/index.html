@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>тембр: звук для микрофона AM8</title>
+<meta name="description" content="Гейт, шумодав, эквалайзер, компрессор и лимитер для микрофона AM8 в одном окне, с выводом в Discord, OBS и Zoom.">
+<link rel="stylesheet" href="./styles.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<div class="app" id="app" data-view="main">
+
+  <header class="bar">
+    <div class="bar__in">
+      <a class="wordmark" href="#/" aria-label="тембр, главный экран">тембр</a>
+
+      <fieldset class="seg presets" id="presets">
+        <legend class="visually-hidden">пресет</legend>
+        <input type="radio" name="preset" id="pr-novice" value="novice"><label for="pr-novice">новичок</label>
+        <input type="radio" name="preset" id="pr-stream" value="stream"><label for="pr-stream">стрим</label>
+        <input type="radio" name="preset" id="pr-voiceover" value="voiceover"><label for="pr-voiceover">закадр</label>
+        <input type="radio" name="preset" id="pr-call" value="call"><label for="pr-call">созвон</label>
+        <input type="radio" name="preset" id="pr-mine" value="mine" hidden><label for="pr-mine" hidden>мой</label>
+      </fieldset>
+
+      <div class="bar__actions">
+        <span class="device" id="device" role="status" data-state="wait">ищем микрофон</span>
+        <button class="pill pill--mute" type="button" id="btn-mute" aria-pressed="false">микрофон включён</button>
+        <button class="pill" type="button" id="btn-bypass" aria-pressed="false">без обработки</button>
+        <button class="pill pill--icon" type="button" id="btn-settings" aria-label="настройки" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 14.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h0a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v0a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== main ===== -->
+  <main class="view" id="view-main">
+    <h1 class="visually-hidden">настройка звука микрофона</h1>
+
+    <section class="deck" aria-label="автонастройка и уровни">
+      <div class="assist">
+        <button class="btn" type="button" id="btn-auto">сделать нормально</button>
+        <p class="assist__note" id="auto-note" aria-live="polite">Тембр попросит сказать несколько фраз шёпотом, обычным голосом и громко, и подберёт настройки под вас и вашу комнату.</p>
+        <button class="link-btn assist__undo" type="button" id="auto-undo" hidden>вернуть как было</button>
+      </div>
+
+      <div class="meter" data-meter="in">
+        <div class="meter__head"><h2 class="meter__name">вход</h2><output class="meter__val" data-val>−60 дБ</output></div>
+        <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
+        <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
+      </div>
+
+      <div class="meter meter--out" data-meter="out">
+        <div class="meter__main">
+          <div class="meter__head"><h2 class="meter__name">выход</h2><output class="meter__val" data-val>−60 дБ</output></div>
+          <div class="meter__track" role="meter" aria-label="уровень на выходе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
+          <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
+        </div>
+        <div class="loud">
+          <span class="loud__label" id="loud-label">громкость</span>
+          <output class="loud__fig" id="loud" aria-labelledby="loud-label">−70</output>
+          <span class="loud__unit">LUFS</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="chain" aria-labelledby="chain-title">
+      <div class="chain__head">
+        <h2 id="chain-title">цепочка</h2>
+        <p class="chain__note" id="dirty-note"><span id="dirty-text"></span><button class="link-btn" type="button" id="btn-reset" hidden>вернуть пресет</button></p>
+      </div>
+
+      <!-- gate -->
+      <section class="lane" data-lane="gate" data-on="true" aria-labelledby="l-gate">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-gate" data-toggle="gate.on">вкл</button>
+          <div><h3 id="l-gate">гейт</h3><p class="lane__hint">глушит паузы между словами</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="gate" aria-hidden="true"></canvas><output class="lane__stat" data-stat="gate">открыт</output></div>
+        <div class="lane__ctl">
+          <div class="field span-all"><label for="f-gate-th">порог</label><output for="f-gate-th" data-out="gate.threshold"></output><input id="f-gate-th" type="range" min="-70" max="-20" step="1" data-param="gate.threshold"></div>
+        </div>
+      </section>
+
+      <!-- noise reduction -->
+      <section class="lane" data-lane="nr" data-on="true" aria-labelledby="l-nr">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-nr" data-toggle="nr.on">вкл</button>
+          <div><h3 id="l-nr">шумодав</h3><p class="lane__hint">убирает фон и стук клавиш</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="nr" aria-hidden="true"></canvas><output class="lane__stat" data-stat="nr">шума меньше на 0 дБ</output></div>
+        <div class="lane__ctl">
+          <fieldset class="seg seg--small seg-group span-all" aria-label="режим шумодава">
+            <input type="radio" name="nr-mode" id="nr-light" value="light" data-param="nr.mode"><label for="nr-light">лёгкий</label>
+            <input type="radio" name="nr-mode" id="nr-hq" value="hq" data-param="nr.mode"><label for="nr-hq">качественный</label>
+          </fieldset>
+          <div class="field span-all"><label for="f-nr-amt">сила</label><output for="f-nr-amt" data-out="nr.amount"></output><input id="f-nr-amt" type="range" min="0" max="100" step="5" data-param="nr.amount"></div>
+        </div>
+      </section>
+
+      <!-- eq -->
+      <section class="lane" data-lane="eq" data-on="true" aria-labelledby="l-eq">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-eq" data-toggle="eq.on">вкл</button>
+          <div><h3 id="l-eq">эквалайзер</h3><p class="lane__hint">тепло и чёткость голоса</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="eq" aria-hidden="true"></canvas>
+          <div class="lane__axis" aria-hidden="true"><span style="--p:19">100 Гц</span><span style="--p:56">1 кГц</span><span style="--p:93">10 кГц</span></div>
+        </div>
+        <div class="lane__ctl lane__ctl--3">
+          <div class="field"><label for="f-eq-low">низ</label><output for="f-eq-low" data-out="eq.low"></output><input id="f-eq-low" type="range" min="-12" max="12" step="1" data-param="eq.low"></div>
+          <div class="field"><label for="f-eq-mid">середина</label><output for="f-eq-mid" data-out="eq.mid"></output><input id="f-eq-mid" type="range" min="-12" max="12" step="1" data-param="eq.mid"></div>
+          <div class="field"><label for="f-eq-high">верх</label><output for="f-eq-high" data-out="eq.high"></output><input id="f-eq-high" type="range" min="-12" max="12" step="1" data-param="eq.high"></div>
+          <div class="lane__row span-all"><button class="pill" type="button" aria-pressed="true" data-chip="eq.lowcut">срез низа на 80 Гц</button></div>
+        </div>
+      </section>
+
+      <!-- compressor -->
+      <section class="lane" data-lane="comp" data-on="true" aria-labelledby="l-comp">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-comp" data-toggle="comp.on">вкл</button>
+          <div><h3 id="l-comp">компрессор</h3><p class="lane__hint">выравнивает громкость</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="comp" aria-hidden="true"></canvas><output class="lane__stat" data-stat="comp">сжатие 0 дБ</output></div>
+        <div class="lane__ctl">
+          <div class="field"><label for="f-comp-th">порог</label><output for="f-comp-th" data-out="comp.threshold"></output><input id="f-comp-th" type="range" min="-40" max="-6" step="1" data-param="comp.threshold"></div>
+          <div class="field"><label for="f-comp-ratio">степень</label><output for="f-comp-ratio" data-out="comp.ratio"></output><input id="f-comp-ratio" type="range" min="1.5" max="8" step="0.5" data-param="comp.ratio"></div>
+        </div>
+      </section>
+
+      <!-- limiter -->
+      <section class="lane" data-lane="lim" data-on="true" aria-labelledby="l-lim">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-lim" data-toggle="lim.on">вкл</button>
+          <div><h3 id="l-lim">лимитер</h3><p class="lane__hint">не даёт звуку перегрузиться</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="lim" aria-hidden="true"></canvas><output class="lane__stat" data-stat="lim">срезов нет</output></div>
+        <div class="lane__ctl">
+          <div class="field span-all"><label for="f-lim-ceil">потолок</label><output for="f-lim-ceil" data-out="lim.ceiling"></output><input id="f-lim-ceil" type="range" min="-12" max="0" step="0.5" data-param="lim.ceiling"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- ===== first run ===== -->
+  <main class="view welcome" id="view-welcome" hidden>
+    <div>
+      <h1>подключим микрофон за минуту</h1>
+      <p class="lead">Тембр забирает звук с AM8, обрабатывает и отдаёт программам через виртуальный кабель.</p>
+
+      <ol class="steps">
+        <li class="step" data-step="mic">
+          <span class="step__n">1</span>
+          <div>
+            <h2>микрофон</h2>
+            <p class="step__text">Подключите микрофон к компьютеру кабелем.</p>
+            <div class="step__status" id="st-mic" aria-live="polite" aria-busy="true"><span class="skeleton"></span></div>
+            <div class="step__actions"><button class="pill" type="button" id="btn-recheck-mic" hidden>проверить снова</button></div>
+          </div>
+        </li>
+        <li class="step" data-step="cable">
+          <span class="step__n">2</span>
+          <div>
+            <h2>виртуальный кабель</h2>
+            <p class="step__text">Через него обработанный звук попадает в Discord, OBS и Zoom. После установки VB-Cable Windows просит перезагрузку.</p>
+            <div class="step__status" id="st-cable" aria-live="polite" aria-busy="true"><span class="skeleton"></span></div>
+            <div class="step__actions" id="cable-actions" hidden>
+              <button class="pill" type="button" id="btn-get-cable">скачать VB-Cable</button>
+              <button class="pill" type="button" id="btn-recheck-cable">проверить снова</button>
+            </div>
+          </div>
+        </li>
+        <li class="step" data-step="app">
+          <span class="step__n">3</span>
+          <div>
+            <h2>программа, которая слушает</h2>
+            <p class="step__text">Выберите микрофоном CABLE Output.</p>
+            <div class="seg tabs" role="tablist" aria-label="программа">
+              <button class="pill" type="button" role="tab" id="tab-discord" aria-selected="true" aria-controls="tp-discord">Discord</button>
+              <button class="pill" type="button" role="tab" id="tab-obs" aria-selected="false" aria-controls="tp-obs" tabindex="-1">OBS</button>
+              <button class="pill" type="button" role="tab" id="tab-zoom" aria-selected="false" aria-controls="tp-zoom" tabindex="-1">Zoom</button>
+            </div>
+            <p class="step__text tabpanel" role="tabpanel" id="tp-discord" aria-labelledby="tab-discord">Настройки, Голос и видео, Устройство ввода: CABLE Output.</p>
+            <p class="step__text tabpanel" role="tabpanel" id="tp-obs" aria-labelledby="tab-obs" hidden>Микшер, шестерёнка у «Микрофон/Aux», Свойства, Устройство: CABLE Output.</p>
+            <p class="step__text tabpanel" role="tabpanel" id="tp-zoom" aria-labelledby="tab-zoom" hidden>Настройки, Звук, Микрофон: CABLE Output.</p>
+          </div>
+        </li>
+      </ol>
+
+    </div>
+
+    <div class="welcome__side">
+    <ol class="route" aria-label="путь звука">
+      <li class="route__node"><h3>AM8</h3><span class="route__state" id="rt-mic">проверяем</span></li>
+      <li class="route__link" aria-hidden="true"></li>
+      <li class="route__node"><h3>тембр</h3><span class="route__state">обрабатывает</span></li>
+      <li class="route__link" aria-hidden="true"></li>
+      <li class="route__node"><h3>CABLE</h3><span class="route__state" id="rt-cable">проверяем</span></li>
+      <li class="route__link" aria-hidden="true"></li>
+      <li class="route__node"><h3>Discord, OBS, Zoom</h3><span class="route__state">слушают CABLE Output</span></li>
+    </ol>
+    <div class="welcome__go">
+      <button class="btn" type="button" id="btn-start" aria-disabled="true">открыть тембр</button>
+      <p class="welcome__why" id="start-why" aria-live="polite">Ждём результат проверки.</p>
+    </div>
+    </div>
+  </main>
+
+
+  <!-- ===== calibration ===== -->
+  <main class="view setup" id="view-setup" hidden>
+    <h1 class="visually-hidden">калибровка микрофона</h1>
+    <ol class="setup__steps" id="setup-steps" aria-label="шаги калибровки">
+      <li data-state="current">ручка</li><li data-state="todo">тишина</li><li data-state="todo">шёпот</li><li data-state="todo">обычно</li><li data-state="todo">громко</li><li data-state="todo">итог</li>
+    </ol>
+
+    <div class="setup__main">
+      <section class="pane" id="pane-knob" aria-labelledby="knob-title">
+        <h2 class="pane__title" id="knob-title">выставим усиление</h2>
+        <p class="lead">Ручка усиления на корпусе микрофона. Тембр её не трогает, поэтому начинаем с неё.</p>
+        <figure class="prompt"><figcaption>громко, как в самый азартный момент эфира</figcaption><blockquote>«Раз, два, три, проверка микрофона!»</blockquote></figure>
+        <p class="setup__verdict" id="knob-verdict" aria-live="polite">Скажите фразу громко.</p>
+        <div class="field setup__demo"><label for="demo-gain">ручка на микрофоне (в превью это ползунок)</label><output for="demo-gain" id="demo-gain-out">−8 дБ</output><input id="demo-gain" type="range" min="-20" max="12" step="1" value="-8"></div>
+        <div class="setup__nav"><button class="btn" id="knob-next" type="button" aria-disabled="true">дальше</button><button class="link-btn" type="button" data-cancel>отмена</button></div>
+        <p class="setup__why" id="knob-why" aria-live="polite">Дальше можно, когда пик попадёт в рамку на шкале.</p>
+      </section>
+
+      <section class="pane" id="pane-capture" aria-labelledby="cap-title" hidden>
+        <h2 class="pane__title" id="cap-title">послушаем комнату</h2>
+        <p class="lead" id="cap-lead"></p>
+        <figure class="prompt" id="cap-prompt" hidden><figcaption id="cap-caption"></figcaption><blockquote id="cap-phrase"></blockquote></figure>
+        <div class="assist__bar" id="cap-bar" hidden><i></i></div>
+        <p class="setup__verdict" id="cap-status" aria-live="polite"></p>
+        <div class="setup__nav"><button class="btn" id="cap-go" type="button" aria-disabled="false">начать запись</button><button class="btn btn--quiet" id="cap-retry" type="button" hidden>повторить</button><button class="link-btn" id="cap-back" type="button">назад</button><button class="link-btn" type="button" data-cancel>отмена</button></div>
+      </section>
+
+      <section class="pane" id="pane-result" aria-labelledby="res-title" hidden>
+        <h2 class="pane__title" id="res-title">готово, вот что получилось</h2>
+        <ul class="figs" id="res-figs" aria-label="что измерено"></ul>
+        <fieldset class="seg seg-group setup__ab" aria-label="сравнить звук">
+          <input type="radio" name="ab" id="ab-before" value="before"><label for="ab-before">было</label>
+          <input type="radio" name="ab" id="ab-after" value="after" checked><label for="ab-after">стало</label>
+        </fieldset>
+        <ul class="rows" id="res-rows" aria-label="что настроено"></ul>
+        <ul class="notes" id="res-notes"></ul>
+        <p class="setup__why">Если что-то не нравится, любой ползунок можно поправить вручную в цепочке.</p>
+        <div class="setup__nav"><button class="btn" id="res-keep" type="button">сохранить пресет</button><button class="btn btn--quiet" id="res-again" type="button">пройти заново</button><button class="link-btn" type="button" data-cancel>вернуть как было</button></div>
+      </section>
+    </div>
+
+    <aside class="setup__hud" aria-label="что слышит тембр">
+      <div class="hud__in">
+        <div class="meter" data-meter="hud-in">
+          <div class="meter__head"><h2 class="meter__name">вход</h2><output class="meter__val" data-val>−60 дБ</output></div>
+          <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div><div class="meter__zone" id="hud-zone" style="--a:0.85;--b:0.95" title="цель для самой громкой фразы"></div></div>
+          <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
+        </div>
+        <p class="hud__zone-note" id="hud-zone-note">Рамка на шкале: цель для самой громкой фразы, от −9 до −3 дБ.</p>
+        <div class="loud"><span class="loud__label">пик за 4 секунды</span><output class="loud__fig" id="hud-peak">−60</output><span class="loud__unit">дБ</span></div>
+      </div>
+      <div class="hud__out" hidden>
+        <div class="meter" data-meter="hud-out">
+          <div class="meter__head"><h2 class="meter__name">выход</h2><output class="meter__val" data-val>−60 дБ</output></div>
+          <div class="meter__track" role="meter" aria-label="уровень на выходе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="lim" data-hud aria-hidden="true"></canvas></div>
+      </div>
+      <p class="setup__demo-note">В превью голос имитирует демо-сигнал.</p>
+    </aside>
+  </main>
+
+  <!-- ===== settings ===== -->
+  <dialog class="sheet" id="settings" aria-labelledby="settings-title">
+    <div class="sheet__head">
+      <h2 id="settings-title">настройки</h2>
+      <button class="pill pill--icon" type="button" id="settings-x" aria-label="закрыть настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="sheet__row"><label for="set-mic">микрофон</label><select class="input" id="set-mic" name="mic"><option>AM8, USB</option></select></div>
+    <div class="sheet__row"><label for="set-out">вывод</label><select class="input" id="set-out" name="out"><option>CABLE Input</option></select></div>
+    <p class="sheet__help" id="engine-msg" aria-live="polite"></p>
+    <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
+    <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
+    <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
+    <div class="sheet__foot"><p class="sheet__help">Тембр 0.1</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>
+  </dialog>
+</div>
+
+<script src="./js/store.js"></script>
+<script src="./js/bridge.js"></script>
+<script src="./js/sim.js"></script>
+<script src="./js/calibrate.js"></script>
+<script src="./js/wizard.js"></script>
+<script src="./js/native.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+target/
+node_modules/
+src/.hallmark/
+.hallmark/shots/
+src-tauri/gen/

@@ -1,0 +1,27 @@
+[
+ {
+  "scope": "app",
+  "shape": "app screen",
+  "theme": "ultraviolet",
+  "axes": "dark/geometric-sans/cool",
+  "hero": "none",
+  "nav": "top bar",
+  "footer": "none",
+  "imagery": "product built, data: sample",
+  "photos": [],
+  "entry": "index.html",
+  "fingerprint": "app/lanes/top-bar",
+  "sections": [
+   "deck",
+   "chain",
+   "welcome",
+   "settings",
+   "tray"
+  ],
+  "signature": "the chain, five lanes drawing the live signal against the raw input",
+  "waived": [],
+  "prompt": "timbre, audio chain app for Fifine AM8",
+  "date": "2026-10-27",
+  "mode": "build"
+ }
+]

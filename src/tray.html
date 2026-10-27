@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>тембр: меню в трее</title>
+<meta name="description" content="Быстрое меню тембра: пресеты, мьют микрофона и обход обработки.">
+<link rel="stylesheet" href="./styles.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="tray-page">
+<main class="tray" aria-label="тембр">
+  <header class="tray__head">
+    <span class="wordmark">тембр</span>
+    <p class="tray__status" id="tray-status" role="status">работает</p>
+  </header>
+
+  <div class="meter" data-meter="out">
+    <div class="meter__track" role="meter" aria-label="уровень на выходе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
+  </div>
+
+  <div class="tray__list" role="radiogroup" aria-label="пресет">
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="novice"><span>новичок</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="stream"><span>стрим</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="voiceover"><span>закадр</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="call"><span>созвон</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="mine" id="tray-mine" hidden><span>мой</span></button>
+  </div>
+
+  <div class="tray__group">
+    <button class="tray__item" type="button" aria-pressed="false" data-flag="muted"><span>выключить микрофон</span><span class="tray__tag" id="tray-hotkey">Ctrl+Alt+M</span></button>
+    <button class="tray__item" type="button" aria-pressed="false" data-flag="bypass"><span>без обработки</span></button>
+  </div>
+
+  <div class="tray__group">
+    <button class="tray__item" type="button" id="tray-open"><span>открыть окно</span></button>
+    <button class="tray__item" type="button" id="tray-quit"><span>выйти</span></button>
+  </div>
+</main>
+
+<script src="./js/store.js"></script>
+<script src="./js/sim.js"></script>
+<script src="./js/tray.js"></script>
+</body>
+</html>
