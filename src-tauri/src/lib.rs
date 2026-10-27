@@ -137,6 +137,20 @@ async fn diagnostics(app_state: State<'_, AppState>) -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn am8_status() -> Result<am8::Status, String> {
+    tauri::async_runtime::spawn_blocking(am8::status)
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn am8_set(key: String, value: f64) -> Result<am8::Status, String> {
+    tauri::async_runtime::spawn_blocking(move || am8::set(&key, value))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
 fn set_state(state: UiState, app_state: State<'_, AppState>) {
     let lang = app_state.lang.lock().unwrap().clone();
     let l = labels(&lang);
@@ -360,6 +374,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             detect_devices,
             diagnostics,
+            am8_status,
+            am8_set,
             set_state,
             set_lang,
             restart_engine,

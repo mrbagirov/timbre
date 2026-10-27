@@ -3,9 +3,13 @@
 //! The protocol was worked out by Austrum-lab/fifine-am8 (MIT) and dank0i/sc3. Here it is used for READS only:
 //! a request is `A5 5A CTRL 00 16` (LEN 0 means "read"), and the reply comes back with the same CTRL.
 //! Hard rules that this file enforces:
-//!  - only CTRL codes from `READABLE` are ever sent, with an empty body;
-//!  - the 8-byte Feature report is never touched (writing it can send the chip into its bootloader);
-//!  - nothing is written to the microphone's settings.
+//!  - reads: only CTRL codes from `READABLE`, with an empty body;
+//!  - writes: only single-parameter writes (`A5 5A node 03 idx lo hi 16`) into the three nodes in `WRITABLE`
+//!    (mic gain/mute 0x95, mic gate 0x90, mic EQ 0x99), with the parameter index and the value range checked;
+//!    every write is read back and compared;
+//!  - the 8-byte Feature report is never touched (writing it can send the chip into its bootloader), and the
+//!    dangerous codes (0xFE, 0x11, 0xFB, 0xFD, 0xFF, 0xA0, 0xA1, 0xA3) are not reachable from here;
+//!  - settings live in the microphone's RAM and are lost when it is replugged.
 
 #[cfg(windows)]
 mod imp {
@@ -104,6 +108,172 @@ mod imp {
         }
     }
 
+    const GAIN_NODE: u8 = 0x95;
+    const GATE_NODE: u8 = 0x90;
+    const EQ_NODE: u8 = 0x99;
+
+    impl Link {
+        /// Single-parameter write. The firmware does not reply, so the caller verifies by reading back.
+        fn write_param(&self, node: u8, idx: u8, val: i16) -> Result<(), String> {
+            // allow-list: node and parameter index
+            let ok = match node {
+                GAIN_NODE => idx == 1 || idx == 2,   // mute flag, gain in centi-dB
+                GATE_NODE => idx <= 4,                // enable, threshold, ratio, attack, release
+                EQ_NODE => idx <= 52,                 // enable, pregain, calc type, 10 filters x 5
+                _ => false,
+            };
+            if !ok {
+                return Err(format!("refused: node {node:02X} index {idx}"));
+            }
+            let mut out = [0u8; REPORT + 1];
+            out[1] = 0xA5;
+            out[2] = 0x5A;
+            out[3] = node;
+            out[4] = 0x03;
+            out[5] = idx;
+            let v = val.to_le_bytes();
+            out[6] = v[0];
+            out[7] = v[1];
+            out[8] = 0x16;
+            self.dev.write(&out).map_err(|e| format!("write: {e}"))?;
+            std::thread::sleep(Duration::from_millis(10));
+            Ok(())
+        }
+
+        /// Reads a node after a write. A different block is read first, because the chip re-serves its last reply.
+        fn fresh_params(&self, node: u8) -> Option<Vec<i16>> {
+            let _ = self.read(0x00);
+            self.params(node)
+        }
+
+        fn set_checked(&self, node: u8, idx: u8, val: i16) -> Result<(), String> {
+            self.write_param(node, idx, val)?;
+            let p = self.fresh_params(node).ok_or("no reply after the write")?;
+            match p.get(idx as usize) {
+                Some(&v) if v == val => Ok(()),
+                other => Err(format!("not applied: wanted {val}, read back {other:?}")),
+            }
+        }
+    }
+
+    #[derive(serde::Serialize, Default, Clone)]
+    #[serde(rename_all = "camelCase")]
+    pub struct Status {
+        pub gain_db: f32,
+        pub mute: bool,
+        pub gate_on: bool,
+        pub gate_db: f32,
+        pub gate_ratio: i16,
+        pub lowcut_on: bool,
+        pub lowcut_hz: i16,
+        pub clarity_db: f32,
+        pub bass_db: f32,
+    }
+
+    fn band(k: usize) -> usize {
+        3 + (k - 1) * 5
+    }
+
+    fn with_link<T>(f: impl FnOnce(&Link) -> Result<T, String>) -> Result<T, String> {
+        static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+        let _g = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let api = hidapi::HidApi::new().map_err(|e| format!("hidapi: {e}"))?;
+        let link = Link::open(&api)?;
+        f(&link)
+    }
+
+    fn read_status(l: &Link) -> Result<Status, String> {
+        let g = l.fresh_params(GAIN_NODE).ok_or("no reply from the gain block")?;
+        let n = l.params(GATE_NODE).ok_or("no reply from the gate block")?;
+        let e = l.params(EQ_NODE).ok_or("no reply from the EQ block")?;
+        if g.len() < 3 || n.len() < 5 || e.len() < band(3) + 5 {
+            return Err("unexpected reply shape".into());
+        }
+        let eq_on = e[0] != 0;
+        let b1 = band(1);
+        let b2 = band(2);
+        let b3 = band(3);
+        Ok(Status {
+            gain_db: g[2] as f32 / 100.0,
+            mute: g[1] != 0,
+            gate_on: n[0] != 0,
+            gate_db: n[1] as f32 / 100.0,
+            gate_ratio: n[2],
+            lowcut_on: eq_on && e[b1] != 0 && e[b1 + 1] == 4,
+            lowcut_hz: e[b1 + 2],
+            clarity_db: if eq_on && e[b2] != 0 { e[b2 + 4] as f32 / 256.0 } else { 0.0 },
+            bass_db: if eq_on && e[b3] != 0 { e[b3 + 4] as f32 / 256.0 } else { 0.0 },
+        })
+    }
+
+    pub fn status() -> Result<Status, String> {
+        with_link(read_status)
+    }
+
+    /// keys: gain (dB, -12..12), mute (0/1), gate (0 = off, else threshold dB -60..-20),
+    /// lowcut (0 = off, else Hz 60..300), clarity (0 = off, else dB 0.5..9), bass (0 = off, else dB -12..9)
+    pub fn set(key: &str, value: f64) -> Result<Status, String> {
+        if !value.is_finite() {
+            return Err("bad value".into());
+        }
+        with_link(|l| {
+            match key {
+                "gain" => l.set_checked(GAIN_NODE, 2, (value.clamp(-12.0, 12.0) * 100.0).round() as i16)?,
+                "mute" => l.set_checked(GAIN_NODE, 1, if value >= 0.5 { 1 } else { 0 })?,
+                "gate" => {
+                    if value == 0.0 {
+                        l.set_checked(GATE_NODE, 0, 0)?;
+                    } else {
+                        l.set_checked(GATE_NODE, 1, (value.clamp(-60.0, -20.0) * 100.0).round() as i16)?;
+                        l.set_checked(GATE_NODE, 2, 4)?;
+                        l.set_checked(GATE_NODE, 0, 1)?;
+                    }
+                }
+                "lowcut" => {
+                    let b = band(1) as u8;
+                    if value == 0.0 {
+                        l.set_checked(EQ_NODE, b, 0)?;
+                    } else {
+                        l.set_checked(EQ_NODE, b + 1, 4)?;
+                        l.set_checked(EQ_NODE, b + 2, value.clamp(60.0, 300.0).round() as i16)?;
+                        l.set_checked(EQ_NODE, b + 3, 724)?;
+                        l.set_checked(EQ_NODE, b + 4, 0)?;
+                        l.set_checked(EQ_NODE, b, 1)?;
+                        l.set_checked(EQ_NODE, 0, 1)?;
+                    }
+                }
+                "clarity" => {
+                    let b = band(2) as u8;
+                    if value == 0.0 {
+                        l.set_checked(EQ_NODE, b, 0)?;
+                    } else {
+                        l.set_checked(EQ_NODE, b + 1, 0)?;
+                        l.set_checked(EQ_NODE, b + 2, 3000)?;
+                        l.set_checked(EQ_NODE, b + 3, 1024)?;
+                        l.set_checked(EQ_NODE, b + 4, (value.clamp(0.5, 9.0) * 256.0).round() as i16)?;
+                        l.set_checked(EQ_NODE, b, 1)?;
+                        l.set_checked(EQ_NODE, 0, 1)?;
+                    }
+                }
+                "bass" => {
+                    let b = band(3) as u8;
+                    if value == 0.0 {
+                        l.set_checked(EQ_NODE, b, 0)?;
+                    } else {
+                        l.set_checked(EQ_NODE, b + 1, 1)?;
+                        l.set_checked(EQ_NODE, b + 2, 150)?;
+                        l.set_checked(EQ_NODE, b + 3, 724)?;
+                        l.set_checked(EQ_NODE, b + 4, (value.clamp(-12.0, 9.0) * 256.0).round() as i16)?;
+                        l.set_checked(EQ_NODE, b, 1)?;
+                        l.set_checked(EQ_NODE, 0, 1)?;
+                    }
+                }
+                _ => return Err(format!("unknown setting {key}")),
+            }
+            read_status(l)
+        })
+    }
+
     fn hex(b: &[u8]) -> String {
         b.iter()
             .map(|x| format!("{x:02X}"))
@@ -164,8 +334,32 @@ mod imp {
 }
 
 #[cfg(windows)]
+pub use imp::Status;
+#[cfg(windows)]
+pub fn status() -> Result<Status, String> {
+    imp::status()
+}
+#[cfg(windows)]
+pub fn set(key: &str, value: f64) -> Result<Status, String> {
+    imp::set(key, value)
+}
+
+#[cfg(windows)]
 pub fn report() -> String {
     imp::report()
+}
+
+#[cfg(not(windows))]
+#[derive(serde::Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Status {}
+#[cfg(not(windows))]
+pub fn status() -> Result<Status, String> {
+    Err("only available on Windows".into())
+}
+#[cfg(not(windows))]
+pub fn set(_key: &str, _value: f64) -> Result<Status, String> {
+    Err("only available on Windows".into())
 }
 
 #[cfg(not(windows))]

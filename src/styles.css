@@ -288,3 +288,9 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .hud__figs { display: flex; flex-wrap: wrap; gap: var(--space-lg); }
 .sheet__row--native { display: none; }
 .native .sheet__row--native { display: grid; }
+
+/* hardware panel of the microphone (native only) */
+.hw { display: flex; align-items: center; gap: var(--space-xs); min-width: 0; }
+.hw input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--color-accent); }
+.hw output { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: right; }
+.hw .toggle { min-width: 3.5rem; }

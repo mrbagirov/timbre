@@ -1,5 +1,19 @@
 /* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
 window.I18N_EN = {
+ "Железо микрофона": "Microphone hardware",
+ "Настройки живут в самом микрофоне и пропадают, если выдернуть USB.": "These settings live inside the microphone and are lost when you unplug the USB cable.",
+ "усиление в микрофоне": "gain inside the microphone",
+ "заглушить микрофон": "mute the microphone",
+ "гейт в микрофоне, порог": "gate inside the microphone, threshold",
+ "срез низов": "low cut",
+ "чёткость (3 кГц), 0 выключено": "clarity (3 kHz), 0 is off",
+ "низ (150 Гц), 0 выключено": "low end (150 Hz), 0 is off",
+ "вернуть заводские": "restore factory settings",
+ "сбросить": "reset",
+ "Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.": "A software mute does not change the button light: press the button twice afterwards.",
+ "Применено и проверено чтением из микрофона.": "Applied and checked by reading it back from the microphone.",
+ "Гц": "Hz",
+
  "тембр: звук для микрофона AM8": "timbre: voice chain for the AM8 microphone",
  "тембр": "timbre",
  "Тембр": "Timbre",

@@ -91,6 +91,52 @@
     }).catch(function (e) { diagHelp.textContent = String(e); });
   });
 
+  /* ---------- the microphone's own DSP (AM8 vendor channel) ---------- */
+  (function () {
+    var panel = document.getElementById('hw'); if (!panel) return;
+    var help = document.getElementById('hw-help');
+    var $ = function (id) { return document.getElementById(id); };
+    var queue = Promise.resolve();
+    function tr(s) { return I18N.t(s); }
+    function setToggle(b, on) { b.setAttribute('aria-checked', String(!!on)); b.textContent = tr(on ? 'вкл' : 'выкл'); }
+    function fmt(v, unit) { return (v > 0 ? '+' : '') + (Math.round(v * 10) / 10) + ' ' + unit; }
+    function paint(st) {
+      $('hw-gain').value = st.gainDb; $('hw-gain-o').textContent = fmt(st.gainDb, 'дБ');
+      setToggle($('hw-mute'), st.mute);
+      setToggle($('hw-gate'), st.gateOn); $('hw-gate-v').value = st.gateDb; $('hw-gate-o').textContent = Math.round(st.gateDb) + ' дБ';
+      setToggle($('hw-lowcut'), st.lowcutOn); if (st.lowcutHz >= 60 && st.lowcutHz <= 300) $('hw-lowcut-v').value = st.lowcutHz; $('hw-lowcut-o').textContent = $('hw-lowcut-v').value + ' Гц';
+      $('hw-clarity').value = st.clarityDb; $('hw-clarity-o').textContent = st.clarityDb ? fmt(st.clarityDb, 'дБ') : tr('выкл');
+      $('hw-bass').value = st.bassDb; $('hw-bass-o').textContent = st.bassDb ? fmt(st.bassDb, 'дБ') : tr('выкл');
+    }
+    function send(key, value) {
+      queue = queue.then(function () { return invoke('am8_set', { key: key, value: value }); }).then(function (st) { paint(st); help.textContent = tr('Применено и проверено чтением из микрофона.'); }, function (e) { help.textContent = String(e); });
+      return queue;
+    }
+    function on(id, ev, fn) { $(id).addEventListener(ev, fn); }
+    on('hw-gain', 'input', function () { $('hw-gain-o').textContent = fmt(+this.value, 'дБ'); });
+    on('hw-gain', 'change', function () { send('gain', +this.value); });
+    on('hw-mute', 'click', function () { send('mute', this.getAttribute('aria-checked') === 'true' ? 0 : 1); });
+    on('hw-gate', 'click', function () { send('gate', this.getAttribute('aria-checked') === 'true' ? 0 : +$('hw-gate-v').value); });
+    on('hw-gate-v', 'input', function () { $('hw-gate-o').textContent = this.value + ' дБ'; });
+    on('hw-gate-v', 'change', function () { if ($('hw-gate').getAttribute('aria-checked') === 'true') send('gate', +this.value); });
+    on('hw-lowcut', 'click', function () { send('lowcut', this.getAttribute('aria-checked') === 'true' ? 0 : +$('hw-lowcut-v').value); });
+    on('hw-lowcut-v', 'input', function () { $('hw-lowcut-o').textContent = this.value + ' Гц'; });
+    on('hw-lowcut-v', 'change', function () { if ($('hw-lowcut').getAttribute('aria-checked') === 'true') send('lowcut', +this.value); });
+    on('hw-clarity', 'input', function () { $('hw-clarity-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); });
+    on('hw-clarity', 'change', function () { send('clarity', +this.value); });
+    on('hw-bass', 'input', function () { $('hw-bass-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); });
+    on('hw-bass', 'change', function () { send('bass', +this.value); });
+    on('hw-reset', 'click', function () {
+      [['mute', 0], ['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
+    });
+    function refresh() {
+      invoke('am8_status').then(function (st) { panel.hidden = false; paint(st); }, function () { panel.hidden = true; });
+    }
+    var dlg = document.getElementById('settings');
+    if (dlg) new MutationObserver(function () { if (dlg.open) refresh(); }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
+    refresh();
+  })();
+
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */
   var lastHotkey = '', lastStartup = null;
   function push(s) {
