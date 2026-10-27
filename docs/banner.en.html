@@ -17,20 +17,22 @@
   .list li { display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--color-rule); font-size: 20px; line-height: 1.35; }
   .list b { font-weight: 500; color: var(--color-ink); }
   .list span { color: var(--color-ink-2); }
+  .mark-row { display: flex; align-items: center; gap: 16px; }
+  .beta { font: 500 15px/1 var(--font-mono, 'JetBrains Mono', monospace); letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; background: var(--color-accent); color: var(--color-accent-ink); }
   .shot { position: absolute; left: 820px; top: 150px; width: 1000px; border-radius: 20px 0 0 0; box-shadow: 0 0 0 1.5px var(--color-rule-2); display: block; }
 </style>
 </head>
 <body>
 <div class="banner">
   <div class="text">
-    <p class="mark">timbre</p>
+    <div class="mark-row"><p class="mark">timbre</p><span class="beta">beta 1 · 0.2.0</span></div>
     <h1>clean AM8 voice<br>in one window</h1>
     <p class="lead">Voice processing for the Fifine AM8 microphone on Windows, no OBS needed.</p>
     <ul class="list">
       <li><b>chain</b><span>gate, noise suppression, EQ, compressor, limiter</span></li>
       <li><b>presets</b><span>4 for tasks and 7 voices, in a drop-down</span></li>
-      <li><b>calibration</b><span>from whispered, normal and loud speech</span></li>
-      <li><b>background</b><span>tray, autostart, global mute hotkey</span></li>
+      <li><b>calibration</b><span>records your voice, plays before and after</span></li>
+      <li><b>in the mic</b><span>gain, gate and EQ inside the AM8 itself</span></li>
       <li><b>output</b><span>to Discord, OBS and Zoom via VB-Cable</span></li>
     </ul>
   </div>
