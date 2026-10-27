@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>тембр: баннер</title>
+<link rel="stylesheet" href="../src/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1600px; height: 820px; overflow: hidden; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .banner { position: relative; width: 1600px; height: 820px; }
+  .text { position: absolute; left: 88px; top: 100px; width: 700px; }
+  .mark { margin: 0; font: 500 32px/1 var(--font-display); letter-spacing: var(--tracking-display); }
+  h1 { margin: 44px 0 0; font: 500 64px/1.06 var(--font-display); letter-spacing: var(--tracking-display); }
+  .lead { margin: 24px 0 0; max-width: 32ch; font-size: 25px; line-height: 1.45; color: var(--color-ink-2); }
+  .list { margin: 38px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-rule); }
+  .list li { display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--color-rule); font-size: 20px; line-height: 1.35; }
+  .list b { font-weight: 500; color: var(--color-ink); }
+  .list span { color: var(--color-ink-2); }
+  .shot { position: absolute; left: 820px; top: 150px; width: 1000px; border-radius: 20px 0 0 0; box-shadow: 0 0 0 1.5px var(--color-rule-2); display: block; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="text">
+    <p class="mark">тембр</p>
+    <h1>чистый голос с AM8<br>в одном окне</h1>
+    <p class="lead">Обработка голоса для микрофона AM8 на Windows без OBS и ручной возни.</p>
+    <ul class="list">
+      <li><b>цепочка</b><span>гейт, шумодав, эквалайзер, компрессор, лимитер</span></li>
+      <li><b>пресеты</b><span>новичок, стрим, закадр, созвон</span></li>
+      <li><b>калибровка</b><span>по шёпоту, обычной и громкой речи</span></li>
+      <li><b>в фоне</b><span>трей, автозапуск, горячая клавиша мьюта</span></li>
+      <li><b>вывод</b><span>в Discord, OBS и Zoom через VB-Cable</span></li>
+    </ul>
+  </div>
+  <img class="shot" src="screen-main.png" alt="Главный экран тембра: пресеты, метры, цепочка из пяти дорожек">
+</div>
+</body>
+</html>
