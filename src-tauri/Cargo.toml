@@ -24,4 +24,4 @@ tauri-plugin-opener = "2.7.2"
 timbre-dsp = { path = "../crates/timbre-dsp" }
 
 [target."cfg(windows)".dependencies]
-hidapi = { version = "2.6.7", default-features = false, features = ["windows-native"] }
+hidapi = { version = "2.6.7", default-features = false }
