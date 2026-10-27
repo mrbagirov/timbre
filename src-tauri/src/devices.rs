@@ -204,6 +204,8 @@ pub fn report(choice: &Choice) -> String {
     }
     let _ = writeln!(s, "\nusb interfaces:");
     let _ = writeln!(s, "{}", usb_interfaces());
+    let _ = writeln!(s, "\nmicrophone internals over the vendor channel (read only):");
+    let _ = writeln!(s, "{}", crate::am8::report());
     let _ = writeln!(s, "\nmicrophone HID interfaces (3142:A010, read only):");
     let _ = writeln!(s, "{}", hid_probe(0x3142, 0xA010, 8000));
     s
