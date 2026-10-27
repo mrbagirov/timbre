@@ -294,6 +294,7 @@
     var h = (location.hash || '#/').replace(/\?.*$/, ''), view = h === '#/welcome' ? 'welcome' : h === '#/setup' ? 'setup' : 'main';
     if (prevView === 'setup' && view !== 'setup' && window.Wizard) Wizard.leave();
     appEl.dataset.view = view;
+    $('#btn-back').hidden = view === 'main';
     vMain.hidden = view !== 'main'; vWelcome.hidden = view !== 'welcome'; vSetup.hidden = view !== 'setup';
     if (view === 'welcome') runDetect(); else if (view === 'main') detectMain();
     if (view === 'setup' && prevView !== 'setup' && window.Wizard) Wizard.enter();
@@ -301,6 +302,13 @@
     window.scrollTo(0, 0);
     if (dlg.open) dlg.close();
   }
+
+  /* ---------- back: from every screen and dialog ---------- */
+  $('#btn-back').addEventListener('click', function () { location.hash = '#/'; });
+  window.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || capturing || dlg.open || e.defaultPrevented) return;
+    if (appEl.dataset.view !== 'main') { e.preventDefault(); location.hash = '#/'; }
+  });
 
   /* ---------- settings ---------- */
   var dlg = $('#settings'), capturing = false, hotkey = $('#set-hotkey'), hotkeyHelp = $('#hotkey-help');

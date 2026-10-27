@@ -358,6 +358,19 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .sheet__row--native { display: none; }
 .native .sheet__row--native { display: grid; }
 
+/* the microphone's own DSP, shown on the main screen (native only) */
+.hw { margin-bottom: var(--space-lg); }
+.hwgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-sm); }
+.hwcard { display: grid; gap: var(--space-xs); align-content: start; padding: var(--space-sm); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-card); min-width: 0; }
+.hwcard h3 { font-size: var(--fs-label); }
+.hwcard--row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.hwcard__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
+.hw .sheet__help { margin-top: var(--space-xs); }
+.bar__back { display: inline-flex; align-items: center; gap: var(--space-3xs); }
+.bar__back svg { width: 1em; height: 1em; }
+.bar__id { grid-area: mark; display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
+.bar__id .wordmark { grid-area: auto; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -404,6 +417,34 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 <script>
 /* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
 window.I18N_EN = {
+ "назад": "back",
+ "в микрофоне": "inside the microphone",
+ "Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.": "These settings run inside the microphone itself, so every app hears them. They are lost when you unplug the USB cable.",
+ "вернуть заводские": "restore factory settings",
+ "заглушить": "mute",
+ "кнопка на корпусе и эта работают вместе": "the button on the body and this one work together",
+ "гейт": "gate",
+ "порог": "threshold",
+ "частота": "frequency",
+ "чёткость, 3 кГц": "clarity, 3 kHz",
+ "низ, 150 Гц": "low end, 150 Hz",
+ "ручка наушников": "headphone knob",
+ "ручка наушников на корпусе": "headphone knob on the body",
+ "крутите на микрофоне, здесь видно": "turn it on the microphone and it moves here",
+
+ "Железо микрофона": "Microphone hardware",
+ "Настройки живут в самом микрофоне и пропадают, если выдернуть USB.": "These settings live inside the microphone and are lost when you unplug the USB cable.",
+ "усиление в микрофоне": "gain inside the microphone",
+ "заглушить микрофон": "mute the microphone",
+ "гейт в микрофоне, порог": "gate inside the microphone, threshold",
+ "срез низов": "low cut",
+ "чёткость (3 кГц), 0 выключено": "clarity (3 kHz), 0 is off",
+ "низ (150 Гц), 0 выключено": "low end (150 Hz), 0 is off",
+ "сбросить": "reset",
+ "Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.": "A software mute does not change the button light: press the button twice afterwards.",
+ "Применено и проверено чтением из микрофона.": "Applied and checked by reading it back from the microphone.",
+ "Гц": "Hz",
+
  "тембр: звук для микрофона AM8": "timbre: voice chain for the AM8 microphone",
  "тембр": "timbre",
  "Тембр": "Timbre",
@@ -434,11 +475,9 @@ window.I18N_EN = {
  "настройки отличаются от пресета «{}».": "settings differ from the “{1}” preset.",
  "вкл": "on",
  "выкл": "off",
- "гейт": "gate",
  "глушит паузы между словами": "silences the pauses between words",
  "открыт": "open",
  "закрыт": "closed",
- "порог": "threshold",
  "шумодав": "noise suppression",
  "убирает фон и стук клавиш": "removes background hiss and keyboard noise",
  "шума меньше на 0 дБ": "noise down by 0 dB",
@@ -532,7 +571,6 @@ window.I18N_EN = {
  "Запись идёт {} секунд, фразу можно повторять по кругу.": "Recording takes {1} seconds, you can repeat the phrase in a loop.",
  "начать запись": "start recording",
  "повторить": "repeat",
- "назад": "back",
  "идёт запись…": "recording…",
  "показать результат": "show the result",
  "Идёт запись, осталось {} с.": "Recording, {1} s left.",

@@ -358,6 +358,19 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .sheet__row--native { display: none; }
 .native .sheet__row--native { display: grid; }
 
+/* the microphone's own DSP, shown on the main screen (native only) */
+.hw { margin-bottom: var(--space-lg); }
+.hwgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-sm); }
+.hwcard { display: grid; gap: var(--space-xs); align-content: start; padding: var(--space-sm); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-card); min-width: 0; }
+.hwcard h3 { font-size: var(--fs-label); }
+.hwcard--row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.hwcard__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
+.hw .sheet__help { margin-top: var(--space-xs); }
+.bar__back { display: inline-flex; align-items: center; gap: var(--space-3xs); }
+.bar__back svg { width: 1em; height: 1em; }
+.bar__id { grid-area: mark; display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
+.bar__id .wordmark { grid-area: auto; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -366,7 +379,12 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 
   <header class="bar">
     <div class="bar__in">
+      <div class="bar__id">
+        <button class="pill bar__back" type="button" id="btn-back" aria-label="назад" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>назад
+      </button>
       <a class="wordmark" href="#/" aria-label="тембр, главный экран">тембр</a>
+      </div>
 
       <div class="presets">
         <label class="visually-hidden" for="preset-select">пресет</label>
@@ -436,6 +454,24 @@ select.input { appearance: none; padding-right: var(--space-lg); }
           <span class="loud__unit">LUFS</span>
         </div>
       </div>
+    </section>
+
+
+    <section class="chain hw" id="hw" hidden aria-labelledby="hw-title">
+      <div class="chain__head">
+        <h2 id="hw-title">в микрофоне</h2>
+        <p class="chain__note"><span id="hw-help">Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.</span> <button class="link-btn" type="button" id="hw-reset">вернуть заводские</button></p>
+      </div>
+      <div class="hwgrid">
+        <div class="hwcard"><div class="field"><label for="hw-gain">усиление</label><output for="hw-gain" id="hw-gain-o" data-no-i18n></output><input id="hw-gain" type="range" min="-12" max="12" step="0.5" value="6"></div></div>
+        <div class="hwcard hwcard--row"><div><h3 id="lbl-hw-mute">заглушить</h3><p class="lane__hint">кнопка на корпусе и эта работают вместе</p></div><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-mute" id="hw-mute">выкл</button></div>
+        <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-gate">гейт</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-gate" id="hw-gate">выкл</button></div><div class="field"><label for="hw-gate-v">порог</label><output for="hw-gate-v" id="hw-gate-o" data-no-i18n></output><input id="hw-gate-v" type="range" min="-60" max="-20" step="1" value="-45"></div></div>
+        <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-lowcut">срез низов</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-lowcut" id="hw-lowcut">выкл</button></div><div class="field"><label for="hw-lowcut-v">частота</label><output for="hw-lowcut-v" id="hw-lowcut-o" data-no-i18n></output><input id="hw-lowcut-v" type="range" min="60" max="300" step="10" value="100"></div></div>
+        <div class="hwcard"><div class="field"><label for="hw-clarity">чёткость, 3 кГц</label><output for="hw-clarity" id="hw-clarity-o" data-no-i18n></output><input id="hw-clarity" type="range" min="0" max="9" step="0.5" value="0"></div></div>
+        <div class="hwcard"><div class="field"><label for="hw-bass">низ, 150 Гц</label><output for="hw-bass" id="hw-bass-o" data-no-i18n></output><input id="hw-bass" type="range" min="-12" max="9" step="0.5" value="0"></div></div>
+        <div class="hwcard"><div class="meter" data-no-meter><div class="meter__head"><h3 class="meter__name">ручка наушников</h3><output class="meter__val" id="hw-mon-o" data-no-i18n></output></div><div class="meter__track" role="meter" aria-label="ручка наушников на корпусе" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="hw-mon"><div class="meter__fill" id="hw-mon-fill"></div></div></div><p class="lane__hint">крутите на микрофоне, здесь видно</p></div>
+      </div>
+      <p class="sheet__help" id="hw-note" aria-live="polite">Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.</p>
     </section>
 
     <section class="chain" aria-labelledby="chain-title">
@@ -682,6 +718,34 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 <script>
 /* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
 window.I18N_EN = {
+ "назад": "back",
+ "в микрофоне": "inside the microphone",
+ "Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.": "These settings run inside the microphone itself, so every app hears them. They are lost when you unplug the USB cable.",
+ "вернуть заводские": "restore factory settings",
+ "заглушить": "mute",
+ "кнопка на корпусе и эта работают вместе": "the button on the body and this one work together",
+ "гейт": "gate",
+ "порог": "threshold",
+ "частота": "frequency",
+ "чёткость, 3 кГц": "clarity, 3 kHz",
+ "низ, 150 Гц": "low end, 150 Hz",
+ "ручка наушников": "headphone knob",
+ "ручка наушников на корпусе": "headphone knob on the body",
+ "крутите на микрофоне, здесь видно": "turn it on the microphone and it moves here",
+
+ "Железо микрофона": "Microphone hardware",
+ "Настройки живут в самом микрофоне и пропадают, если выдернуть USB.": "These settings live inside the microphone and are lost when you unplug the USB cable.",
+ "усиление в микрофоне": "gain inside the microphone",
+ "заглушить микрофон": "mute the microphone",
+ "гейт в микрофоне, порог": "gate inside the microphone, threshold",
+ "срез низов": "low cut",
+ "чёткость (3 кГц), 0 выключено": "clarity (3 kHz), 0 is off",
+ "низ (150 Гц), 0 выключено": "low end (150 Hz), 0 is off",
+ "сбросить": "reset",
+ "Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.": "A software mute does not change the button light: press the button twice afterwards.",
+ "Применено и проверено чтением из микрофона.": "Applied and checked by reading it back from the microphone.",
+ "Гц": "Hz",
+
  "тембр: звук для микрофона AM8": "timbre: voice chain for the AM8 microphone",
  "тембр": "timbre",
  "Тембр": "Timbre",
@@ -712,11 +776,9 @@ window.I18N_EN = {
  "настройки отличаются от пресета «{}».": "settings differ from the “{1}” preset.",
  "вкл": "on",
  "выкл": "off",
- "гейт": "gate",
  "глушит паузы между словами": "silences the pauses between words",
  "открыт": "open",
  "закрыт": "closed",
- "порог": "threshold",
  "шумодав": "noise suppression",
  "убирает фон и стук клавиш": "removes background hiss and keyboard noise",
  "шума меньше на 0 дБ": "noise down by 0 dB",
@@ -810,7 +872,6 @@ window.I18N_EN = {
  "Запись идёт {} секунд, фразу можно повторять по кругу.": "Recording takes {1} seconds, you can repeat the phrase in a loop.",
  "начать запись": "start recording",
  "повторить": "repeat",
- "назад": "back",
  "идёт запись…": "recording…",
  "показать результат": "show the result",
  "Идёт запись, осталось {} с.": "Recording, {1} s left.",
@@ -1716,6 +1777,77 @@ window.I18N_EN = {
     }).catch(function (e) { diagHelp.textContent = String(e); });
   });
 
+  /* ---------- the microphone's own DSP (AM8 vendor channel), live both ways ---------- */
+  (function () {
+    var panel = document.getElementById('hw'); if (!panel) return;
+    var help = document.getElementById('hw-help');
+    var $ = function (id) { return document.getElementById(id); };
+    var queue = Promise.resolve(), last = {}, busy = 0, touched = 0, connected = false;
+    function tr(s) { return I18N.t(s); }
+    function setToggle(b, on) { b.setAttribute('aria-checked', String(!!on)); b.textContent = tr(on ? 'вкл' : 'выкл'); }
+    function fmt(v, unit) { return (v > 0 ? '+' : '') + (Math.round(v * 10) / 10) + ' ' + unit; }
+    function ranges() { return ['hw-gain', 'hw-gate-v', 'hw-lowcut-v', 'hw-clarity', 'hw-bass']; }
+    function fill(id) { var r = $(id), lo = +r.min, hi = +r.max; r.style.setProperty('--fill', ((+r.value - lo) / (hi - lo) * 100) + '%'); }
+    function paint(st, live) {
+      last = st;
+      // while a slider is being dragged, or just after, the value on screen is the user's
+      var skip = !live ? 0 : (Date.now() - touched < 1500 ? 1 : 0);
+      if (!skip) {
+        $('hw-gain').value = st.gainDb; $('hw-gain-o').textContent = fmt(st.gainDb, 'дБ');
+        if (!live) {
+          $('hw-gate-v').value = st.gateDb; $('hw-gate-o').textContent = Math.round(st.gateDb) + ' дБ';
+          if (st.lowcutHz >= 60 && st.lowcutHz <= 300) $('hw-lowcut-v').value = st.lowcutHz; $('hw-lowcut-o').textContent = $('hw-lowcut-v').value + ' Гц';
+          $('hw-clarity').value = st.clarityDb; $('hw-clarity-o').textContent = st.clarityDb ? fmt(st.clarityDb, 'дБ') : tr('выкл');
+          $('hw-bass').value = st.bassDb; $('hw-bass-o').textContent = st.bassDb ? fmt(st.bassDb, 'дБ') : tr('выкл');
+          setToggle($('hw-gate'), st.gateOn); setToggle($('hw-lowcut'), st.lowcutOn);
+        }
+        setToggle($('hw-mute'), st.mute);
+        ranges().forEach(fill);
+      }
+      var m = st.monitor;
+      if (m >= 0) {
+        $('hw-mon-o').textContent = Math.round(m) + '%';
+        $('hw-mon').setAttribute('aria-valuenow', String(Math.round(m)));
+        $('hw-mon-fill').style.setProperty('--v', String(m / 100));
+      }
+    }
+    function send(key, value) {
+      busy++; touched = Date.now();
+      queue = queue.then(function () { return invoke('am8_set', { key: key, value: value }); }).then(function (st) { busy--; paint(st, false); help.textContent = tr('Применено и проверено чтением из микрофона.'); }, function (e) { busy--; help.textContent = String(e); });
+      return queue;
+    }
+    function on(id, ev, fn) { $(id).addEventListener(ev, fn); }
+    function isOn(id) { return $(id).getAttribute('aria-checked') === 'true'; }
+    on('hw-gain', 'input', function () { touched = Date.now(); $('hw-gain-o').textContent = fmt(+this.value, 'дБ'); fill('hw-gain'); });
+    on('hw-gain', 'change', function () { send('gain', +this.value); });
+    on('hw-mute', 'click', function () { send('mute', isOn('hw-mute') ? 0 : 1); });
+    on('hw-gate', 'click', function () { send('gate', isOn('hw-gate') ? 0 : +$('hw-gate-v').value); });
+    on('hw-gate-v', 'input', function () { touched = Date.now(); $('hw-gate-o').textContent = this.value + ' дБ'; fill('hw-gate-v'); });
+    on('hw-gate-v', 'change', function () { if (isOn('hw-gate')) send('gate', +this.value); });
+    on('hw-lowcut', 'click', function () { send('lowcut', isOn('hw-lowcut') ? 0 : +$('hw-lowcut-v').value); });
+    on('hw-lowcut-v', 'input', function () { touched = Date.now(); $('hw-lowcut-o').textContent = this.value + ' Гц'; fill('hw-lowcut-v'); });
+    on('hw-lowcut-v', 'change', function () { if (isOn('hw-lowcut')) send('lowcut', +this.value); });
+    on('hw-clarity', 'input', function () { touched = Date.now(); $('hw-clarity-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); fill('hw-clarity'); });
+    on('hw-clarity', 'change', function () { send('clarity', +this.value); });
+    on('hw-bass', 'input', function () { touched = Date.now(); $('hw-bass-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); fill('hw-bass'); });
+    on('hw-bass', 'change', function () { send('bass', +this.value); });
+    on('hw-reset', 'click', function () {
+      [['mute', 0], ['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
+    });
+    function refresh() {
+      invoke('am8_status').then(function (st) { connected = true; panel.hidden = false; paint(st, false); }, function () { connected = false; panel.hidden = true; });
+    }
+    // live read: mute state and the headphone knob, twice a second, only while the main screen is visible
+    function tick() {
+      var mainVisible = document.getElementById('app').dataset.view === 'main' && !document.hidden;
+      if (!connected) { if (mainVisible) refresh(); return; }
+      if (!mainVisible || busy) return;
+      invoke('am8_poll', { prev: last }).then(function (st) { if (!busy) paint(st, true); }, function () { connected = false; panel.hidden = true; });
+    }
+    setInterval(tick, 500);
+    refresh();
+  })();
+
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */
   var lastHotkey = '', lastStartup = null;
   function push(s) {
@@ -2035,6 +2167,7 @@ window.I18N_EN = {
     var h = (location.hash || '#/').replace(/\?.*$/, ''), view = h === '#/welcome' ? 'welcome' : h === '#/setup' ? 'setup' : 'main';
     if (prevView === 'setup' && view !== 'setup' && window.Wizard) Wizard.leave();
     appEl.dataset.view = view;
+    $('#btn-back').hidden = view === 'main';
     vMain.hidden = view !== 'main'; vWelcome.hidden = view !== 'welcome'; vSetup.hidden = view !== 'setup';
     if (view === 'welcome') runDetect(); else if (view === 'main') detectMain();
     if (view === 'setup' && prevView !== 'setup' && window.Wizard) Wizard.enter();
@@ -2042,6 +2175,13 @@ window.I18N_EN = {
     window.scrollTo(0, 0);
     if (dlg.open) dlg.close();
   }
+
+  /* ---------- back: from every screen and dialog ---------- */
+  $('#btn-back').addEventListener('click', function () { location.hash = '#/'; });
+  window.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || capturing || dlg.open || e.defaultPrevented) return;
+    if (appEl.dataset.view !== 'main') { e.preventDefault(); location.hash = '#/'; }
+  });
 
   /* ---------- settings ---------- */
   var dlg = $('#settings'), capturing = false, hotkey = $('#set-hotkey'), hotkeyHelp = $('#hotkey-help');

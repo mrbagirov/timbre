@@ -289,8 +289,15 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .sheet__row--native { display: none; }
 .native .sheet__row--native { display: grid; }
 
-/* hardware panel of the microphone (native only) */
-.hw { display: flex; align-items: center; gap: var(--space-xs); min-width: 0; }
-.hw input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--color-accent); }
-.hw output { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: right; }
-.hw .toggle { min-width: 3.5rem; }
+/* the microphone's own DSP, shown on the main screen (native only) */
+.hw { margin-bottom: var(--space-lg); }
+.hwgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-sm); }
+.hwcard { display: grid; gap: var(--space-xs); align-content: start; padding: var(--space-sm); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-card); min-width: 0; }
+.hwcard h3 { font-size: var(--fs-label); }
+.hwcard--row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.hwcard__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
+.hw .sheet__help { margin-top: var(--space-xs); }
+.bar__back { display: inline-flex; align-items: center; gap: var(--space-3xs); }
+.bar__back svg { width: 1em; height: 1em; }
+.bar__id { grid-area: mark; display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
+.bar__id .wordmark { grid-area: auto; }

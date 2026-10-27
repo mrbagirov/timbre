@@ -144,6 +144,13 @@ async fn am8_status() -> Result<am8::Status, String> {
 }
 
 #[tauri::command]
+async fn am8_poll(prev: am8::Status) -> Result<am8::Status, String> {
+    tauri::async_runtime::spawn_blocking(move || am8::poll(&prev))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
 async fn am8_set(key: String, value: f64) -> Result<am8::Status, String> {
     tauri::async_runtime::spawn_blocking(move || am8::set(&key, value))
         .await
@@ -358,6 +365,10 @@ fn build_tray(app: &AppHandle, lang: &str) -> tauri::Result<TrayItems> {
 
 pub fn run() {
     tauri::Builder::default()
+        // a second launch only brings the first window forward
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_main(app);
+        }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_autostart::init(
@@ -375,6 +386,7 @@ pub fn run() {
             detect_devices,
             diagnostics,
             am8_status,
+            am8_poll,
             am8_set,
             set_state,
             set_lang,

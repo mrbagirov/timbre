@@ -13,7 +13,12 @@
 
   <header class="bar">
     <div class="bar__in">
+      <div class="bar__id">
+        <button class="pill bar__back" type="button" id="btn-back" aria-label="назад" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>назад
+      </button>
       <a class="wordmark" href="#/" aria-label="тембр, главный экран">тембр</a>
+      </div>
 
       <div class="presets">
         <label class="visually-hidden" for="preset-select">пресет</label>
@@ -83,6 +88,24 @@
           <span class="loud__unit">LUFS</span>
         </div>
       </div>
+    </section>
+
+
+    <section class="chain hw" id="hw" hidden aria-labelledby="hw-title">
+      <div class="chain__head">
+        <h2 id="hw-title">в микрофоне</h2>
+        <p class="chain__note"><span id="hw-help">Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.</span> <button class="link-btn" type="button" id="hw-reset">вернуть заводские</button></p>
+      </div>
+      <div class="hwgrid">
+        <div class="hwcard"><div class="field"><label for="hw-gain">усиление</label><output for="hw-gain" id="hw-gain-o" data-no-i18n></output><input id="hw-gain" type="range" min="-12" max="12" step="0.5" value="6"></div></div>
+        <div class="hwcard hwcard--row"><div><h3 id="lbl-hw-mute">заглушить</h3><p class="lane__hint">кнопка на корпусе и эта работают вместе</p></div><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-mute" id="hw-mute">выкл</button></div>
+        <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-gate">гейт</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-gate" id="hw-gate">выкл</button></div><div class="field"><label for="hw-gate-v">порог</label><output for="hw-gate-v" id="hw-gate-o" data-no-i18n></output><input id="hw-gate-v" type="range" min="-60" max="-20" step="1" value="-45"></div></div>
+        <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-lowcut">срез низов</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-lowcut" id="hw-lowcut">выкл</button></div><div class="field"><label for="hw-lowcut-v">частота</label><output for="hw-lowcut-v" id="hw-lowcut-o" data-no-i18n></output><input id="hw-lowcut-v" type="range" min="60" max="300" step="10" value="100"></div></div>
+        <div class="hwcard"><div class="field"><label for="hw-clarity">чёткость, 3 кГц</label><output for="hw-clarity" id="hw-clarity-o" data-no-i18n></output><input id="hw-clarity" type="range" min="0" max="9" step="0.5" value="0"></div></div>
+        <div class="hwcard"><div class="field"><label for="hw-bass">низ, 150 Гц</label><output for="hw-bass" id="hw-bass-o" data-no-i18n></output><input id="hw-bass" type="range" min="-12" max="9" step="0.5" value="0"></div></div>
+        <div class="hwcard"><div class="meter" data-no-meter><div class="meter__head"><h3 class="meter__name">ручка наушников</h3><output class="meter__val" id="hw-mon-o" data-no-i18n></output></div><div class="meter__track" role="meter" aria-label="ручка наушников на корпусе" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="hw-mon"><div class="meter__fill" id="hw-mon-fill"></div></div></div><p class="lane__hint">крутите на микрофоне, здесь видно</p></div>
+      </div>
+      <p class="sheet__help" id="hw-note" aria-live="polite">Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.</p>
     </section>
 
     <section class="chain" aria-labelledby="chain-title">
@@ -320,16 +343,6 @@
     <div class="sheet__row"><label for="set-lang">язык</label><select class="input" id="set-lang" name="lang" data-no-i18n><option value="ru">Русский</option><option value="en">English</option></select></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
-    <div id="hw" hidden>
-      <div class="sheet__row"><span class="sheet__label">Железо микрофона</span><p class="sheet__help" id="hw-help" aria-live="polite">Настройки живут в самом микрофоне и пропадают, если выдернуть USB.</p></div>
-      <div class="sheet__row"><label for="hw-gain">усиление в микрофоне</label><div class="hw"><input type="range" id="hw-gain" min="-12" max="12" step="0.5" value="6"><output id="hw-gain-o" data-no-i18n></output></div></div>
-      <div class="sheet__row"><span class="sheet__label" id="lbl-hw-mute">заглушить микрофон</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-mute" id="hw-mute">выкл</button></div>
-      <div class="sheet__row"><span class="sheet__label" id="lbl-hw-gate">гейт в микрофоне, порог</span><div class="hw"><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-gate" id="hw-gate">выкл</button><input type="range" id="hw-gate-v" min="-60" max="-20" step="1" value="-45" aria-labelledby="lbl-hw-gate"><output id="hw-gate-o" data-no-i18n></output></div></div>
-      <div class="sheet__row"><span class="sheet__label" id="lbl-hw-lowcut">срез низов</span><div class="hw"><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-lowcut" id="hw-lowcut">выкл</button><input type="range" id="hw-lowcut-v" min="60" max="300" step="10" value="100" aria-labelledby="lbl-hw-lowcut"><output id="hw-lowcut-o" data-no-i18n></output></div></div>
-      <div class="sheet__row"><label for="hw-clarity">чёткость (3 кГц), 0 выключено</label><div class="hw"><input type="range" id="hw-clarity" min="0" max="9" step="0.5" value="0"><output id="hw-clarity-o" data-no-i18n></output></div></div>
-      <div class="sheet__row"><label for="hw-bass">низ (150 Гц), 0 выключено</label><div class="hw"><input type="range" id="hw-bass" min="-12" max="9" step="0.5" value="0"><output id="hw-bass-o" data-no-i18n></output></div></div>
-      <div class="sheet__row"><span class="sheet__label" id="lbl-hw-reset">вернуть заводские</span><button class="pill" type="button" id="hw-reset">сбросить</button><p class="sheet__help">Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.</p></div>
-    </div>
     <div class="sheet__row sheet__row--native"><span class="sheet__label" id="lbl-diag">диагностика</span><button class="pill" type="button" id="btn-diag">скопировать отчёт</button><p class="sheet__help" id="diag-help" aria-live="polite">Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
     <div class="sheet__foot"><p class="sheet__help">Тембр 0.1.1</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>

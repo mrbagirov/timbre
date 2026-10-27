@@ -156,8 +156,8 @@ mod imp {
         }
     }
 
-    #[derive(serde::Serialize, Default, Clone)]
-    #[serde(rename_all = "camelCase")]
+    #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
+    #[serde(rename_all = "camelCase", default)]
     pub struct Status {
         pub gain_db: f32,
         pub mute: bool,
@@ -168,18 +168,26 @@ mod imp {
         pub lowcut_hz: i16,
         pub clarity_db: f32,
         pub bass_db: f32,
+        pub monitor: f32,
     }
 
     fn band(k: usize) -> usize {
         3 + (k - 1) * 5
     }
 
+    /// One open link is kept between calls (the status is polled twice a second) and re-opened after any error.
     fn with_link<T>(f: impl FnOnce(&Link) -> Result<T, String>) -> Result<T, String> {
-        static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
-        let _g = LOCK.lock().unwrap_or_else(|e| e.into_inner());
-        let api = hidapi::HidApi::new().map_err(|e| format!("hidapi: {e}"))?;
-        let link = Link::open(&api)?;
-        f(&link)
+        static LINK: std::sync::Mutex<Option<Link>> = std::sync::Mutex::new(None);
+        let mut guard = LINK.lock().unwrap_or_else(|e| e.into_inner());
+        if guard.is_none() {
+            let api = hidapi::HidApi::new().map_err(|e| format!("hidapi: {e}"))?;
+            *guard = Some(Link::open(&api)?);
+        }
+        let res = f(guard.as_ref().unwrap());
+        if res.is_err() {
+            *guard = None;
+        }
+        res
     }
 
     fn read_status(l: &Link) -> Result<Status, String> {
@@ -203,6 +211,31 @@ mod imp {
             lowcut_hz: e[b1 + 2],
             clarity_db: if eq_on && e[b2] != 0 { e[b2 + 4] as f32 / 256.0 } else { 0.0 },
             bass_db: if eq_on && e[b3] != 0 { e[b3 + 4] as f32 / 256.0 } else { 0.0 },
+            monitor: monitor_pct(l),
+        })
+    }
+
+    /// Headphone knob on the body: the DAC volume, 0..4095, left channel at body offset 7.
+    fn monitor_pct(l: &Link) -> f32 {
+        match l.read(0x09) {
+            Some(d) if d.len() >= 9 => u16::from_le_bytes([d[7], d[8]]) as f32 * 100.0 / 4095.0,
+            _ => -1.0,
+        }
+    }
+
+    /// Light read for the live view: mute flag, gain and the headphone knob only.
+    pub fn poll(prev: &Status) -> Result<Status, String> {
+        let prev = prev.clone();
+        with_link(move |l| {
+            let g = l.params(GAIN_NODE).ok_or("no reply from the gain block")?;
+            if g.len() < 3 {
+                return Err("unexpected reply shape".into());
+            }
+            let mut s = prev;
+            s.mute = g[1] != 0;
+            s.gain_db = g[2] as f32 / 100.0;
+            s.monitor = monitor_pct(l);
+            Ok(s)
         })
     }
 
@@ -340,6 +373,10 @@ pub fn status() -> Result<Status, String> {
     imp::status()
 }
 #[cfg(windows)]
+pub fn poll(prev: &Status) -> Result<Status, String> {
+    imp::poll(prev)
+}
+#[cfg(windows)]
 pub fn set(key: &str, value: f64) -> Result<Status, String> {
     imp::set(key, value)
 }
@@ -350,11 +387,15 @@ pub fn report() -> String {
 }
 
 #[cfg(not(windows))]
-#[derive(serde::Serialize, Default, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
 pub struct Status {}
 #[cfg(not(windows))]
 pub fn status() -> Result<Status, String> {
+    Err("only available on Windows".into())
+}
+#[cfg(not(windows))]
+pub fn poll(_prev: &Status) -> Result<Status, String> {
     Err("only available on Windows".into())
 }
 #[cfg(not(windows))]
