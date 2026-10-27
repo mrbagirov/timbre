@@ -136,6 +136,48 @@ async fn diagnostics(app_state: State<'_, AppState>) -> Result<String, String> {
         .map_err(|e| e.to_string())
 }
 
+fn clip_to_b64(v: &[f32]) -> String {
+    use base64::Engine as _;
+    let mut b = Vec::with_capacity(v.len() * 2);
+    for &x in v {
+        b.extend_from_slice(&((x.clamp(-1.0, 1.0) * 32767.0) as i16).to_le_bytes());
+    }
+    base64::engine::general_purpose::STANDARD.encode(b)
+}
+
+fn clip_from_b64(s: &str) -> Result<Vec<f32>, String> {
+    use base64::Engine as _;
+    let b = base64::engine::general_purpose::STANDARD
+        .decode(s)
+        .map_err(|e| e.to_string())?;
+    Ok(b.chunks_exact(2)
+        .map(|c| i16::from_le_bytes([c[0], c[1]]) as f32 / 32767.0)
+        .collect())
+}
+
+/// Starts keeping the raw microphone signal (at most ten seconds) for the calibration wizard.
+#[tauri::command]
+fn rec_start() {
+    engine::rec_start();
+}
+
+/// Stops and returns the take: 48 kHz mono, 16-bit little endian, base64.
+#[tauri::command]
+fn rec_stop() -> String {
+    clip_to_b64(&engine::rec_stop())
+}
+
+/// Runs a take through the chain with the given parameters, for the before and after comparison.
+#[tauri::command]
+async fn process_clip(clip: String, params: timbre_dsp::Params) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let samples = clip_from_b64(&clip)?;
+        Ok(clip_to_b64(&engine::process_clip(&samples, &params)))
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
 #[tauri::command]
 async fn am8_status() -> Result<am8::Status, String> {
     tauri::async_runtime::spawn_blocking(am8::status)
@@ -385,6 +427,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             detect_devices,
             diagnostics,
+            rec_start,
+            rec_stop,
+            process_clip,
             am8_status,
             am8_poll,
             am8_set,

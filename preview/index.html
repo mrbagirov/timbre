@@ -370,6 +370,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .bar__back svg { width: 1em; height: 1em; }
 .bar__id { grid-area: mark; display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
 .bar__id .wordmark { grid-area: auto; }
+.setup__play { display: flex; align-items: center; gap: var(--space-sm); margin-block: var(--space-sm); }
 
 </style>
 <script>document.documentElement.classList.add('js');</script>
@@ -464,14 +465,12 @@ select.input { appearance: none; padding-right: var(--space-lg); }
       </div>
       <div class="hwgrid">
         <div class="hwcard"><div class="field"><label for="hw-gain">усиление</label><output for="hw-gain" id="hw-gain-o" data-no-i18n></output><input id="hw-gain" type="range" min="-12" max="12" step="0.5" value="6"></div></div>
-        <div class="hwcard hwcard--row"><div><h3 id="lbl-hw-mute">заглушить</h3><p class="lane__hint">кнопка на корпусе и эта работают вместе</p></div><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-mute" id="hw-mute">выкл</button></div>
         <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-gate">гейт</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-gate" id="hw-gate">выкл</button></div><div class="field"><label for="hw-gate-v">порог</label><output for="hw-gate-v" id="hw-gate-o" data-no-i18n></output><input id="hw-gate-v" type="range" min="-60" max="-20" step="1" value="-45"></div></div>
         <div class="hwcard"><div class="hwcard__head"><h3 id="lbl-hw-lowcut">срез низов</h3><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-hw-lowcut" id="hw-lowcut">выкл</button></div><div class="field"><label for="hw-lowcut-v">частота</label><output for="hw-lowcut-v" id="hw-lowcut-o" data-no-i18n></output><input id="hw-lowcut-v" type="range" min="60" max="300" step="10" value="100"></div></div>
         <div class="hwcard"><div class="field"><label for="hw-clarity">чёткость, 3 кГц</label><output for="hw-clarity" id="hw-clarity-o" data-no-i18n></output><input id="hw-clarity" type="range" min="0" max="9" step="0.5" value="0"></div></div>
         <div class="hwcard"><div class="field"><label for="hw-bass">низ, 150 Гц</label><output for="hw-bass" id="hw-bass-o" data-no-i18n></output><input id="hw-bass" type="range" min="-12" max="9" step="0.5" value="0"></div></div>
         <div class="hwcard"><div class="meter" data-no-meter><div class="meter__head"><h3 class="meter__name">ручка наушников</h3><output class="meter__val" id="hw-mon-o" data-no-i18n></output></div><div class="meter__track" role="meter" aria-label="ручка наушников на корпусе" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="hw-mon"><div class="meter__fill" id="hw-mon-fill"></div></div></div><p class="lane__hint">крутите на микрофоне, здесь видно</p></div>
       </div>
-      <p class="sheet__help" id="hw-note" aria-live="polite">Программный мьют не меняет подсветку кнопки: после него кнопку нужно нажать дважды.</p>
     </section>
 
     <section class="chain" aria-labelledby="chain-title">
@@ -667,6 +666,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
           <input type="radio" name="ab" id="ab-before" value="before"><label for="ab-before">было</label>
           <input type="radio" name="ab" id="ab-after" value="after" checked><label for="ab-after">стало</label>
         </fieldset>
+        <div class="setup__play" id="ab-play" hidden><button class="pill" type="button" id="res-play">послушать запись</button><span class="setup__why" id="ab-status" aria-live="polite"></span></div>
         <ul class="rows" id="res-rows" aria-label="что настроено"></ul>
         <ul class="notes" id="res-notes"></ul>
         <p class="setup__why">Если что-то не нравится, любой ползунок можно поправить вручную в цепочке.</p>
@@ -711,13 +711,20 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
     <div class="sheet__row sheet__row--native"><span class="sheet__label" id="lbl-diag">диагностика</span><button class="pill" type="button" id="btn-diag">скопировать отчёт</button><p class="sheet__help" id="diag-help" aria-live="polite">Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
-    <div class="sheet__foot"><p class="sheet__help">Тембр 0.1.1</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>
+    <div class="sheet__foot"><p class="sheet__help">Тембр 0.2.0</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>
   </dialog>
 </div>
 
 <script>
 /* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
 window.I18N_EN = {
+ "послушать запись": "play the recording",
+ "остановить": "stop",
+ "Готовлю запись для сравнения…": "Preparing the recording for comparison…",
+ "Одна и та же запись вашего голоса: переключайте «было» и «стало».": "The same recording of your voice: switch between \"before\" and \"after\".",
+ "в микрофоне {} дБ, в программе {} дБ": "in the microphone {1} dB, in the program {2} dB",
+ "Усиление поставлено в самом микрофоне, поэтому его слышат все программы.": "The gain is set in the microphone itself, so every program hears it.",
+
  "назад": "back",
  "в микрофоне": "inside the microphone",
  "Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.": "These settings run inside the microphone itself, so every app hears them. They are lost when you unplug the USB cable.",
@@ -932,7 +939,7 @@ window.I18N_EN = {
  "мастер подключения": "setup wizard",
  "открыть": "open",
  "закрыть": "close",
- "Тембр 0.1.1": "Timbre 0.1.1",
+ "Тембр 0.2.0": "Timbre 0.2.0",
  "язык": "language",
  "Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.": "The “mine” preset was built from the calibration. Pick it at the top, and adjust any slider by hand.",
  "Прежние настройки возвращены.": "Previous settings restored.",
@@ -1460,7 +1467,7 @@ window.I18N_EN = {
     };
   }
 
-  var api = { compute: compute };
+  var api = { compute: compute, F: F };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else window.Calibrate = api;
 })();
 
@@ -1491,6 +1498,68 @@ window.I18N_EN = {
   function pct(arr, q) { if (!arr.length) return Sim.FLOOR; var a = arr.slice().sort(function (x, y) { return x - y; }); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; }
   function setBtn(btn, text, disabled) { btn.textContent = tr(text); btn.setAttribute('aria-disabled', String(!!disabled)); }
 
+  /* ---------- real takes and the before/after comparison (native app only) ---------- */
+  function native() { return document.documentElement.classList.contains('native') && !!window.NativeAudio; }
+  function b64ToI16(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Int16Array(u.buffer, 0, u.length >> 1); }
+  function i16ToB64(a) {
+    var u = new Uint8Array(a.buffer, a.byteOffset, a.byteLength), out = '';
+    for (var i = 0; i < u.length; i += 0x8000) out += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return btoa(out);
+  }
+  function stopPlay() {
+    if (!S || !S.player) return;
+    try { S.player.srcA.stop(); S.player.srcB.stop(); S.player.ctx.close(); } catch (e) {}
+    S.player = null; var b = $('#res-play'); if (b) b.textContent = tr('послушать запись');
+  }
+  function side() { var c = $('input[name="ab"]:checked'); return c ? c.value : 'after'; }
+  function setSide(v) { if (S && S.player) { S.player.ga.gain.value = v === 'before' ? 1 : 0; S.player.gb.gain.value = v === 'before' ? 0 : 1; } }
+  function togglePlay() {
+    if (!S || !S.ab) return;
+    if (S.player) { stopPlay(); return; }
+    var ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+    function buf(a) { var b = ctx.createBuffer(1, a.length, 48000), d = b.getChannelData(0); for (var i = 0; i < a.length; i++) d[i] = a[i] / 32768; return b; }
+    var ga = ctx.createGain(), gb = ctx.createGain(), srcA = ctx.createBufferSource(), srcB = ctx.createBufferSource();
+    srcA.buffer = buf(S.ab.a); srcB.buffer = buf(S.ab.b); srcA.loop = srcB.loop = true;
+    srcA.connect(ga); srcB.connect(gb); ga.connect(ctx.destination); gb.connect(ctx.destination);
+    S.player = { ctx: ctx, srcA: srcA, srcB: srcB, ga: ga, gb: gb };
+    setSide(side()); srcA.start(); srcB.start();
+    $('#res-play').textContent = tr('остановить');
+  }
+  /* The same take of the user's voice goes through the chain twice: with the settings from before and with the new ones. */
+  function buildAB() {
+    var sess = S, box = $('#ab-play'); box.hidden = true; sess.ab = null;
+    if (!native()) return;
+    var parts = [], total = 0;
+    ['quiet', 'whisper', 'normal', 'loud'].forEach(function (id) {
+      var c = sess.clips[id]; if (!c) return;
+      if (id === 'quiet') c = c.subarray(0, 96000);
+      parts.push(c); total += c.length;
+    });
+    if (parts.length < 3) return;
+    var all = new Int16Array(total), at = 0; parts.forEach(function (c) { all.set(c, at); at += c.length; });
+    var b64 = i16ToB64(all);
+    $('#ab-status').textContent = tr('Готовлю запись для сравнения…'); box.hidden = false; $('#res-play').setAttribute('aria-disabled', 'true');
+    Promise.all([NativeAudio.process(b64, sess.before.params), NativeAudio.process(b64, sess.res.params)]).then(function (r) {
+      if (S !== sess) return;
+      sess.ab = { a: b64ToI16(r[0]), b: b64ToI16(r[1]) };
+      $('#res-play').removeAttribute('aria-disabled');
+      $('#ab-status').textContent = tr('Одна и та же запись вашего голоса: переключайте «было» и «стало».');
+    }, function () { if (S === sess) box.hidden = true; });
+  }
+  /* The gain goes into the microphone itself when it can be reached, the rest stays in the program. */
+  function splitGain() {
+    S.split = null;
+    if (!(window.Mic && Mic.available())) return;
+    var g = S.res.params.input.gain, hw0 = Mic.gainDb();
+    var hw1 = Math.max(-12, Math.min(12, Math.round((hw0 + g) * 2) / 2));
+    var sw = Math.max(0, Math.round(g - (hw1 - hw0)));
+    S.split = { hw: hw1, sw: sw };
+    var row = S.res.rows[0];
+    var sgn = function (v) { return (v > 0 ? '+' : v < 0 ? ui.MINUS : '') + Math.abs(v); };
+    row.value = Calibrate.F('в микрофоне {} дБ, в программе {} дБ', sgn(hw1), sgn(sw));
+    row.why.push('Усиление поставлено в самом микрофоне, поэтому его слышат все программы.');
+  }
+
   var els = null;
   function grab() {
     if (els) return;
@@ -1515,17 +1584,19 @@ window.I18N_EN = {
     els.capBack.addEventListener('click', function () { go(S.idx - 1); });
     $$('[data-cancel]').forEach(function (b) { b.addEventListener('click', cancel); });
     $('#res-keep').addEventListener('click', keep);
+    $('#res-play').addEventListener('click', function () { if (this.getAttribute('aria-disabled') !== 'true') togglePlay(); });
     $('#res-again').addEventListener('click', again);
     $$('input[name="ab"]').forEach(function (i) {
       i.addEventListener('change', function () {
         if (!i.checked || !S.res) return;
+        setSide(i.value);
         if (i.value === 'before') { Store.state.preset = S.before.preset; Store.replaceParams(S.before.params); } else Store.replaceParams(S.res.params);
       });
     });
   }
 
   function fresh(before) {
-    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
+    return { before: before, clips: {}, split: null, ab: null, player: null, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
   }
 
   function enter() {
@@ -1536,7 +1607,7 @@ window.I18N_EN = {
     show(0);
   }
 
-  function leave() { Sim.setMode('auto'); Sim.setGain(0); }
+  function leave() { stopPlay(); Sim.setMode('auto'); Sim.setGain(0); }
 
   function cancel() {
     Store.state.preset = S.before.preset; Store.replaceParams(S.before.params);
@@ -1544,14 +1615,17 @@ window.I18N_EN = {
   }
 
   function again() {
-    var before = S.before; S = fresh(before);
+    stopPlay(); var before = S.before; S = fresh(before);
     Store.state.preset = before.preset; Store.replaceParams(before.params);
     $$('input[name="ab"]').forEach(function (i) { i.checked = i.value === 'after'; });
     Sim.setMode('loud'); show(0);
   }
 
   function keep() {
-    Store.saveCustom(S.res.params);
+    var p = S.res.params;
+    if (S.split && window.Mic && Mic.available()) { p.input.gain = S.split.sw; Mic.setGain(S.split.hw); }
+    stopPlay();
+    Store.saveCustom(p); Store.replaceParams(p);
     var before = S.before;
     location.hash = '#/';
     window.UI.afterSetup(before);
@@ -1595,12 +1669,14 @@ window.I18N_EN = {
     S.cap = { state: 'rec', t: 0, samples: [] }; S.lastSec = -1;
     Sim.setMode(st.mode);
     els.capBar.firstElementChild.style.setProperty('--v', '0');
+    if (native()) NativeAudio.recStart().catch(function () {});
     renderCap();
   }
 
   function finishRec() {
     var st = STAGES[S.idx], m = S.meas, s = S.cap.samples, line = '', bad = false;
     S.cap.state = 'done';
+    if (native()) { var sess = S, sid = st.id; NativeAudio.recStop().then(function (b) { if (S === sess) sess.clips[sid] = b64ToI16(b); }, function () {}); }
     Sim.setMode(st.id === 'quiet' ? 'silence' : 'normal');
     if (st.id === 'quiet') {
       m.noise = pct(s, 0.9);
@@ -1627,7 +1703,9 @@ window.I18N_EN = {
     m.noise = m.noise === undefined ? -51 : m.noise;
     m.whisper = m.whisper || { lvl: -36 }; m.normal = m.normal || { lvl: -18 }; m.loud = m.loud || { lvl: -8, peak: -5 }; m.bands = m.bands || { low: 0, mid: 0, high: 0 };
     S.res = Calibrate.compute(m);
+    splitGain();
     Store.replaceParams(S.res.params);
+    buildAB();
     $$('input[name="ab"]').forEach(function (i) { i.checked = i.value === 'after'; });
 
     els.figs.innerHTML = ''; S.res.figures.forEach(function (f) {
@@ -1728,6 +1806,12 @@ window.I18N_EN = {
   /* ---------- devices ---------- */
   Bridge.mock = false;
   Bridge.detect = function () { return invoke('detect_devices'); };
+  // raw takes for the calibration wizard and the before/after comparison
+  window.NativeAudio = {
+    recStart: function () { return invoke('rec_start'); },
+    recStop: function () { return invoke('rec_stop'); },
+    process: function (clip, params) { return invoke('process_clip', { clip: clip, params: params }); }
+  };
   Bridge.openUrl = function (url) { invoke('open_url', { url: url }).catch(function () {}); };
 
   var DEV_KEY = 'timbre.devices';
@@ -1785,7 +1869,7 @@ window.I18N_EN = {
     var queue = Promise.resolve(), last = {}, busy = 0, touched = 0, connected = false;
     function tr(s) { return I18N.t(s); }
     function setToggle(b, on) { b.setAttribute('aria-checked', String(!!on)); b.textContent = tr(on ? 'вкл' : 'выкл'); }
-    function fmt(v, unit) { return (v > 0 ? '+' : '') + (Math.round(v * 10) / 10) + ' ' + unit; }
+    function fmt(v, unit) { return (v > 0 ? '+' : '') + (Math.round(v * 10) / 10) + ' ' + tr(unit); }
     function ranges() { return ['hw-gain', 'hw-gate-v', 'hw-lowcut-v', 'hw-clarity', 'hw-bass']; }
     function fill(id) { var r = $(id), lo = +r.min, hi = +r.max; r.style.setProperty('--fill', ((+r.value - lo) / (hi - lo) * 100) + '%'); }
     function paint(st, live) {
@@ -1795,14 +1879,13 @@ window.I18N_EN = {
       if (!skip) {
         $('hw-gain').value = st.gainDb; $('hw-gain-o').textContent = fmt(st.gainDb, 'дБ');
         if (!live) {
-          $('hw-gate-v').value = st.gateDb; $('hw-gate-o').textContent = Math.round(st.gateDb) + ' дБ';
-          if (st.lowcutHz >= 60 && st.lowcutHz <= 300) $('hw-lowcut-v').value = st.lowcutHz; $('hw-lowcut-o').textContent = $('hw-lowcut-v').value + ' Гц';
+          $('hw-gate-v').value = st.gateDb; $('hw-gate-o').textContent = Math.round(st.gateDb) + ' ' + tr('дБ');
+          if (st.lowcutHz >= 60 && st.lowcutHz <= 300) $('hw-lowcut-v').value = st.lowcutHz; $('hw-lowcut-o').textContent = $('hw-lowcut-v').value + ' ' + tr('Гц');
           $('hw-clarity').value = st.clarityDb; $('hw-clarity-o').textContent = st.clarityDb ? fmt(st.clarityDb, 'дБ') : tr('выкл');
           $('hw-bass').value = st.bassDb; $('hw-bass-o').textContent = st.bassDb ? fmt(st.bassDb, 'дБ') : tr('выкл');
           setToggle($('hw-gate'), st.gateOn); setToggle($('hw-lowcut'), st.lowcutOn);
         }
-        setToggle($('hw-mute'), st.mute);
-        ranges().forEach(fill);
+          ranges().forEach(fill);
       }
       var m = st.monitor;
       if (m >= 0) {
@@ -1820,19 +1903,18 @@ window.I18N_EN = {
     function isOn(id) { return $(id).getAttribute('aria-checked') === 'true'; }
     on('hw-gain', 'input', function () { touched = Date.now(); $('hw-gain-o').textContent = fmt(+this.value, 'дБ'); fill('hw-gain'); });
     on('hw-gain', 'change', function () { send('gain', +this.value); });
-    on('hw-mute', 'click', function () { send('mute', isOn('hw-mute') ? 0 : 1); });
     on('hw-gate', 'click', function () { send('gate', isOn('hw-gate') ? 0 : +$('hw-gate-v').value); });
-    on('hw-gate-v', 'input', function () { touched = Date.now(); $('hw-gate-o').textContent = this.value + ' дБ'; fill('hw-gate-v'); });
+    on('hw-gate-v', 'input', function () { touched = Date.now(); $('hw-gate-o').textContent = this.value + ' ' + tr('дБ'); fill('hw-gate-v'); });
     on('hw-gate-v', 'change', function () { if (isOn('hw-gate')) send('gate', +this.value); });
     on('hw-lowcut', 'click', function () { send('lowcut', isOn('hw-lowcut') ? 0 : +$('hw-lowcut-v').value); });
-    on('hw-lowcut-v', 'input', function () { touched = Date.now(); $('hw-lowcut-o').textContent = this.value + ' Гц'; fill('hw-lowcut-v'); });
+    on('hw-lowcut-v', 'input', function () { touched = Date.now(); $('hw-lowcut-o').textContent = this.value + ' ' + tr('Гц'); fill('hw-lowcut-v'); });
     on('hw-lowcut-v', 'change', function () { if (isOn('hw-lowcut')) send('lowcut', +this.value); });
     on('hw-clarity', 'input', function () { touched = Date.now(); $('hw-clarity-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); fill('hw-clarity'); });
     on('hw-clarity', 'change', function () { send('clarity', +this.value); });
     on('hw-bass', 'input', function () { touched = Date.now(); $('hw-bass-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); fill('hw-bass'); });
     on('hw-bass', 'change', function () { send('bass', +this.value); });
     on('hw-reset', 'click', function () {
-      [['mute', 0], ['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
+      [['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
     });
     function refresh() {
       invoke('am8_status').then(function (st) { connected = true; panel.hidden = false; paint(st, false); }, function () { connected = false; panel.hidden = true; });
@@ -1846,6 +1928,12 @@ window.I18N_EN = {
     }
     setInterval(tick, 500);
     refresh();
+    // used by the calibration wizard: the gain goes into the microphone when it is there
+    window.Mic = {
+      available: function () { return connected; },
+      gainDb: function () { return +last.gainDb || 0; },
+      setGain: function (db) { return send('gain', db); }
+    };
   })();
 
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */

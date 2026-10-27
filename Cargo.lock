@@ -278,6 +278,12 @@ checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
 
 [[package]]
 name = "base64"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
+name = "base64"
 version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
@@ -4193,9 +4199,10 @@ dependencies = [
 
 [[package]]
 name = "timbre"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "arc-swap",
+ "base64 0.22.1",
  "cpal",
  "hidapi",
  "ringbuf",
@@ -4212,7 +4219,7 @@ dependencies = [
 
 [[package]]
 name = "timbre-dsp"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "nnnoiseless",
  "serde",

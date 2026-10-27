@@ -42,6 +42,12 @@
   /* ---------- devices ---------- */
   Bridge.mock = false;
   Bridge.detect = function () { return invoke('detect_devices'); };
+  // raw takes for the calibration wizard and the before/after comparison
+  window.NativeAudio = {
+    recStart: function () { return invoke('rec_start'); },
+    recStop: function () { return invoke('rec_stop'); },
+    process: function (clip, params) { return invoke('process_clip', { clip: clip, params: params }); }
+  };
   Bridge.openUrl = function (url) { invoke('open_url', { url: url }).catch(function () {}); };
 
   var DEV_KEY = 'timbre.devices';
@@ -115,8 +121,7 @@
           $('hw-bass').value = st.bassDb; $('hw-bass-o').textContent = st.bassDb ? fmt(st.bassDb, 'дБ') : tr('выкл');
           setToggle($('hw-gate'), st.gateOn); setToggle($('hw-lowcut'), st.lowcutOn);
         }
-        setToggle($('hw-mute'), st.mute);
-        ranges().forEach(fill);
+          ranges().forEach(fill);
       }
       var m = st.monitor;
       if (m >= 0) {
@@ -134,7 +139,6 @@
     function isOn(id) { return $(id).getAttribute('aria-checked') === 'true'; }
     on('hw-gain', 'input', function () { touched = Date.now(); $('hw-gain-o').textContent = fmt(+this.value, 'дБ'); fill('hw-gain'); });
     on('hw-gain', 'change', function () { send('gain', +this.value); });
-    on('hw-mute', 'click', function () { send('mute', isOn('hw-mute') ? 0 : 1); });
     on('hw-gate', 'click', function () { send('gate', isOn('hw-gate') ? 0 : +$('hw-gate-v').value); });
     on('hw-gate-v', 'input', function () { touched = Date.now(); $('hw-gate-o').textContent = this.value + ' ' + tr('дБ'); fill('hw-gate-v'); });
     on('hw-gate-v', 'change', function () { if (isOn('hw-gate')) send('gate', +this.value); });
@@ -146,7 +150,7 @@
     on('hw-bass', 'input', function () { touched = Date.now(); $('hw-bass-o').textContent = +this.value ? fmt(+this.value, 'дБ') : tr('выкл'); fill('hw-bass'); });
     on('hw-bass', 'change', function () { send('bass', +this.value); });
     on('hw-reset', 'click', function () {
-      [['mute', 0], ['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
+      [['gate', 0], ['lowcut', 0], ['clarity', 0], ['bass', 0], ['gain', 6]].forEach(function (p) { send(p[0], p[1]); });
     });
     function refresh() {
       invoke('am8_status').then(function (st) { connected = true; panel.hidden = false; paint(st, false); }, function () { connected = false; panel.hidden = true; });
@@ -160,6 +164,12 @@
     }
     setInterval(tick, 500);
     refresh();
+    // used by the calibration wizard: the gain goes into the microphone when it is there
+    window.Mic = {
+      available: function () { return connected; },
+      gainDb: function () { return +last.gainDb || 0; },
+      setGain: function (db) { return send('gain', db); }
+    };
   })();
 
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */

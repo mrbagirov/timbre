@@ -8,12 +8,67 @@ use ringbuf::traits::{Consumer, Observer, Producer, Split};
 use ringbuf::HeapRb;
 use serde::Serialize;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 use timbre_dsp::resample::Resampler;
 use timbre_dsp::{Chain, Flags, FrameMeters, FRAME, SAMPLE_RATE};
+
+/// A stream error from the audio callbacks: that it happened, and what the driver said.
+#[derive(Default)]
+pub struct ErrState {
+    pub flag: AtomicBool,
+    pub msg: Mutex<String>,
+}
+
+fn report_err(errors: &ErrState, e: impl std::fmt::Display) {
+    if let Ok(mut m) = errors.msg.lock() {
+        *m = e.to_string();
+    }
+    errors.flag.store(true, Ordering::SeqCst);
+}
+
+/// Raw microphone samples kept for the calibration wizard (so it can play before and after on the same take).
+pub struct Rec {
+    on: bool,
+    buf: Vec<f32>,
+}
+static REC: Mutex<Rec> = Mutex::new(Rec { on: false, buf: Vec::new() });
+const REC_MAX: usize = SAMPLE_RATE as usize * 10;
+
+pub fn rec_start() {
+    let mut r = REC.lock().unwrap_or_else(|e| e.into_inner());
+    r.buf.clear();
+    r.on = true;
+}
+
+pub fn rec_stop() -> Vec<f32> {
+    let mut r = REC.lock().unwrap_or_else(|e| e.into_inner());
+    r.on = false;
+    std::mem::take(&mut r.buf)
+}
+
+/// Runs a recorded take through a fresh chain with the given parameters, compensating the chain's latency.
+pub fn process_clip(samples: &[f32], params: &timbre_dsp::Params) -> Vec<f32> {
+    let mut chain = Chain::new();
+    let flags = Flags { bypass: false };
+    let want = samples.len();
+    let mut padded = samples.to_vec();
+    padded.resize(want + timbre_dsp::LATENCY + FRAME, 0.0);
+    while padded.len() % FRAME != 0 {
+        padded.push(0.0);
+    }
+    let mut out = Vec::with_capacity(padded.len());
+    let mut o = [0.0f32; FRAME];
+    for chunk in padded.chunks(FRAME) {
+        chain.process(chunk, &mut o, params, &flags);
+        out.extend_from_slice(&o);
+    }
+    out.drain(..timbre_dsp::LATENCY.min(out.len()));
+    out.truncate(want);
+    out
+}
 
 pub struct EngineHandle {
     stop: Arc<AtomicBool>,
@@ -119,7 +174,7 @@ fn build_input<T>(
     device: &cpal::Device,
     config: cpal::StreamConfig,
     mut prod: ringbuf::HeapProd<f32>,
-    errors: Arc<AtomicBool>,
+    errors: Arc<ErrState>,
 ) -> Result<cpal::Stream, cpal::Error>
 where
     T: SizedSample + Send + 'static,
@@ -142,7 +197,7 @@ where
             rs.push(&mono, &mut conv);
             let _ = prod.push_slice(&conv);
         },
-        move |_e| errors.store(true, Ordering::SeqCst),
+        move |e| report_err(&errors, e),
         None,
     )
 }
@@ -151,7 +206,7 @@ fn build_output<T>(
     device: &cpal::Device,
     config: cpal::StreamConfig,
     mut cons: ringbuf::HeapCons<f32>,
-    errors: Arc<AtomicBool>,
+    errors: Arc<ErrState>,
 ) -> Result<cpal::Stream, cpal::Error>
 where
     T: SizedSample + FromSample<f32> + Send + 'static,
@@ -183,7 +238,7 @@ where
                 }
             }
         },
-        move |_e| errors.store(true, Ordering::SeqCst),
+        move |e| report_err(&errors, e),
         None,
     )
 }
@@ -232,7 +287,7 @@ fn run(app: AppHandle, shared: Arc<ArcSwap<UiState>>, choice: Choice, stop: Arc<
     let out_dev = devices::pick_output(&choice);
     let out_name = out_dev.as_ref().map(name_of).unwrap_or_default();
 
-    let errors = Arc::new(AtomicBool::new(false));
+    let errors = Arc::new(ErrState::default());
 
     let in_cfg = match in_dev
         .supported_input_configs()
@@ -372,12 +427,13 @@ fn run(app: AppHandle, shared: Arc<ArcSwap<UiState>>, choice: Choice, stop: Arc<
     let mut reported_error = false;
 
     while !stop.load(Ordering::SeqCst) {
-        if errors.load(Ordering::SeqCst) && !reported_error {
+        if errors.flag.load(Ordering::SeqCst) && !reported_error {
             reported_error = true;
+            let why = errors.msg.lock().map(|m| m.clone()).unwrap_or_default();
             status(
                 &app,
                 "error",
-                "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».",
+                format!("Поток звука прервался: {why}. Возможно, устройство отключено. Нажмите «проверить снова»."),
                 &in_name,
                 &out_name,
                 in_cfg.sample_rate(),
@@ -389,6 +445,11 @@ fn run(app: AppHandle, shared: Arc<ArcSwap<UiState>>, choice: Choice, stop: Arc<
             continue;
         }
         in_cons.pop_slice(&mut inbuf);
+        if let Ok(mut r) = REC.try_lock() {
+            if r.on && r.buf.len() < REC_MAX {
+                r.buf.extend_from_slice(&inbuf);
+            }
+        }
         let st = shared.load();
         let flags = Flags { bypass: st.bypass };
         let m = chain.process(&inbuf, &mut out, &st.params, &flags);

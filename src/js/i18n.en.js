@@ -1,5 +1,12 @@
 /* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
 window.I18N_EN = {
+ "послушать запись": "play the recording",
+ "остановить": "stop",
+ "Готовлю запись для сравнения…": "Preparing the recording for comparison…",
+ "Одна и та же запись вашего голоса: переключайте «было» и «стало».": "The same recording of your voice: switch between \"before\" and \"after\".",
+ "в микрофоне {} дБ, в программе {} дБ": "in the microphone {1} dB, in the program {2} dB",
+ "Усиление поставлено в самом микрофоне, поэтому его слышат все программы.": "The gain is set in the microphone itself, so every program hears it.",
+
  "назад": "back",
  "в микрофоне": "inside the microphone",
  "Эти настройки работают внутри самого микрофона, поэтому их слышит любая программа. Пропадают, если выдернуть USB.": "These settings run inside the microphone itself, so every app hears them. They are lost when you unplug the USB cable.",
@@ -214,7 +221,7 @@ window.I18N_EN = {
  "мастер подключения": "setup wizard",
  "открыть": "open",
  "закрыть": "close",
- "Тембр 0.1.1": "Timbre 0.1.1",
+ "Тембр 0.2.0": "Timbre 0.2.0",
  "язык": "language",
  "Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.": "The “mine” preset was built from the calibration. Pick it at the top, and adjust any slider by hand.",
  "Прежние настройки возвращены.": "Previous settings restored.",

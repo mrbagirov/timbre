@@ -93,6 +93,6 @@
     };
   }
 
-  var api = { compute: compute };
+  var api = { compute: compute, F: F };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else window.Calibrate = api;
 })();

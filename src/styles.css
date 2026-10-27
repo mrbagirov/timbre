@@ -301,3 +301,4 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .bar__back svg { width: 1em; height: 1em; }
 .bar__id { grid-area: mark; display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
 .bar__id .wordmark { grid-area: auto; }
+.setup__play { display: flex; align-items: center; gap: var(--space-sm); margin-block: var(--space-sm); }

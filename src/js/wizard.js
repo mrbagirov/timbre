@@ -23,6 +23,68 @@
   function pct(arr, q) { if (!arr.length) return Sim.FLOOR; var a = arr.slice().sort(function (x, y) { return x - y; }); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; }
   function setBtn(btn, text, disabled) { btn.textContent = tr(text); btn.setAttribute('aria-disabled', String(!!disabled)); }
 
+  /* ---------- real takes and the before/after comparison (native app only) ---------- */
+  function native() { return document.documentElement.classList.contains('native') && !!window.NativeAudio; }
+  function b64ToI16(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Int16Array(u.buffer, 0, u.length >> 1); }
+  function i16ToB64(a) {
+    var u = new Uint8Array(a.buffer, a.byteOffset, a.byteLength), out = '';
+    for (var i = 0; i < u.length; i += 0x8000) out += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return btoa(out);
+  }
+  function stopPlay() {
+    if (!S || !S.player) return;
+    try { S.player.srcA.stop(); S.player.srcB.stop(); S.player.ctx.close(); } catch (e) {}
+    S.player = null; var b = $('#res-play'); if (b) b.textContent = tr('послушать запись');
+  }
+  function side() { var c = $('input[name="ab"]:checked'); return c ? c.value : 'after'; }
+  function setSide(v) { if (S && S.player) { S.player.ga.gain.value = v === 'before' ? 1 : 0; S.player.gb.gain.value = v === 'before' ? 0 : 1; } }
+  function togglePlay() {
+    if (!S || !S.ab) return;
+    if (S.player) { stopPlay(); return; }
+    var ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+    function buf(a) { var b = ctx.createBuffer(1, a.length, 48000), d = b.getChannelData(0); for (var i = 0; i < a.length; i++) d[i] = a[i] / 32768; return b; }
+    var ga = ctx.createGain(), gb = ctx.createGain(), srcA = ctx.createBufferSource(), srcB = ctx.createBufferSource();
+    srcA.buffer = buf(S.ab.a); srcB.buffer = buf(S.ab.b); srcA.loop = srcB.loop = true;
+    srcA.connect(ga); srcB.connect(gb); ga.connect(ctx.destination); gb.connect(ctx.destination);
+    S.player = { ctx: ctx, srcA: srcA, srcB: srcB, ga: ga, gb: gb };
+    setSide(side()); srcA.start(); srcB.start();
+    $('#res-play').textContent = tr('остановить');
+  }
+  /* The same take of the user's voice goes through the chain twice: with the settings from before and with the new ones. */
+  function buildAB() {
+    var sess = S, box = $('#ab-play'); box.hidden = true; sess.ab = null;
+    if (!native()) return;
+    var parts = [], total = 0;
+    ['quiet', 'whisper', 'normal', 'loud'].forEach(function (id) {
+      var c = sess.clips[id]; if (!c) return;
+      if (id === 'quiet') c = c.subarray(0, 96000);
+      parts.push(c); total += c.length;
+    });
+    if (parts.length < 3) return;
+    var all = new Int16Array(total), at = 0; parts.forEach(function (c) { all.set(c, at); at += c.length; });
+    var b64 = i16ToB64(all);
+    $('#ab-status').textContent = tr('Готовлю запись для сравнения…'); box.hidden = false; $('#res-play').setAttribute('aria-disabled', 'true');
+    Promise.all([NativeAudio.process(b64, sess.before.params), NativeAudio.process(b64, sess.res.params)]).then(function (r) {
+      if (S !== sess) return;
+      sess.ab = { a: b64ToI16(r[0]), b: b64ToI16(r[1]) };
+      $('#res-play').removeAttribute('aria-disabled');
+      $('#ab-status').textContent = tr('Одна и та же запись вашего голоса: переключайте «было» и «стало».');
+    }, function () { if (S === sess) box.hidden = true; });
+  }
+  /* The gain goes into the microphone itself when it can be reached, the rest stays in the program. */
+  function splitGain() {
+    S.split = null;
+    if (!(window.Mic && Mic.available())) return;
+    var g = S.res.params.input.gain, hw0 = Mic.gainDb();
+    var hw1 = Math.max(-12, Math.min(12, Math.round((hw0 + g) * 2) / 2));
+    var sw = Math.max(0, Math.round(g - (hw1 - hw0)));
+    S.split = { hw: hw1, sw: sw };
+    var row = S.res.rows[0];
+    var sgn = function (v) { return (v > 0 ? '+' : v < 0 ? ui.MINUS : '') + Math.abs(v); };
+    row.value = Calibrate.F('в микрофоне {} дБ, в программе {} дБ', sgn(hw1), sgn(sw));
+    row.why.push('Усиление поставлено в самом микрофоне, поэтому его слышат все программы.');
+  }
+
   var els = null;
   function grab() {
     if (els) return;
@@ -47,17 +109,19 @@
     els.capBack.addEventListener('click', function () { go(S.idx - 1); });
     $$('[data-cancel]').forEach(function (b) { b.addEventListener('click', cancel); });
     $('#res-keep').addEventListener('click', keep);
+    $('#res-play').addEventListener('click', function () { if (this.getAttribute('aria-disabled') !== 'true') togglePlay(); });
     $('#res-again').addEventListener('click', again);
     $$('input[name="ab"]').forEach(function (i) {
       i.addEventListener('change', function () {
         if (!i.checked || !S.res) return;
+        setSide(i.value);
         if (i.value === 'before') { Store.state.preset = S.before.preset; Store.replaceParams(S.before.params); } else Store.replaceParams(S.res.params);
       });
     });
   }
 
   function fresh(before) {
-    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
+    return { before: before, clips: {}, split: null, ab: null, player: null, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
   }
 
   function enter() {
@@ -68,7 +132,7 @@
     show(0);
   }
 
-  function leave() { Sim.setMode('auto'); Sim.setGain(0); }
+  function leave() { stopPlay(); Sim.setMode('auto'); Sim.setGain(0); }
 
   function cancel() {
     Store.state.preset = S.before.preset; Store.replaceParams(S.before.params);
@@ -76,14 +140,17 @@
   }
 
   function again() {
-    var before = S.before; S = fresh(before);
+    stopPlay(); var before = S.before; S = fresh(before);
     Store.state.preset = before.preset; Store.replaceParams(before.params);
     $$('input[name="ab"]').forEach(function (i) { i.checked = i.value === 'after'; });
     Sim.setMode('loud'); show(0);
   }
 
   function keep() {
-    Store.saveCustom(S.res.params);
+    var p = S.res.params;
+    if (S.split && window.Mic && Mic.available()) { p.input.gain = S.split.sw; Mic.setGain(S.split.hw); }
+    stopPlay();
+    Store.saveCustom(p); Store.replaceParams(p);
     var before = S.before;
     location.hash = '#/';
     window.UI.afterSetup(before);
@@ -127,12 +194,14 @@
     S.cap = { state: 'rec', t: 0, samples: [] }; S.lastSec = -1;
     Sim.setMode(st.mode);
     els.capBar.firstElementChild.style.setProperty('--v', '0');
+    if (native()) NativeAudio.recStart().catch(function () {});
     renderCap();
   }
 
   function finishRec() {
     var st = STAGES[S.idx], m = S.meas, s = S.cap.samples, line = '', bad = false;
     S.cap.state = 'done';
+    if (native()) { var sess = S, sid = st.id; NativeAudio.recStop().then(function (b) { if (S === sess) sess.clips[sid] = b64ToI16(b); }, function () {}); }
     Sim.setMode(st.id === 'quiet' ? 'silence' : 'normal');
     if (st.id === 'quiet') {
       m.noise = pct(s, 0.9);
@@ -159,7 +228,9 @@
     m.noise = m.noise === undefined ? -51 : m.noise;
     m.whisper = m.whisper || { lvl: -36 }; m.normal = m.normal || { lvl: -18 }; m.loud = m.loud || { lvl: -8, peak: -5 }; m.bands = m.bands || { low: 0, mid: 0, high: 0 };
     S.res = Calibrate.compute(m);
+    splitGain();
     Store.replaceParams(S.res.params);
+    buildAB();
     $$('input[name="ab"]').forEach(function (i) { i.checked = i.value === 'after'; });
 
     els.figs.innerHTML = ''; S.res.figures.forEach(function (f) {
