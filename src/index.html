@@ -24,6 +24,8 @@
         <input type="radio" name="preset" id="pr-mine" value="mine" hidden><label for="pr-mine" hidden>мой</label>
       </fieldset>
 
+      <button class="link-btn bar__lang" id="lang-bar" type="button" data-no-i18n></button>
+
       <div class="bar__actions">
         <span class="device" id="device" role="status" data-state="wait">ищем микрофон</span>
         <button class="pill pill--mute" type="button" id="btn-mute" aria-pressed="false">микрофон включён</button>
@@ -282,6 +284,7 @@
     <div class="sheet__row"><label for="set-mic">микрофон</label><select class="input" id="set-mic" name="mic"><option>AM8, USB</option></select></div>
     <div class="sheet__row"><label for="set-out">вывод</label><select class="input" id="set-out" name="out"><option>CABLE Input</option></select></div>
     <p class="sheet__help" id="engine-msg" aria-live="polite"></p>
+    <div class="sheet__row"><label for="set-lang">язык</label><select class="input" id="set-lang" name="lang" data-no-i18n><option value="ru">Русский</option><option value="en">English</option></select></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
@@ -289,6 +292,8 @@
   </dialog>
 </div>
 
+<script src="./js/i18n.en.js"></script>
+<script src="./js/i18n.js"></script>
 <script src="./js/store.js"></script>
 <script src="./js/bridge.js"></script>
 <script src="./js/sim.js"></script>

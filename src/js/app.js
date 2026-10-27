@@ -6,10 +6,11 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var tr = I18N.t, DEC = I18N.dec;
 
   /* ---------- text ---------- */
   var MINUS = '−';
-  function num(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', ','); return (v < 0 && Number(s.replace(',', '.')) !== 0 ? MINUS : '') + s; }
+  function num(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', DEC); return (v < 0 && Number(s.replace(DEC, '.')) !== 0 ? MINUS : '') + s; }
   function sgn(v) { return v > 0 ? '+' + v : v < 0 ? MINUS + Math.abs(v) : '0'; }
   var fmt = {
     'gate.threshold': function (v) { return num(v) + ' дБ'; },
@@ -18,7 +19,7 @@
     'eq.mid': function (v) { return sgn(v) + ' дБ'; },
     'eq.high': function (v) { return sgn(v) + ' дБ'; },
     'comp.threshold': function (v) { return num(v) + ' дБ'; },
-    'comp.ratio': function (v) { return String(v).replace('.', ',') + ' к 1'; },
+    'comp.ratio': function (v) { return String(v).replace('.', DEC) + ' к 1'; },
     'lim.ceiling': function (v) { return num(v, 1) + ' дБ'; }
   };
 
@@ -34,22 +35,22 @@
         el.style.setProperty('--fill', ((v - el.min) / (el.max - el.min)) * 100 + '%');
       } else if (el.type === 'radio') el.checked = el.value === v;
     });
-    $$('[data-out]').forEach(function (o) { var p = o.dataset.out; o.textContent = (fmt[p] || String)(Store.get(p)); });
+    $$('[data-out]').forEach(function (o) { var p = o.dataset.out; o.textContent = tr((fmt[p] || String)(Store.get(p))); });
     $$('[data-toggle]').forEach(function (b) {
       var on = Store.get(b.dataset.toggle);
-      b.setAttribute('aria-checked', String(on)); b.textContent = on ? 'вкл' : 'выкл';
+      b.setAttribute('aria-checked', String(on)); b.textContent = tr(on ? 'вкл' : 'выкл');
       var lane = b.closest('.lane'); if (lane) lane.dataset.on = String(on);
     });
     $$('[data-chip]').forEach(function (b) { b.setAttribute('aria-pressed', String(Store.get(b.dataset.chip))); });
 
-    var mute = $('#btn-mute'); mute.setAttribute('aria-pressed', String(s.muted)); mute.textContent = s.muted ? 'микрофон выключен' : 'микрофон включён';
+    var mute = $('#btn-mute'); mute.setAttribute('aria-pressed', String(s.muted)); mute.textContent = tr(s.muted ? 'микрофон выключен' : 'микрофон включён');
     $('#btn-bypass').setAttribute('aria-pressed', String(s.bypass));
 
     var dirty = Store.isDirty();
-    $('#dirty-text').textContent = dirty ? 'настройки отличаются от пресета «' + Store.PRESETS[s.preset].name + '». ' : '';
+    $('#dirty-text').textContent = dirty ? tr('настройки отличаются от пресета «' + Store.PRESETS[s.preset].name + '».') : '';
     $('#btn-reset').hidden = !dirty;
 
-    var st = $('#set-startup'); st.setAttribute('aria-checked', String(!!s.settings.startup)); st.textContent = s.settings.startup ? 'вкл' : 'выкл';
+    var st = $('#set-startup'); st.setAttribute('aria-checked', String(!!s.settings.startup)); st.textContent = tr(s.settings.startup ? 'вкл' : 'выкл');
     if (!capturing) $('#set-hotkey').value = s.settings.hotkey;
   }
 
@@ -162,12 +163,12 @@
     this.el.dataset.clip = String(this.clip > 0);
     if (text) {
       var shown = db <= -60 ? MINUS + '60 дБ' : num(Math.round(db)) + ' дБ';
-      this.val.textContent = this.clip > 0 ? shown + ', перегруз' : shown;
+      this.val.textContent = tr(this.clip > 0 ? shown + ', перегруз' : shown);
       this.track.setAttribute('aria-valuenow', String(Math.round(clamp(db, -60, 0))));
     }
   };
   window.UI = { Meter: Meter, num: num, clamp: clamp, MINUS: MINUS, afterSetup: function (before) {
-    undoTo = before; autoNote.textContent = 'Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.'; autoUndo.hidden = false;
+    undoTo = before; autoNote.textContent = tr('Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.'); autoUndo.hidden = false;
     clearTimeout(undoTimer); undoTimer = setTimeout(function () { autoUndo.hidden = true; }, 10000);
   } };
   var mIn = new Meter($('[data-meter="in"]')), mOut = new Meter($('[data-meter="out"]'));
@@ -175,7 +176,7 @@
 
   function updateStats() {
     var s = Store.state, p = s.params, n = Sim.now, by = s.bypass;
-    var set = function (k, t) { var el = $('[data-stat="' + k + '"]'); if (el && el.textContent !== t) el.textContent = t; };
+    var set = function (k, txt) { var el = $('[data-stat="' + k + '"]'), v = tr(txt); if (el && el.textContent !== v) el.textContent = v; };
     set('gate', by ? 'обход' : !p.gate.on ? 'выключен' : n.gateOpen ? 'открыт' : 'закрыт');
     set('nr', by ? 'обход' : !p.nr.on ? 'выключен' : 'шума меньше на ' + num(n.nrDb) + ' дБ');
     set('comp', by ? 'обход' : !p.comp.on ? 'выключен' : 'сжатие ' + num(n.grDb, 1) + ' дБ');
@@ -185,12 +186,12 @@
   /* ---------- the calibration wizard lives in wizard.js; this is its entry and its undo ---------- */
   var DEFAULT_NOTE = 'Тембр попросит сказать несколько фраз шёпотом, обычным голосом и громко, и подберёт настройки под вас и вашу комнату.';
   var btnAuto = $('#btn-auto'), autoNote = $('#auto-note'), autoUndo = $('#auto-undo'), undoTimer = 0, undoTo = null;
-  autoNote.textContent = DEFAULT_NOTE;
+  autoNote.textContent = tr(DEFAULT_NOTE);
   btnAuto.addEventListener('click', function () { location.hash = '#/setup'; });
   autoUndo.addEventListener('click', function () {
     if (!undoTo) return;
     Store.state.preset = undoTo.preset; Store.replaceParams(undoTo.params);
-    autoUndo.hidden = true; clearTimeout(undoTimer); autoNote.textContent = 'Прежние настройки возвращены.';
+    autoUndo.hidden = true; clearTimeout(undoTimer); autoNote.textContent = tr('Прежние настройки возвращены.');
   });
 
   /* ---------- loop ---------- */
@@ -229,24 +230,24 @@
   /* ---------- devices and first run ---------- */
   var deviceEl = $('#device');
   function detectMain() {
-    deviceEl.dataset.state = 'wait'; deviceEl.textContent = 'ищем микрофон';
+    deviceEl.dataset.state = 'wait'; deviceEl.textContent = tr('ищем микрофон');
     Bridge.detect().then(function (r) {
       var used = r.mic.found || !!r.mic.name;
       deviceEl.dataset.state = used ? 'ok' : 'none';
-      deviceEl.textContent = r.mic.found ? r.mic.name + ' подключён' : used ? 'микрофон: ' + r.mic.name : 'микрофон не найден';
+      deviceEl.textContent = tr(r.mic.found ? r.mic.name + ' подключён' : used ? 'микрофон: ' + r.mic.name : 'микрофон не найден');
     });
   }
 
   var stMic = $('#st-mic'), stCable = $('#st-cable'), btnStart = $('#btn-start'), startWhy = $('#start-why');
   var ready = false;
-  function setStatus(el, text, bad) { el.removeAttribute('aria-busy'); el.textContent = text; if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
-  function setRoute(el, text, bad) { el.textContent = text; if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
+  function setStatus(el, text, bad) { el.removeAttribute('aria-busy'); el.textContent = tr(text); if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
+  function setRoute(el, text, bad) { el.textContent = tr(text); if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
 
   function runDetect() {
     [stMic, stCable].forEach(function (el) { el.setAttribute('aria-busy', 'true'); el.innerHTML = '<span class="skeleton"></span>'; delete el.dataset.tone; });
     $('#btn-recheck-mic').hidden = true; $('#cable-actions').hidden = true;
     setRoute($('#rt-mic'), 'проверяем'); setRoute($('#rt-cable'), 'проверяем');
-    ready = false; btnStart.setAttribute('aria-disabled', 'true'); startWhy.textContent = 'Ждём результат проверки.';
+    ready = false; btnStart.setAttribute('aria-disabled', 'true'); startWhy.textContent = tr('Ждём результат проверки.');
     Bridge.detect().then(function (r) {
       var micOk = r.mic.found || !!r.mic.name;
       if (r.mic.found) { setStatus(stMic, r.mic.name + ' найден' + (r.mic.transport ? ', подключён по ' + r.mic.transport : '') + '.'); setRoute($('#rt-mic'), 'найден'); }
@@ -256,7 +257,7 @@
       else { setStatus(stCable, 'VB-Cable не найден.', true); setRoute($('#rt-cable'), 'не найден', true); $('#cable-actions').hidden = false; }
       ready = micOk && r.cable.found;
       btnStart.setAttribute('aria-disabled', String(!ready));
-      startWhy.textContent = ready ? '' : !micOk && !r.cable.found ? 'Нужны микрофон и кабель.' : !micOk ? 'Нужен микрофон.' : 'Нужен кабель.';
+      startWhy.textContent = ready ? '' : tr(!micOk && !r.cable.found ? 'Нужны микрофон и кабель.' : !micOk ? 'Нужен микрофон.' : 'Нужен кабель.');
     });
   }
   $('#btn-recheck-mic').addEventListener('click', runDetect);
@@ -301,8 +302,8 @@
   $('#open-wizard').addEventListener('click', function () { dlg.close(); });
   $('#set-startup').addEventListener('click', function () { Store.setSetting('startup', !Store.state.settings.startup); });
 
-  hotkey.addEventListener('click', function () { capturing = true; hotkey.value = 'нажмите сочетание'; hotkeyHelp.textContent = 'Escape отменяет.'; });
-  hotkey.addEventListener('blur', function () { if (capturing) { capturing = false; render(); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; } });
+  hotkey.addEventListener('click', function () { capturing = true; hotkey.value = tr('нажмите сочетание'); hotkeyHelp.textContent = tr('Escape отменяет.'); });
+  hotkey.addEventListener('blur', function () { if (capturing) { capturing = false; render(); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); } });
   function combo(e) {
     var k = e.key.length === 1 ? e.key.toUpperCase() : e.key, m = [];
     if (e.ctrlKey) m.push('Ctrl'); if (e.altKey) m.push('Alt'); if (e.shiftKey) m.push('Shift'); if (e.metaKey) m.push('Win');
@@ -311,11 +312,11 @@
   window.addEventListener('keydown', function (e) {
     if (capturing) {
       e.preventDefault();
-      if (e.key === 'Escape') { capturing = false; render(); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; return; }
+      if (e.key === 'Escape') { capturing = false; render(); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); return; }
       if (['Control', 'Alt', 'Shift', 'Meta'].indexOf(e.key) >= 0) return;
       var c = combo(e);
-      if (!c.mods) { hotkeyHelp.textContent = 'Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.'; return; }
-      capturing = false; Store.setSetting('hotkey', c.text); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; return;
+      if (!c.mods) { hotkeyHelp.textContent = tr('Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.'); return; }
+      capturing = false; Store.setSetting('hotkey', c.text); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); return;
     }
     if (document.documentElement.classList.contains('native')) return; // the global shortcut handles it
     if (dlg.open || vMain.hidden) return;
@@ -323,6 +324,11 @@
     var cc = combo(e);
     if (cc.mods && cc.text === Store.state.settings.hotkey) { e.preventDefault(); Store.setFlag('muted', !Store.state.muted); }
   });
+
+  /* ---------- language ---------- */
+  var langSel = $('#set-lang'), langBar = $('#lang-bar');
+  if (langSel) { langSel.value = I18N.lang; langSel.addEventListener('change', function () { I18N.set(langSel.value); }); }
+  if (langBar) { langBar.textContent = I18N.lang === 'ru' ? 'English' : 'Русский'; langBar.addEventListener('click', function () { I18N.set(I18N.lang === 'ru' ? 'en' : 'ru'); }); }
 
   /* ---------- go ---------- */
   for (var w = 0; w < 28; w++) Sim.advance(0.25, Store.state.params, Store.state);

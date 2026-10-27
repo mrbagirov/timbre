@@ -22,9 +22,62 @@ pub struct UiState {
     pub bypass: bool,
 }
 
+/// Menu wording in the two interface languages.
+struct Labels {
+    show: &'static str,
+    presets: [&'static str; 5],
+    mute_off: &'static str,
+    mute_on: &'static str,
+    bypass_off: &'static str,
+    bypass_on: &'static str,
+    quit: &'static str,
+    tooltip: &'static str,
+}
+
+fn labels(lang: &str) -> Labels {
+    if lang == "ru" {
+        Labels {
+            show: "Открыть окно",
+            presets: [
+                "Пресет: новичок",
+                "Пресет: стрим",
+                "Пресет: закадр",
+                "Пресет: созвон",
+                "Пресет: мой",
+            ],
+            mute_off: "Выключить микрофон",
+            mute_on: "Включить микрофон",
+            bypass_off: "Без обработки",
+            bypass_on: "Вернуть обработку",
+            quit: "Выйти",
+            tooltip: "тембр",
+        }
+    } else {
+        Labels {
+            show: "Open window",
+            presets: [
+                "Preset: beginner",
+                "Preset: stream",
+                "Preset: voice-over",
+                "Preset: call",
+                "Preset: mine",
+            ],
+            mute_off: "Turn the microphone off",
+            mute_on: "Turn the microphone on",
+            bypass_off: "Bypass",
+            bypass_on: "Resume processing",
+            quit: "Quit",
+            tooltip: "timbre",
+        }
+    }
+}
+
 struct TrayItems {
+    show: MenuItem<tauri::Wry>,
+    presets: Vec<MenuItem<tauri::Wry>>,
     mute: MenuItem<tauri::Wry>,
     bypass: MenuItem<tauri::Wry>,
+    quit: MenuItem<tauri::Wry>,
 }
 
 struct AppState {
@@ -32,6 +85,7 @@ struct AppState {
     engine: Mutex<Option<engine::EngineHandle>>,
     choice: Mutex<Choice>,
     tray: Mutex<Option<TrayItems>>,
+    lang: Mutex<String>,
 }
 
 fn restart(app: &AppHandle, state: &AppState) {
@@ -50,19 +104,40 @@ fn detect_devices() -> Detect {
 
 #[tauri::command]
 fn set_state(state: UiState, app_state: State<'_, AppState>) {
+    let lang = app_state.lang.lock().unwrap().clone();
+    let l = labels(&lang);
     if let Some(t) = app_state.tray.lock().unwrap().as_ref() {
-        let _ = t.mute.set_text(if state.muted {
-            "Включить микрофон"
-        } else {
-            "Выключить микрофон"
-        });
+        let _ = t
+            .mute
+            .set_text(if state.muted { l.mute_on } else { l.mute_off });
         let _ = t.bypass.set_text(if state.bypass {
-            "Вернуть обработку"
+            l.bypass_on
         } else {
-            "Без обработки"
+            l.bypass_off
         });
     }
     app_state.shared.store(Arc::new(state));
+}
+
+/// The window tells which language it runs in, so the tray menu follows.
+#[tauri::command]
+fn set_lang(lang: String, app_state: State<'_, AppState>) {
+    *app_state.lang.lock().unwrap() = lang.clone();
+    let l = labels(&lang);
+    let st = app_state.shared.load();
+    if let Some(t) = app_state.tray.lock().unwrap().as_ref() {
+        let _ = t.show.set_text(l.show);
+        for (item, text) in t.presets.iter().zip(l.presets.iter()) {
+            let _ = item.set_text(*text);
+        }
+        let _ = t
+            .mute
+            .set_text(if st.muted { l.mute_on } else { l.mute_off });
+        let _ = t
+            .bypass
+            .set_text(if st.bypass { l.bypass_on } else { l.bypass_off });
+        let _ = t.quit.set_text(l.quit);
+    }
 }
 
 #[tauri::command]
@@ -121,35 +196,46 @@ fn show_main(app: &AppHandle) {
     }
 }
 
-fn build_tray(app: &AppHandle) -> tauri::Result<TrayItems> {
-    let show = MenuItem::with_id(app, "show", "Открыть окно", true, None::<&str>)?;
-    let p_novice = MenuItem::with_id(app, "preset:novice", "Пресет: новичок", true, None::<&str>)?;
-    let p_stream = MenuItem::with_id(app, "preset:stream", "Пресет: стрим", true, None::<&str>)?;
-    let p_voice = MenuItem::with_id(
-        app,
+fn build_tray(app: &AppHandle, lang: &str) -> tauri::Result<TrayItems> {
+    let l = labels(lang);
+    let show = MenuItem::with_id(app, "show", l.show, true, None::<&str>)?;
+    let ids = [
+        "preset:novice",
+        "preset:stream",
         "preset:voiceover",
-        "Пресет: закадр",
-        true,
-        None::<&str>,
-    )?;
-    let p_call = MenuItem::with_id(app, "preset:call", "Пресет: созвон", true, None::<&str>)?;
-    let p_mine = MenuItem::with_id(app, "preset:mine", "Пресет: мой", true, None::<&str>)?;
-    let mute = MenuItem::with_id(app, "mute", "Выключить микрофон", true, None::<&str>)?;
-    let bypass = MenuItem::with_id(app, "bypass", "Без обработки", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Выйти", true, None::<&str>)?;
+        "preset:call",
+        "preset:mine",
+    ];
+    let mut presets = Vec::new();
+    for (id, text) in ids.iter().zip(l.presets.iter()) {
+        presets.push(MenuItem::with_id(app, *id, *text, true, None::<&str>)?);
+    }
+    let mute = MenuItem::with_id(app, "mute", l.mute_off, true, None::<&str>)?;
+    let bypass = MenuItem::with_id(app, "bypass", l.bypass_off, true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", l.quit, true, None::<&str>)?;
     let sep1 = PredefinedMenuItem::separator(app)?;
     let sep2 = PredefinedMenuItem::separator(app)?;
     let sep3 = PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(
         app,
         &[
-            &show, &sep1, &p_novice, &p_stream, &p_voice, &p_call, &p_mine, &sep2, &mute, &bypass,
-            &sep3, &quit,
+            &show,
+            &sep1,
+            &presets[0],
+            &presets[1],
+            &presets[2],
+            &presets[3],
+            &presets[4],
+            &sep2,
+            &mute,
+            &bypass,
+            &sep3,
+            &quit,
         ],
     )?;
 
     let mut builder = TrayIconBuilder::with_id("main")
-        .tooltip("тембр")
+        .tooltip(l.tooltip)
         .menu(&menu)
         .show_menu_on_left_click(false);
     if let Some(icon) = app.default_window_icon().cloned() {
@@ -188,7 +274,13 @@ fn build_tray(app: &AppHandle) -> tauri::Result<TrayItems> {
             }
         })
         .build(app)?;
-    Ok(TrayItems { mute, bypass })
+    Ok(TrayItems {
+        show,
+        presets,
+        mute,
+        bypass,
+        quit,
+    })
 }
 
 pub fn run() {
@@ -204,10 +296,12 @@ pub fn run() {
             engine: Mutex::new(None),
             choice: Mutex::new(Choice::default()),
             tray: Mutex::new(None),
+            lang: Mutex::new("en".to_string()),
         })
         .invoke_handler(tauri::generate_handler![
             detect_devices,
             set_state,
+            set_lang,
             restart_engine,
             set_hotkey,
             set_autostart,
@@ -215,7 +309,7 @@ pub fn run() {
         ])
         .setup(|app| {
             let handle = app.handle().clone();
-            let items = build_tray(&handle)?;
+            let items = build_tray(&handle, "en")?;
             let state = app.state::<AppState>();
             *state.tray.lock().unwrap() = Some(items);
             restart(&handle, &state);

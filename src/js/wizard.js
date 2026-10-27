@@ -18,9 +18,10 @@
 
   var S = null, hudIn = null, hudOut = null, ui = null;
 
+  var tr = I18N.t;
   function num(v, d) { return ui.num(v, d); }
   function pct(arr, q) { if (!arr.length) return Sim.FLOOR; var a = arr.slice().sort(function (x, y) { return x - y; }); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; }
-  function setBtn(btn, text, disabled) { btn.textContent = text; btn.setAttribute('aria-disabled', String(!!disabled)); }
+  function setBtn(btn, text, disabled) { btn.textContent = tr(text); btn.setAttribute('aria-disabled', String(!!disabled)); }
 
   var els = null;
   function grab() {
@@ -37,7 +38,7 @@
     hudIn = new ui.Meter($('[data-meter="hud-in"]'));
     hudOut = new ui.Meter($('[data-meter="hud-out"]'));
 
-    els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = (els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'; });
+    els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = tr((els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'); });
     els.knobNext.addEventListener('click', function () { if (S.zoneHit) go(1); });
     els.capGo.addEventListener('click', function () {
       if (S.cap.state === 'ready') startRec(); else if (S.cap.state === 'done') go(S.idx + 1);
@@ -99,14 +100,14 @@
     if (st.id === 'knob') {
       Sim.setMode('loud');
       setBtn(els.knobNext, 'дальше', !S.zoneHit);
-      els.knobWhy.textContent = 'Дальше можно, когда пик попадёт в рамку на шкале.';
-      S.lastCat = ''; els.verdict.textContent = 'Скажите фразу громко.';
+      els.knobWhy.textContent = tr('Дальше можно, когда пик попадёт в рамку на шкале.');
+      S.lastCat = ''; els.verdict.textContent = tr('Скажите фразу громко.');
     } else if (st.id === 'result') {
       Sim.setMode('auto'); computeResult();
     } else {
       Sim.setMode(st.mode === 'silence' ? 'silence' : 'normal');
-      els.capTitle.textContent = st.title; els.capLead.textContent = st.lead;
-      els.capPrompt.hidden = !st.phrase; els.capCaption.textContent = st.caption; els.capPhrase.textContent = st.phrase;
+      els.capTitle.textContent = tr(st.title); els.capLead.textContent = tr(st.lead);
+      els.capPrompt.hidden = !st.phrase; els.capCaption.textContent = tr(st.caption); els.capPhrase.textContent = tr(st.phrase);
       renderCap();
     }
   }
@@ -116,7 +117,7 @@
     els.capBar.hidden = c.state !== 'rec';
     els.capRetry.hidden = c.state !== 'done';
     els.capBack.hidden = c.state === 'rec';
-    if (c.state === 'ready') { setBtn(els.capGo, 'начать запись', false); els.capGo.removeAttribute('aria-busy'); els.capStatus.textContent = st.id === 'quiet' ? 'Запись идёт ' + st.rec + ' секунд.' : 'Запись идёт ' + st.rec + ' секунд, фразу можно повторять по кругу.'; }
+    if (c.state === 'ready') { setBtn(els.capGo, 'начать запись', false); els.capGo.removeAttribute('aria-busy'); els.capStatus.textContent = tr(st.id === 'quiet' ? 'Запись идёт ' + st.rec + ' секунд.' : 'Запись идёт ' + st.rec + ' секунд, фразу можно повторять по кругу.'); }
     else if (c.state === 'rec') { setBtn(els.capGo, 'идёт запись…', true); els.capGo.setAttribute('aria-busy', 'true'); }
     else { setBtn(els.capGo, S.idx === 4 ? 'показать результат' : 'дальше', false); els.capGo.removeAttribute('aria-busy'); }
   }
@@ -149,7 +150,7 @@
         if (pk > -1) bad = true;
       }
     }
-    els.capStatus.textContent = line;
+    els.capStatus.textContent = tr(line);
     renderCap();
   }
 
@@ -163,15 +164,15 @@
 
     els.figs.innerHTML = ''; S.res.figures.forEach(function (f) {
       var li = document.createElement('li'); li.innerHTML = '<span class="fig__label"></span><output class="fig__val"></output>';
-      li.firstChild.textContent = f.label + ', дБ'; li.lastChild.textContent = f.value; els.figs.appendChild(li);
+      li.firstChild.textContent = tr(f.label + ', дБ'); li.lastChild.textContent = f.value; els.figs.appendChild(li);
     });
     els.rows.innerHTML = ''; S.res.rows.forEach(function (r) {
       var li = document.createElement('li'); li.innerHTML = '<span class="row__name"></span><span class="row__val"></span><span class="row__why"></span>';
-      li.children[0].textContent = r.name; li.children[1].textContent = r.value; li.children[2].textContent = r.why; els.rows.appendChild(li);
+      li.children[0].textContent = tr(r.name); li.children[1].textContent = tr(r.value); li.children[2].textContent = r.why.map(function (x) { return tr(x); }).join(' '); els.rows.appendChild(li);
     });
     els.notes.innerHTML = '';
-    S.res.warnings.forEach(function (w) { var li = document.createElement('li'); li.dataset.kind = 'warn'; li.textContent = 'Внимание: ' + w; els.notes.appendChild(li); });
-    S.res.tips.forEach(function (w) { var li = document.createElement('li'); li.textContent = 'Совет: ' + w; els.notes.appendChild(li); });
+    S.res.warnings.forEach(function (w) { var li = document.createElement('li'); li.dataset.kind = 'warn'; li.textContent = tr('Внимание:') + ' ' + tr(w); els.notes.appendChild(li); });
+    S.res.tips.forEach(function (w) { var li = document.createElement('li'); li.textContent = tr('Совет:') + ' ' + tr(w); els.notes.appendChild(li); });
   }
 
   /* called by app.js on every frame while the setup view is open */
@@ -189,17 +190,17 @@
     if (S.idx === 0) {
       var lo = ZONE[0], hi = ZONE[1];
       var cat = peak < -45 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
-      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = 'Можно идти дальше. Ручку больше не трогайте.'; }
+      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = tr('Можно идти дальше. Ручку больше не трогайте.'); }
       if (cat !== S.lastCat) {
         S.lastCat = cat;
-        els.verdict.textContent = { quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat];
+        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat]);
       }
     } else if (S.cap.state === 'rec') {
       var c = S.cap, st = STAGES[S.idx];
       c.t += dt; c.samples.push(n.inDb);
       els.capBar.firstElementChild.style.setProperty('--v', Math.min(1, c.t / st.rec).toFixed(3));
       var left = Math.max(1, Math.ceil(st.rec - c.t));
-      if (left !== S.lastSec) { S.lastSec = left; els.capStatus.textContent = 'Идёт запись, осталось ' + left + ' с.'; }
+      if (left !== S.lastSec) { S.lastSec = left; els.capStatus.textContent = tr('Идёт запись, осталось ' + left + ' с.'); }
       if (c.t >= st.rec) finishRec();
     }
   }

@@ -23,6 +23,15 @@
   --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
   --text-display-s: 1.44rem; --text-display: 1.728rem; --text-section: 1.2rem; --text-title: 1rem; --text-lead: 1rem;
+  /* Type roles. Families: Geologica (titles and the one big number), Onest (text, labels, controls), JetBrains Mono (measured values).
+     Sizes follow a 1.2 scale from the 16px body. Weights: 400 and 500 only. */
+  --fs-display: var(--text-3xl);  /* 33px  page and wizard titles, Geologica 500 */
+  --fs-figure: var(--text-2xl);   /* 28px  the one big number, Geologica 500, tabular */
+  --fs-title: var(--text-xl);     /* 23px  section titles, quoted phrases, result figures, Geologica 500 */
+  --fs-section: var(--text-lg);   /* 19px  item titles: lanes, steps, the wordmark, Geologica 500 */
+  --fs-body: var(--text-md);      /* 16px  running text, verdicts, buttons, Onest 400 and 500 */
+  --fs-label: var(--text-sm);     /* 14px  hints, field labels, pills, Onest 400 and 500 */
+  --fs-micro: var(--text-xs);     /* 12px  scales, lane stats, units, JetBrains Mono 400 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
   --color-error: oklch(72% 0.17 25); --color-success: oklch(76% 0.12 160);
@@ -45,13 +54,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 html { scrollbar-color: var(--color-muted) var(--color-paper); scroll-padding-top: var(--space-3xl); }
-body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: var(--text-md); line-height: 1.55; -webkit-font-smoothing: antialiased; caret-color: var(--color-accent); }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: var(--fs-body); line-height: 1.55; -webkit-font-smoothing: antialiased; caret-color: var(--color-accent); }
 ::selection { background: color-mix(in oklab, var(--color-accent) 25%, transparent); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
 h1, h2, h3 { margin: 0; font-family: var(--font-display); font-weight: var(--display-weight, 700); font-synthesis: none; letter-spacing: var(--tracking-display); line-height: 1.05; overflow-wrap: break-word; min-width: 0; text-wrap: balance; }
-h1 { max-width: 20ch; font-size: var(--text-display); } h2 { max-width: 30ch; font-size: var(--text-section); } h3 { max-width: 40ch; font-size: var(--text-title); line-height: 1.2; }
-.lead { font-size: var(--text-lead); line-height: 1.45; max-width: 52ch; }
+h1 { max-width: 20ch; font-size: var(--fs-display); } h2 { max-width: 30ch; font-size: var(--fs-title); } h3 { max-width: 40ch; font-size: var(--fs-section); line-height: 1.2; }
+.lead { font-size: var(--fs-body); line-height: 1.45; max-width: 52ch; }
 p { margin: 0; text-wrap: pretty; }
 p:not([class]) { max-width: 65ch; }
 img, video { max-width: 100%; height: auto; display: block; }
@@ -66,23 +75,23 @@ button, input, select, textarea { font: inherit; }
 @media (prefers-reduced-motion: reduce) { *:not(.keep-motion), *:not(.keep-motion)::before, *:not(.keep-motion)::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
 
 
-body { min-height: 100dvh; font-size: var(--text-md); }
+body { min-height: 100dvh; font-size: var(--fs-body); }
 button { color: inherit; }
 
 /* ---------- shell ---------- */
 .app { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); min-height: 100dvh; }
 .bar { position: sticky; top: 0; z-index: var(--z-sticky-nav); background: var(--color-paper); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .bar__in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "mark presets actions"; align-items: center; gap: var(--space-lg); max-width: var(--container); min-height: 64px; margin-inline: auto; padding-inline: var(--gutter); }
-.wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--text-lg)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
+.wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--fs-section)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
 .presets { grid-area: presets; display: flex; gap: var(--space-xs); margin: 0; padding: var(--space-3xs) var(--space-3xs); border: 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .presets::-webkit-scrollbar { display: none; }
 .bar__actions { grid-area: actions; display: flex; align-items: center; gap: var(--space-xs); }
-.device { font-size: var(--text-sm); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
+.device { font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
 .device[data-state="none"] { color: var(--color-error); }
 
 /* ---------- pills, toggles, buttons ---------- */
 .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.pill, .seg label { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: var(--control-h); padding: 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-ink-2); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--text-sm)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
+.pill, .seg label { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: var(--control-h); padding: 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-ink-2); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--fs-label)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
 .pill::before, .seg label::before, .toggle::before, .link-btn::before { content: ""; position: absolute; inset: -4px 0; }
 .pill:hover, .seg label:hover { background: var(--color-paper-2); color: var(--color-ink); }
 .pill:active, .seg label:active { transform: translateY(1px); }
@@ -93,7 +102,7 @@ button { color: inherit; }
 .pill--icon { width: var(--control-h); padding: 0; }
 .pill svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-lg); border: 0; border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-accent-ink); font: 500 var(--text-md)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-lg); border: 0; border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-accent-ink); font: 500 var(--fs-body)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
 .btn:hover { background: var(--color-accent-deep); }
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
@@ -102,13 +111,13 @@ button { color: inherit; }
 .btn--quiet { background: transparent; color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); }
 .btn--quiet:hover { background: var(--color-paper-2); }
 
-.link-btn { position: relative; padding: 0; border: 0; background: none; color: var(--color-ink-2); font: 400 var(--text-sm)/1.4 var(--font-body); text-decoration: underline; text-decoration-color: var(--color-rule-2); text-underline-offset: 0.2em; cursor: pointer; }
+.link-btn { position: relative; padding: 0; border: 0; background: none; color: var(--color-ink-2); font: 400 var(--fs-label)/1.4 var(--font-body); text-decoration: underline; text-decoration-color: var(--color-rule-2); text-underline-offset: 0.2em; cursor: pointer; }
 .link-btn:hover { color: var(--color-ink); text-decoration-color: var(--color-accent); }
 .link-btn:active { transform: translateY(1px); }
 .link-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .link-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-.toggle { position: relative; flex-shrink: 0; min-width: 52px; min-height: 32px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-muted); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--text-sm)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+.toggle { position: relative; flex-shrink: 0; min-width: 52px; min-height: 32px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-muted); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--fs-label)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
 .toggle[aria-checked="true"] { background: var(--color-accent); color: var(--color-accent-ink); box-shadow: none; }
 .toggle:hover { color: var(--color-ink); }
 .toggle[aria-checked="true"]:hover { background: var(--color-accent-deep); color: var(--color-accent-ink); }
@@ -122,44 +131,44 @@ button { color: inherit; }
 .deck { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap-columns); align-items: center; padding-bottom: var(--space-md); }
 .assist { display: grid; gap: var(--space-sm); }
 .assist .btn { width: 100%; }
-.assist__note { min-height: 3lh; font-size: var(--text-sm); line-height: 1.45; color: var(--color-ink-2); }
+.assist__note { min-height: 3lh; font-size: var(--fs-label); line-height: 1.45; color: var(--color-ink-2); }
 .assist__bar { height: 4px; border-radius: var(--radius-card); background: var(--color-paper-3); overflow: hidden; }
 .assist__bar > i { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transform: scaleX(var(--v, 0)); }
 .assist__undo { justify-self: start; }
 
 .meter { display: grid; gap: var(--space-xs); min-width: 0; }
 .meter__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
-.meter__name { font-size: var(--text-title); }
-.meter__val { font: 400 var(--text-sm)/1 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+.meter__name { font: 500 var(--fs-body)/1.2 var(--font-body); letter-spacing: 0; }
+.meter__val { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
 .meter__track { position: relative; height: 10px; border-radius: var(--radius-card); background: var(--color-paper-3); overflow: hidden; }
 .meter__fill { position: absolute; inset: 0; background: var(--color-accent); transform-origin: left; transform: scaleX(var(--v, 0)); }
 .meter__peak { position: absolute; top: 0; bottom: 0; left: calc(var(--pk, 0) * 100%); width: 2px; background: var(--color-ink); }
 .meter[data-clip="true"] .meter__fill { background: var(--color-error); }
 .meter[data-clip="true"] .meter__val { color: var(--color-error); }
-.meter__scale { position: relative; height: 1lh; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.meter__scale { position: relative; height: 1lh; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); font-variant-numeric: tabular-nums; }
 .meter__scale span { white-space: nowrap; position: absolute; left: calc(var(--p) * 1%); transform: translateX(-50%); }
 .meter__scale span:first-child { transform: none; }
 .meter__scale span:last-child { transform: translateX(-100%); }
 .meter--out { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-lg); align-items: start; }
 .meter--out .meter__main { display: grid; gap: var(--space-xs); min-width: 0; }
 .loud { display: grid; justify-items: end; gap: var(--space-3xs); }
-.loud__label { font-size: var(--text-sm); color: var(--color-muted); }
-.loud__fig { font: 500 var(--text-2xl)/1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; color: var(--color-accent-ink); }
-.loud__unit { font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); }
+.loud__label { font-size: var(--fs-label); color: var(--color-muted); }
+.loud__fig { font: 500 var(--fs-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; color: var(--color-accent-ink); }
+.loud__unit { font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); }
 
 /* ---------- the chain ---------- */
 .chain__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-md); padding-bottom: var(--space-sm); }
 .chain__head h2 { max-width: none; }
-.chain__note { display: flex; align-items: baseline; gap: var(--space-sm); font-size: var(--text-sm); color: var(--color-muted); min-height: 1lh; }
+.chain__note { display: flex; align-items: baseline; gap: var(--space-sm); font-size: var(--fs-label); color: var(--color-muted); min-height: 1lh; }
 
 .lane { display: grid; grid-template-columns: minmax(0, 236px) minmax(0, 1fr) minmax(0, 340px); gap: var(--space-lg); align-items: center; padding-block: var(--space-sm); border-top: var(--rule-hair) solid var(--color-rule); }
 .lane__id { display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
-.lane__id h3 { font-size: var(--text-lg); line-height: 1.1; }
-.lane__hint { margin-top: var(--space-2xs); font-size: var(--text-sm); line-height: 1.3; color: var(--color-muted); }
+.lane__id h3 { font-size: var(--fs-section); line-height: 1.1; }
+.lane__hint { margin-top: var(--space-2xs); font-size: var(--fs-label); line-height: 1.3; color: var(--color-muted); }
 .lane__viz { position: relative; height: 68px; border-radius: var(--radius-card); background: var(--color-paper-2); overflow: hidden; transition: opacity var(--dur-short) var(--ease-out); }
 .lane__viz canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lane__stat { position: absolute; left: var(--space-xs); top: var(--space-xs); padding: var(--space-3xs) var(--space-xs); border-radius: var(--radius-card); background: var(--color-paper-2); font: 400 var(--text-xs)/1.2 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
-.lane__axis { position: absolute; inset: auto 0 var(--space-3xs) 0; height: 1lh; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); pointer-events: none; }
+.lane__stat { position: absolute; left: var(--space-xs); top: var(--space-xs); padding: var(--space-3xs) var(--space-xs); border-radius: var(--radius-card); background: var(--color-paper-2); font: 400 var(--fs-micro)/1.2 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+.lane__axis { position: absolute; inset: auto 0 var(--space-3xs) 0; height: 1lh; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); pointer-events: none; }
 .lane__axis span { white-space: nowrap; position: absolute; left: calc(var(--p) * 1%); transform: translateX(-50%); }
 .lane[data-on="false"] .lane__viz { opacity: 0.45; }
 .lane[data-on="false"] h3 { color: var(--color-muted); }
@@ -170,8 +179,8 @@ button { color: inherit; }
 .lane__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); min-height: var(--hit); }
 
 .field { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-xs); align-items: baseline; min-width: 0; }
-.field label { font-size: var(--text-sm); color: var(--color-ink-2); }
-.field output { font: 400 var(--text-sm)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.field label { font-size: var(--fs-label); color: var(--color-ink-2); }
+.field output { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; }
 .field input[type="range"] { --fill: 50%; grid-column: 1 / -1; width: 100%; height: var(--hit); margin: 0; background: transparent; border-radius: var(--space-xs); -webkit-appearance: none; appearance: none; cursor: pointer; }
 .field input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: var(--radius-card); background: linear-gradient(to right, var(--color-accent) var(--fill), var(--color-rule-2) var(--fill)); }
 .field input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: var(--thumb); height: var(--thumb); margin-top: calc((var(--space-2xs) - var(--thumb)) / 2); border: 0; border-radius: 50%; background: var(--color-ink); box-shadow: 0 0 0 3px var(--color-paper); transition: transform var(--dur-micro) var(--ease-out); }
@@ -185,27 +194,27 @@ button { color: inherit; }
 
 /* ---------- welcome ---------- */
 .welcome { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: var(--space-2xl); align-items: start; padding-block: var(--space-xl) var(--space-2xl); }
-.welcome h1 { max-width: 16ch; font-size: var(--text-3xl); }
+.welcome h1 { max-width: 16ch; font-size: var(--fs-display); }
 .welcome .lead { margin-top: var(--space-sm); color: var(--color-ink-2); }
 .steps { display: grid; gap: 0; margin: var(--space-xl) 0 0; padding: 0; list-style: none; }
 .step { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-md); padding-block: var(--space-lg); border-top: var(--rule-hair) solid var(--color-rule); }
-.step__n { font: 500 var(--text-2xl)/1 var(--font-display); color: var(--color-muted); font-variant-numeric: tabular-nums; }
-.step h2 { max-width: none; font-size: var(--text-lg); }
-.step__text { margin-top: var(--space-xs); color: var(--color-ink-2); font-size: var(--text-sm); line-height: 1.5; }
-.step__status { margin-top: var(--space-sm); min-height: 1.4lh; font-size: var(--text-sm); color: var(--color-ink); }
+.step__n { font: 500 var(--fs-figure)/1 var(--font-display); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.step h2 { max-width: none; font-size: var(--fs-section); }
+.step__text { margin-top: var(--space-xs); color: var(--color-ink-2); font-size: var(--fs-label); line-height: 1.5; }
+.step__status { margin-top: var(--space-sm); min-height: 1.4lh; font-size: var(--fs-label); color: var(--color-ink); }
 .step__status[data-tone="bad"] { color: var(--color-error); }
 .step__actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-sm); }
 .skeleton { display: block; width: 11rem; height: 1.1em; border-radius: var(--radius-card); background: var(--color-paper-3); }
 .tabs { display: flex; gap: var(--space-xs); margin-top: var(--space-sm); }
 .tabpanel { margin-top: var(--space-sm); }
 .welcome__go { display: grid; gap: var(--space-sm); justify-items: start; padding-top: var(--space-lg); border-top: var(--rule-hair) solid var(--color-rule); }
-.welcome__why { min-height: 1lh; font-size: var(--text-sm); color: var(--color-muted); }
+.welcome__why { min-height: 1lh; font-size: var(--fs-label); color: var(--color-muted); }
 
 .welcome__side { position: sticky; top: calc(64px + var(--space-xl)); display: grid; gap: var(--space-lg); margin-top: var(--space-xl); }
 .route { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 .route__node { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-md); align-items: baseline; padding: var(--space-md) var(--space-lg); border-radius: var(--radius-card); background: var(--color-paper-2); }
-.route__node h3 { font-size: var(--text-xl); }
-.route__state { font-size: var(--text-sm); color: var(--color-ink-2); }
+.route__node h3 { font-size: var(--fs-title); }
+.route__state { font-size: var(--fs-label); color: var(--color-ink-2); }
 .route__state[data-tone="bad"] { color: var(--color-error); }
 .route__link { width: 1px; height: var(--space-lg); margin-left: var(--space-lg); background: var(--color-rule-2); }
 
@@ -216,9 +225,9 @@ dialog.sheet::backdrop { background: color-mix(in oklab, var(--color-paper), tra
 .sheet__head h2 { max-width: none; }
 .sheet__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 14rem); gap: var(--space-md); align-items: center; min-height: var(--hit); padding-block: var(--space-xs); border-top: var(--rule-hair) solid var(--color-rule); }
 .sheet__row .toggle, .sheet__row .pill { justify-self: end; min-width: 6rem; }
-.sheet__row label, .sheet__row .sheet__label { font-size: var(--text-sm); color: var(--color-ink-2); }
-.sheet__help { grid-column: 1 / -1; min-height: 1lh; margin-top: calc(var(--space-xs) * -1); font-size: var(--text-xs); color: var(--color-muted); }
-.input { width: 100%; min-height: var(--hit); padding: 0 var(--space-md); border: 1.5px solid var(--color-rule-2); border-radius: var(--radius-pill); background: var(--color-paper); color: var(--color-ink); font: 400 var(--text-sm)/1 var(--font-body); outline: 2px solid transparent; outline-offset: -3px; }
+.sheet__row label, .sheet__row .sheet__label { font-size: var(--fs-label); color: var(--color-ink-2); }
+.sheet__help { grid-column: 1 / -1; min-height: 1lh; margin-top: calc(var(--space-xs) * -1); font-size: var(--fs-micro); color: var(--color-muted); }
+.input { width: 100%; min-height: var(--hit); padding: 0 var(--space-md); border: 1.5px solid var(--color-rule-2); border-radius: var(--radius-pill); background: var(--color-paper); color: var(--color-ink); font: 400 var(--fs-label)/1 var(--font-body); outline: 2px solid transparent; outline-offset: -3px; }
 .input:hover { background: var(--color-paper-3); }
 .input:focus-visible { outline-color: var(--color-focus); border-color: var(--color-ink); }
 .input:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -230,60 +239,60 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .tray { width: 100%; max-width: 280px; padding: var(--space-md); border-radius: var(--radius-card); background: var(--color-paper-2); box-shadow: var(--shadow-card); }
 .tray__head { display: grid; gap: var(--space-2xs); padding-bottom: var(--space-sm); }
 .tray__head .wordmark { grid-area: auto; min-height: 0; }
-.tray__status { font-size: var(--text-sm); color: var(--color-ink-2); }
+.tray__status { font-size: var(--fs-label); color: var(--color-ink-2); }
 .tray .meter__track { height: 6px; }
 .tray__list { display: grid; gap: 0; margin: var(--space-sm) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: var(--rule-hair) solid var(--color-rule); }
-.tray__item { white-space: nowrap; position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); width: 100%; min-height: var(--hit); padding: 0 var(--space-sm); border: 0; border-radius: var(--space-xs); background: transparent; color: var(--color-ink); font: 400 var(--text-sm)/1 var(--font-body); text-align: left; cursor: pointer; }
+.tray__item { white-space: nowrap; position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); width: 100%; min-height: var(--hit); padding: 0 var(--space-sm); border: 0; border-radius: var(--space-xs); background: transparent; color: var(--color-ink); font: 400 var(--fs-label)/1 var(--font-body); text-align: left; cursor: pointer; }
 .tray__item:hover { background: var(--color-paper-3); }
 .tray__item:active { transform: translateY(1px); }
 .tray__item:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
 .tray__item[aria-checked="true"], .tray__item[aria-pressed="true"] { font-weight: 500; }
-.tray__item .tray__tag { font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); }
-.tray__item[role="radio"][aria-checked="true"]::after { content: "выбран"; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-ink); }
+.tray__item .tray__tag { font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); }
+.tray__item[role="radio"][aria-checked="true"]::after { content: "выбран"; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-ink); }
 .tray__item[aria-checked="true"] .tray__tag, .tray__item[aria-pressed="true"] .tray__tag { color: var(--color-ink); }
 .tray__group { margin: var(--space-xs) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: var(--rule-hair) solid var(--color-rule); display: grid; gap: 0; }
 
 /* ---------- calibration ---------- */
 .setup { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 0 var(--space-2xl); align-items: start; padding-block: var(--space-lg) var(--space-2xl); }
 .setup__steps { grid-column: 1 / -1; display: flex; gap: var(--space-lg); margin: 0 0 var(--space-xl); padding: 0; list-style: none; counter-reset: s; overflow-x: auto; scrollbar-width: none; border-bottom: var(--rule-hair) solid var(--color-rule); }
-.setup__steps li { counter-increment: s; flex-shrink: 0; padding-block: var(--space-sm); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: var(--text-sm); color: var(--color-muted); white-space: nowrap; }
+.setup__steps li { counter-increment: s; flex-shrink: 0; padding-block: var(--space-sm); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; }
 .setup__steps li::before { content: counter(s) " "; font-family: var(--font-outlier); font-variant-numeric: tabular-nums; }
 .setup__steps li[data-state="done"] { color: var(--color-ink-2); }
 .setup__steps li[data-state="current"] { color: var(--color-ink); border-bottom-color: var(--color-ink); font-weight: 500; }
-.pane__title { max-width: 20ch; font-size: var(--text-3xl); }
+.pane__title { max-width: 20ch; font-size: var(--fs-display); }
 .pane .lead { margin-top: var(--space-sm); color: var(--color-ink-2); }
 .prompt { margin: var(--space-xl) 0 0; }
-.prompt figcaption { margin-bottom: var(--space-xs); font-size: var(--text-sm); color: var(--color-muted); }
-.prompt blockquote { margin: 0; max-width: 28ch; font: 500 var(--text-xl)/1.3 var(--font-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
-.setup__verdict { min-height: 2lh; margin-top: var(--space-lg); font-size: var(--text-md); }
+.prompt figcaption { margin-bottom: var(--space-xs); font-size: var(--fs-label); color: var(--color-muted); }
+.prompt blockquote { margin: 0; max-width: 28ch; font: 500 var(--fs-title)/1.3 var(--font-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
+.setup__verdict { min-height: 2lh; margin-top: var(--space-lg); font-size: var(--fs-body); }
 .setup__demo { margin-top: var(--space-md); }
 .setup__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-md); margin-top: var(--space-lg); }
-.setup__why { min-height: 1lh; margin-top: var(--space-md); font-size: var(--text-sm); color: var(--color-muted); }
+.setup__why { min-height: 1lh; margin-top: var(--space-md); font-size: var(--fs-label); color: var(--color-muted); }
 .pane .assist__bar { margin-top: var(--space-lg); }
 .setup__hud { position: sticky; top: calc(64px + var(--space-lg)); display: grid; gap: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-card); background: var(--color-paper-2); }
 .hud__in, .hud__out { display: grid; gap: var(--space-lg); }
 .hud__in .loud { justify-items: start; }
-.hud__zone-note { font-size: var(--text-sm); color: var(--color-ink-2); }
-.setup__demo-note { font-size: var(--text-xs); color: var(--color-muted); }
+.hud__zone-note { font-size: var(--fs-label); color: var(--color-ink-2); }
+.setup__demo-note { font-size: var(--fs-micro); color: var(--color-muted); }
 .meter__zone { position: absolute; top: 0; bottom: 0; left: calc(var(--a) * 100%); width: calc((var(--b) - var(--a)) * 100%); box-shadow: inset 0 0 0 2px var(--color-ink); pointer-events: none; }
 .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); margin: var(--space-lg) 0 0; padding: 0; list-style: none; }
 .figs li { display: grid; gap: var(--space-3xs); align-content: start; }
 .figs li + li { padding-left: var(--space-md); border-left: var(--rule-hair) solid var(--color-rule); }
-.fig__label { font-size: var(--text-sm); color: var(--color-muted); }
-.fig__val { font: 500 var(--text-xl)/1.1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
+.fig__label { font-size: var(--fs-label); color: var(--color-muted); }
+.fig__val { font: 500 var(--fs-title)/1.1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
 .setup__ab { margin-top: var(--space-lg); }
 .rows { margin: var(--space-md) 0 0; padding: 0; list-style: none; }
 .rows li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-3xs) var(--space-md); padding-block: var(--space-sm); border-top: var(--rule-hair) solid var(--color-rule); align-items: baseline; }
 .row__name { font-weight: 500; }
-.row__val { font: 400 var(--text-sm)/1.4 var(--font-outlier); font-variant-numeric: tabular-nums; }
-.row__why { grid-column: 2; font-size: var(--text-sm); line-height: 1.5; color: var(--color-ink-2); }
-.notes { display: grid; gap: var(--space-sm); margin: var(--space-md) 0 0; padding: 0; list-style: none; font-size: var(--text-sm); line-height: 1.5; color: var(--color-ink-2); }
+.row__val { font: 400 var(--fs-label)/1.4 var(--font-outlier); font-variant-numeric: tabular-nums; }
+.row__why { grid-column: 2; font-size: var(--fs-label); line-height: 1.5; color: var(--color-ink-2); }
+.notes { display: grid; gap: var(--space-sm); margin: var(--space-md) 0 0; padding: 0; list-style: none; font-size: var(--fs-label); line-height: 1.5; color: var(--color-ink-2); }
 .notes li[data-kind="warn"] { color: var(--color-error); }
 @media (max-width: 64rem) {
   .setup { grid-template-columns: minmax(0, 1fr); }
   .setup__steps { order: -2; }
   .setup__hud { order: -1; position: static; margin-bottom: var(--space-lg); }
-  .pane__title { font-size: var(--text-2xl); }
+  .pane__title { font-size: var(--fs-figure); }
 }
 @media (max-width: 40rem) {
   .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-md); }
@@ -329,6 +338,14 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mark"; }
 .welcome__side .welcome__go { padding-top: 0; border-top: 0; }
 
+.device { max-width: 16rem; overflow: hidden; text-overflow: ellipsis; }
+.native .setup__demo, .native .setup__demo-note { display: none; }
+
+/* ---------- language link, shown on the screens that have no action row ---------- */
+.bar__lang { grid-area: lang; display: none; }
+.app[data-view="welcome"] .bar__lang, .app[data-view="setup"] .bar__lang { display: inline-block; min-height: var(--hit); }
+.app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "mark lang"; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -362,6 +379,324 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   </div>
 </main>
 
+<script>
+/* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
+window.I18N_EN = {
+ "тембр: звук для микрофона AM8": "timbre: voice chain for the AM8 microphone",
+ "тембр": "timbre",
+ "Тембр": "Timbre",
+ "пресет": "preset",
+ "новичок": "beginner",
+ "стрим": "stream",
+ "закадр": "voice-over",
+ "созвон": "call",
+ "мой": "mine",
+ "ищем микрофон": "looking for the microphone",
+ "микрофон включён": "microphone on",
+ "микрофон выключен": "microphone off",
+ "без обработки": "bypass",
+ "настройка звука микрофона": "microphone sound setup",
+ "сделать нормально": "make it normal",
+ "Тембр попросит сказать несколько фраз шёпотом, обычным голосом и громко, и подберёт настройки под вас и вашу комнату.": "Timbre will ask you to say a few phrases in a whisper, in a normal voice and loudly, then set everything for you and your room.",
+ "вернуть как было": "undo",
+ "вход": "input",
+ "выход": "output",
+ "громкость": "loudness",
+ "−60 дБ": "−60 dB",
+ "{} дБ": "{1} dB",
+ "дБ": "dB",
+ "{} к 1": "{1}:1",
+ "{} дБ, перегруз": "{1} dB, overload",
+ "цепочка": "chain",
+ "вернуть пресет": "restore preset",
+ "настройки отличаются от пресета «{}».": "settings differ from the “{1}” preset.",
+ "вкл": "on",
+ "выкл": "off",
+ "гейт": "gate",
+ "глушит паузы между словами": "silences the pauses between words",
+ "открыт": "open",
+ "закрыт": "closed",
+ "порог": "threshold",
+ "шумодав": "noise suppression",
+ "убирает фон и стук клавиш": "removes background hiss and keyboard noise",
+ "шума меньше на 0 дБ": "noise down by 0 dB",
+ "шума меньше на {} дБ": "noise down by {1} dB",
+ "лёгкий": "light",
+ "качественный": "quality",
+ "сила": "amount",
+ "эквалайзер": "EQ",
+ "тепло и чёткость голоса": "warmth and clarity of the voice",
+ "100 Гц": "100 Hz",
+ "1 кГц": "1 kHz",
+ "10 кГц": "10 kHz",
+ "низ": "low",
+ "середина": "mid",
+ "верх": "high",
+ "срез низа на 80 Гц": "low cut at 80 Hz",
+ "компрессор": "compressor",
+ "выравнивает громкость": "evens out the volume",
+ "сжатие 0 дБ": "compression 0 dB",
+ "сжатие {} дБ": "compression {1} dB",
+ "степень": "ratio",
+ "лимитер": "limiter",
+ "не даёт звуку перегрузиться": "keeps the sound from clipping",
+ "срезов нет": "no clipping",
+ "срезано {} дБ": "clipped {1} dB",
+ "потолок": "ceiling",
+ "обход": "bypass",
+ "выключен": "off",
+ "подключим микрофон за минуту": "connect your microphone in a minute",
+ "Тембр забирает звук с AM8, обрабатывает и отдаёт программам через виртуальный кабель.": "Timbre takes the sound from the AM8, processes it and hands it to your apps through a virtual cable.",
+ "микрофон": "microphone",
+ "Подключите микрофон к компьютеру кабелем.": "Connect the microphone to the computer with its cable.",
+ "проверить снова": "check again",
+ "виртуальный кабель": "virtual cable",
+ "Через него обработанный звук попадает в Discord, OBS и Zoom. После установки VB-Cable Windows просит перезагрузку.": "The processed sound reaches Discord, OBS and Zoom through it. After installing VB-Cable, Windows asks for a restart.",
+ "скачать VB-Cable": "download VB-Cable",
+ "программа, которая слушает": "the app that listens",
+ "Выберите микрофоном CABLE Output.": "Pick CABLE Output as the microphone.",
+ "Настройки, Голос и видео, Устройство ввода: CABLE Output.": "Settings, Voice & Video, Input Device: CABLE Output.",
+ "Микшер, шестерёнка у «Микрофон/Aux», Свойства, Устройство: CABLE Output.": "Mixer, the gear next to “Mic/Aux”, Properties, Device: CABLE Output.",
+ "Настройки, Звук, Микрофон: CABLE Output.": "Settings, Audio, Microphone: CABLE Output.",
+ "проверяем": "checking",
+ "обрабатывает": "processes",
+ "слушают CABLE Output": "listen to CABLE Output",
+ "открыть тембр": "open timbre",
+ "Ждём результат проверки.": "Waiting for the check.",
+ "{} подключён": "{1} connected",
+ "микрофон не найден": "microphone not found",
+ "микрофон: {}": "microphone: {1}",
+ "{} найден, подключён по {}.": "{1} found, connected over {2}.",
+ "{} найден.": "{1} found.",
+ "AM8 по названию не найден. Сейчас используется «{}», другой микрофон можно выбрать в настройках.": "No device named AM8 was found. “{1}” is in use for now, you can pick another microphone in the settings.",
+ "используется другой": "another one in use",
+ "Микрофон не найден. Подключите AM8 по USB и нажмите «проверить снова».": "No microphone found. Connect the AM8 over USB and press “check again”.",
+ "найден": "found",
+ "не найден": "not found",
+ "VB-Cable не найден.": "VB-Cable not found.",
+ "Нужны микрофон и кабель.": "A microphone and a cable are needed.",
+ "Нужен микрофон.": "A microphone is needed.",
+ "Нужен кабель.": "A cable is needed.",
+ "калибровка микрофона": "microphone calibration",
+ "ручка": "knob",
+ "тишина": "silence",
+ "шёпот": "whisper",
+ "обычно": "normal",
+ "громко": "loud",
+ "итог": "result",
+ "выставим усиление": "set the gain",
+ "Ручка усиления на корпусе микрофона. Тембр её не трогает, поэтому начинаем с неё.": "The gain knob is on the microphone body. Timbre does not touch it, so we start there.",
+ "громко, как в самый азартный момент эфира": "loudly, as in the most exciting moment of a broadcast",
+ "«Раз, два, три, проверка микрофона!»": "“One, two, three, mic check!”",
+ "Скажите фразу громко.": "Say the phrase loudly.",
+ "ручка на микрофоне (в превью это ползунок)": "knob on the microphone (a slider in the preview)",
+ "−8 дБ": "−8 dB",
+ "дальше": "next",
+ "отмена": "cancel",
+ "Дальше можно, когда пик попадёт в рамку на шкале.": "You can continue once the peak reaches the frame on the scale.",
+ "Можно идти дальше. Ручку больше не трогайте.": "You can continue. Do not touch the knob again.",
+ "послушаем комнату": "listen to the room",
+ "Сидите тихо и не двигайтесь, пока идёт запись. Если играет музыка, выключите её.": "Sit quietly and stay still while recording. If music is playing, turn it off.",
+ "теперь шёпотом": "now in a whisper",
+ "Как ночью, когда рядом кто-то спит. Повторяйте фразу, пока идёт запись.": "As at night, when someone is sleeping nearby. Repeat the phrase while recording.",
+ "шёпотом": "in a whisper",
+ "«Ночью в доме все спят, поэтому говорю тихо.»": "“Everyone in the house is asleep tonight, so I am speaking quietly.”",
+ "обычным голосом": "in a normal voice",
+ "Как на созвоне с друзьями, на той дистанции до микрофона, на которой сидите обычно.": "As on a call with friends, at the distance from the microphone where you usually sit.",
+ "«Привет, меня слышно хорошо, а шум остался за кадром.»": "“Hi, you can hear me well, and the noise stays off screen.”",
+ "теперь громко": "now loudly",
+ "Как в самый азартный момент стрима. Перегрузить не страшно: ради этого мы и меряем.": "As in the most exciting moment of a stream. Overloading is fine: that is exactly what we measure for.",
+ "Запись идёт {} секунд.": "Recording takes {1} seconds.",
+ "Запись идёт {} секунд, фразу можно повторять по кругу.": "Recording takes {1} seconds, you can repeat the phrase in a loop.",
+ "начать запись": "start recording",
+ "повторить": "repeat",
+ "назад": "back",
+ "идёт запись…": "recording…",
+ "показать результат": "show the result",
+ "Идёт запись, осталось {} с.": "Recording, {1} s left.",
+ "Пока тишина. Скажите фразу громко.": "Silence so far. Say the phrase loudly.",
+ "Тихо. Прибавьте усиление на микрофоне.": "Too quiet. Turn the gain up on the microphone.",
+ "То что нужно: пик в рамке.": "Just right: the peak is in the frame.",
+ "Близко к перегрузу. Чуть убавьте усиление.": "Close to clipping. Turn the gain down a little.",
+ "Перегруз. Убавьте усиление.": "Overload. Turn the gain down.",
+ "Шум комнаты {} дБ.": "Room noise {1} dB.",
+ "Шум комнаты {} дБ. Шумно, шумодаву придётся работать сильнее.": "Room noise {1} dB. It is noisy, noise suppression will have to work harder.",
+ "Почти не слышно над шумом комнаты. Повторите ближе к микрофону.": "Barely audible above the room noise. Repeat closer to the microphone.",
+ "Шёпот {} дБ, на {} дБ выше шума комнаты.": "Whisper {1} dB, {2} dB above the room noise.",
+ "Обычная речь {} дБ.": "Normal speech {1} dB.",
+ "Громкая речь {} дБ, пик {} дБ.": "Loud speech {1} dB, peak {2} dB.",
+ "Громкая речь {} дБ, пик {} дБ. Звук упёрся в 0 дБ: убавьте усиление ручкой и запишите заново.": "Loud speech {1} dB, peak {2} dB. The sound hit 0 dB: turn the gain knob down and record again.",
+ "готово, вот что получилось": "done, here is the result",
+ "было": "before",
+ "стало": "after",
+ "Если что-то не нравится, любой ползунок можно поправить вручную в цепочке.": "If you do not like something, adjust any slider by hand in the chain.",
+ "сохранить пресет": "save preset",
+ "пройти заново": "start over",
+ "Рамка на шкале: цель для самой громкой фразы, от −9 до −3 дБ.": "The frame on the scale is the target for the loudest phrase, from −9 to −3 dB.",
+ "пик за 4 секунды": "peak over 4 seconds",
+ "В превью голос имитирует демо-сигнал.": "In the preview a demo signal imitates the voice.",
+ "шум комнаты, дБ": "room noise, dB",
+ "шёпот, дБ": "whisper, dB",
+ "обычная речь, дБ": "normal speech, dB",
+ "громко, дБ": "loud, dB",
+ "Внимание:": "Warning:",
+ "Совет:": "Tip:",
+ "Шёпот всего на {} дБ выше шума комнаты, поэтому гейт сделан мягким и может подрезать концы слов. Помогает подвинуть микрофон ближе ко рту или тише включить вентилятор.": "The whisper is only {1} dB above the room noise, so the gate is soft and may clip the ends of words. Moving the microphone closer to your mouth or turning the fan down helps.",
+ "Порог на {} дБ выше шума комнаты ({} дБ) и на {} дБ ниже шёпота, слова не обрежутся.": "The threshold is {1} dB above the room noise ({2} dB) and {3} dB below the whisper, so words will not be cut.",
+ "качественный, {}%": "quality, {1}%",
+ "лёгкий, {}%": "light, {1}%",
+ "Фон в комнате заметный ({} дБ), включён качественный режим.": "The room background is noticeable ({1} dB), so quality mode is on.",
+ "Комната тихая ({} дБ), лёгкого режима хватает и он не трогает голос.": "The room is quiet ({1} dB), light mode is enough and it leaves the voice alone.",
+ "Низа на {} дБ больше нормы, обычно это близко к микрофону.": "There is {1} dB too much low end, usually because you are close to the microphone.",
+ "Отодвиньтесь от микрофона на ширину ладони: вблизи низ раздувается, и эквалайзер лечит это хуже, чем расстояние.": "Move away from the microphone by a hand's width: up close the low end swells, and EQ fixes that worse than distance does.",
+ "Низа на {} дБ меньше нормы, добавлено тепло.": "The low end is {1} dB short, warmth was added.",
+ "Верха не хватает на {} дБ, добавлена чёткость.": "The high end is {1} dB short, clarity was added.",
+ "Верх звенит на {} дБ, приглушён.": "The high end rings {1} dB too much, so it was softened.",
+ "Тембр близок к целевому, правки минимальны.": "The tone is close to the target, so the changes are minimal.",
+ "Срез низа на 80 Гц включён.": "The low cut at 80 Hz is on.",
+ "низ {}, середина {}, верх {} дБ": "low {1}, mid {2}, high {3} dB",
+ "{} дБ, {} к 1": "{1} dB, {2}:1",
+ "Между шёпотом и громкой речью {} дБ. Компрессор берёт всё, что громче обычной речи, и выравнивает.": "There are {1} dB between the whisper and loud speech. The compressor takes everything louder than normal speech and evens it out.",
+ "Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.": "The loud phrase hit 0 dB. Turn the gain knob on the microphone down and calibrate again, otherwise the sound will distort before processing.",
+ "Громкая фраза тихая, пик {} дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.": "The loud phrase is quiet, peak {1} dB. Turn the gain knob on the microphone up: the higher the signal above the noise, the less work for noise suppression.",
+ "Самая громкая фраза доходит до {} дБ, потолок поставлен чуть ниже нуля.": "The loudest phrase reaches {1} dB, so the ceiling is set just below zero.",
+ "настройки": "settings",
+ "вывод": "output",
+ "запускать вместе с Windows": "start with Windows",
+ "горячая клавиша мьюта": "mute hotkey",
+ "Нажмите на поле и сочетание клавиш.": "Click the field and press a key combination.",
+ "нажмите сочетание": "press a combination",
+ "Escape отменяет.": "Escape cancels.",
+ "Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.": "Add Ctrl, Alt or Shift so the key does not get in the way of typing.",
+ "мастер подключения": "setup wizard",
+ "открыть": "open",
+ "закрыть": "close",
+ "Тембр 0.1": "Timbre 0.1",
+ "язык": "language",
+ "Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.": "The “mine” preset was built from the calibration. Pick it at the top, and adjust any slider by hand.",
+ "Прежние настройки возвращены.": "Previous settings restored.",
+ "автоматически": "automatic",
+ "ошибка звука": "sound error",
+ "Гейт, шумодав, эквалайзер, компрессор и лимитер для микрофона AM8 в одном окне, с выводом в Discord, OBS и Zoom.": "Gate, noise suppression, EQ, compressor and limiter for the AM8 microphone in one window, with output to Discord, OBS and Zoom.",
+ "тембр, главный экран": "timbre, main screen",
+ "автонастройка и уровни": "auto setup and levels",
+ "уровень на входе": "input level",
+ "уровень на выходе": "output level",
+ "режим шумодава": "noise suppression mode",
+ "программа": "app",
+ "путь звука": "sound path",
+ "шаги калибровки": "calibration steps",
+ "что измерено": "what was measured",
+ "сравнить звук": "compare the sound",
+ "что настроено": "what was set",
+ "что слышит тембр": "what timbre hears",
+ "цель для самой громкой фразы": "target for the loudest phrase",
+ "закрыть настройки": "close settings",
+ "тембр: меню в трее": "timbre: tray menu",
+ "работает": "running",
+ "работает, пресет «{}»": "running, “{1}” preset",
+ "обработка отключена": "processing is off",
+ "выключить микрофон": "turn the microphone off",
+ "открыть окно": "open window",
+ "выйти": "quit",
+ "Быстрое меню тембра: пресеты, мьют микрофона и обход обработки.": "Quick menu of timbre: presets, microphone mute and bypass.",
+ "Не найден ни один микрофон.": "No microphone was found.",
+ "Не удалось прочитать форматы микрофона «{}».": "Could not read the formats of the microphone “{1}”.",
+ "Формат звука микрофона {} пока не поддерживается.": "The sound format {1} of the microphone is not supported yet.",
+ "Не удалось открыть микрофон «{}»: {}": "Could not open the microphone “{1}”: {2}",
+ "Не удалось прочитать форматы вывода «{}».": "Could not read the formats of the output “{1}”.",
+ "Не удалось открыть вывод «{}»: {}": "Could not open the output “{1}”: {2}",
+ "Микрофон не запускается: {}": "The microphone does not start: {1}",
+ "Работает.": "Running.",
+ "Работает без вывода: виртуальный кабель не найден.": "Running without output: the virtual cable was not found.",
+ "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”."
+};
+
+</script>
+<script>
+/* Localization. The Russian text in the sources is the key; the English dictionary (i18n.en.js) maps it to English.
+   - exact strings are looked up as they are;
+   - strings with numbers or names use templates with {1}, {2} holes, matched by pattern;
+   - the page language is fixed per load: the switch stores the choice and reloads. */
+(function () {
+  'use strict';
+
+  var KEY = 'timbre.lang';
+  var lang = 'ru';
+  try {
+    var saved = localStorage.getItem(KEY);
+    lang = saved === 'ru' || saved === 'en' ? saved : /^ru/i.test(navigator.language || '') ? 'ru' : 'en';
+  } catch (e) { /* storage may be unavailable */ }
+
+  var dict = window.I18N_EN || {};
+  var exact = Object.create(null), templates = [];
+  Object.keys(dict).forEach(function (k) {
+    if (k.indexOf('{}') < 0) { exact[k] = dict[k]; return; }
+    var parts = k.split('{}'), n = parts.length - 1;
+    var re = new RegExp('^' + parts.map(function (p) { return p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('(.+?)') + '$');
+    templates.push({ re: re, n: n, en: dict[k], weight: parts.join('').length });
+  });
+  templates.sort(function (a, b) { return b.weight - a.weight; }); // the most specific template first
+
+  var DEC = lang === 'en' ? '.' : ',';
+  function number(s) { return /^[−+-]?\d+[.,]\d+$/.test(s) ? s.replace(/[.,]/, DEC) : s; }
+
+  function t(s) {
+    if (lang !== 'en' || typeof s !== 'string') return s;
+    if (exact[s] !== undefined) return exact[s];
+    for (var i = 0; i < templates.length; i++) {
+      var m = templates[i].re.exec(s);
+      if (m) return templates[i].en.replace(/\{(\d)\}/g, function (x, d) { var c = m[+d]; return exact[c] !== undefined ? exact[c] : number(c); });
+    }
+    return s;
+  }
+
+  /* "{}" holes filled in order, for strings built from numbers */
+  function f(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
+
+  var originals = new WeakMap();
+  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+
+  function apply(root) {
+    if (lang !== 'en') return;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode;
+        if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || p.closest('[data-no-i18n]')) return NodeFilter.FILTER_REJECT;
+        return /\S/.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (node) {
+      var o = originals.has(node) ? originals.get(node) : node.nodeValue;
+      originals.set(node, o);
+      var core = o.trim(), out = t(core.replace(/\s+/g, ' '));
+      if (out !== core) node.nodeValue = o.replace(core, out);
+    });
+    root.querySelectorAll(ATTRS.map(function (a) { return '[' + a + ']'; }).join(',')).forEach(function (el) {
+      if (el.closest('[data-no-i18n]')) return;
+      ATTRS.forEach(function (a) { if (el.hasAttribute(a)) { var v = el.getAttribute(a), tv = t(v); if (tv !== v) el.setAttribute(a, tv); } });
+    });
+  }
+
+  function set(l) {
+    try { localStorage.setItem(KEY, l); } catch (e) { /* ignore */ }
+    location.reload();
+  }
+
+  document.documentElement.lang = lang;
+  if (lang === 'en') {
+    document.title = t(document.title);
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', t(meta.getAttribute('content')));
+  }
+
+  window.I18N = { t: t, f: f, lang: lang, dec: DEC, apply: apply, set: set };
+  apply(document.body);
+})();
+
+</script>
 <script>
 /* Settings state shared by the main window and the tray window.
    In Tauri, replace the localStorage calls with invoke("get_state") / invoke("set_param") and
@@ -602,7 +937,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     $('#tray-mine').hidden = !Store.PRESETS.mine;
     $$('[data-preset]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.preset === s.preset)); });
     $$('[data-flag]').forEach(function (b) { b.setAttribute('aria-pressed', String(!!s[b.dataset.flag])); });
-    $('#tray-status').textContent = s.muted ? 'микрофон выключен' : s.bypass ? 'обработка отключена' : 'работает, пресет «' + Store.PRESETS[s.preset].name + '»';
+    $('#tray-status').textContent = I18N.t(s.muted ? 'микрофон выключен' : s.bypass ? 'обработка отключена' : 'работает, пресет «' + Store.PRESETS[s.preset].name + '»');
     $('#tray-hotkey').textContent = s.settings.hotkey;
   }
 

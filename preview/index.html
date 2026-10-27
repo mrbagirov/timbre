@@ -23,6 +23,15 @@
   --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
   --text-display-s: 1.44rem; --text-display: 1.728rem; --text-section: 1.2rem; --text-title: 1rem; --text-lead: 1rem;
+  /* Type roles. Families: Geologica (titles and the one big number), Onest (text, labels, controls), JetBrains Mono (measured values).
+     Sizes follow a 1.2 scale from the 16px body. Weights: 400 and 500 only. */
+  --fs-display: var(--text-3xl);  /* 33px  page and wizard titles, Geologica 500 */
+  --fs-figure: var(--text-2xl);   /* 28px  the one big number, Geologica 500, tabular */
+  --fs-title: var(--text-xl);     /* 23px  section titles, quoted phrases, result figures, Geologica 500 */
+  --fs-section: var(--text-lg);   /* 19px  item titles: lanes, steps, the wordmark, Geologica 500 */
+  --fs-body: var(--text-md);      /* 16px  running text, verdicts, buttons, Onest 400 and 500 */
+  --fs-label: var(--text-sm);     /* 14px  hints, field labels, pills, Onest 400 and 500 */
+  --fs-micro: var(--text-xs);     /* 12px  scales, lane stats, units, JetBrains Mono 400 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
   --color-error: oklch(72% 0.17 25); --color-success: oklch(76% 0.12 160);
@@ -45,13 +54,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 html { scrollbar-color: var(--color-muted) var(--color-paper); scroll-padding-top: var(--space-3xl); }
-body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: var(--text-md); line-height: 1.55; -webkit-font-smoothing: antialiased; caret-color: var(--color-accent); }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: var(--fs-body); line-height: 1.55; -webkit-font-smoothing: antialiased; caret-color: var(--color-accent); }
 ::selection { background: color-mix(in oklab, var(--color-accent) 25%, transparent); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
 h1, h2, h3 { margin: 0; font-family: var(--font-display); font-weight: var(--display-weight, 700); font-synthesis: none; letter-spacing: var(--tracking-display); line-height: 1.05; overflow-wrap: break-word; min-width: 0; text-wrap: balance; }
-h1 { max-width: 20ch; font-size: var(--text-display); } h2 { max-width: 30ch; font-size: var(--text-section); } h3 { max-width: 40ch; font-size: var(--text-title); line-height: 1.2; }
-.lead { font-size: var(--text-lead); line-height: 1.45; max-width: 52ch; }
+h1 { max-width: 20ch; font-size: var(--fs-display); } h2 { max-width: 30ch; font-size: var(--fs-title); } h3 { max-width: 40ch; font-size: var(--fs-section); line-height: 1.2; }
+.lead { font-size: var(--fs-body); line-height: 1.45; max-width: 52ch; }
 p { margin: 0; text-wrap: pretty; }
 p:not([class]) { max-width: 65ch; }
 img, video { max-width: 100%; height: auto; display: block; }
@@ -66,23 +75,23 @@ button, input, select, textarea { font: inherit; }
 @media (prefers-reduced-motion: reduce) { *:not(.keep-motion), *:not(.keep-motion)::before, *:not(.keep-motion)::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
 
 
-body { min-height: 100dvh; font-size: var(--text-md); }
+body { min-height: 100dvh; font-size: var(--fs-body); }
 button { color: inherit; }
 
 /* ---------- shell ---------- */
 .app { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); min-height: 100dvh; }
 .bar { position: sticky; top: 0; z-index: var(--z-sticky-nav); background: var(--color-paper); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .bar__in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "mark presets actions"; align-items: center; gap: var(--space-lg); max-width: var(--container); min-height: 64px; margin-inline: auto; padding-inline: var(--gutter); }
-.wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--text-lg)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
+.wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--fs-section)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
 .presets { grid-area: presets; display: flex; gap: var(--space-xs); margin: 0; padding: var(--space-3xs) var(--space-3xs); border: 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .presets::-webkit-scrollbar { display: none; }
 .bar__actions { grid-area: actions; display: flex; align-items: center; gap: var(--space-xs); }
-.device { font-size: var(--text-sm); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
+.device { font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
 .device[data-state="none"] { color: var(--color-error); }
 
 /* ---------- pills, toggles, buttons ---------- */
 .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.pill, .seg label { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: var(--control-h); padding: 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-ink-2); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--text-sm)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
+.pill, .seg label { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: var(--control-h); padding: 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-ink-2); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--fs-label)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
 .pill::before, .seg label::before, .toggle::before, .link-btn::before { content: ""; position: absolute; inset: -4px 0; }
 .pill:hover, .seg label:hover { background: var(--color-paper-2); color: var(--color-ink); }
 .pill:active, .seg label:active { transform: translateY(1px); }
@@ -93,7 +102,7 @@ button { color: inherit; }
 .pill--icon { width: var(--control-h); padding: 0; }
 .pill svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-lg); border: 0; border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-accent-ink); font: 500 var(--text-md)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-lg); border: 0; border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-accent-ink); font: 500 var(--fs-body)/1 var(--font-body); white-space: nowrap; cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out); }
 .btn:hover { background: var(--color-accent-deep); }
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
@@ -102,13 +111,13 @@ button { color: inherit; }
 .btn--quiet { background: transparent; color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); }
 .btn--quiet:hover { background: var(--color-paper-2); }
 
-.link-btn { position: relative; padding: 0; border: 0; background: none; color: var(--color-ink-2); font: 400 var(--text-sm)/1.4 var(--font-body); text-decoration: underline; text-decoration-color: var(--color-rule-2); text-underline-offset: 0.2em; cursor: pointer; }
+.link-btn { position: relative; padding: 0; border: 0; background: none; color: var(--color-ink-2); font: 400 var(--fs-label)/1.4 var(--font-body); text-decoration: underline; text-decoration-color: var(--color-rule-2); text-underline-offset: 0.2em; cursor: pointer; }
 .link-btn:hover { color: var(--color-ink); text-decoration-color: var(--color-accent); }
 .link-btn:active { transform: translateY(1px); }
 .link-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .link-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-.toggle { position: relative; flex-shrink: 0; min-width: 52px; min-height: 32px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-muted); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--text-sm)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+.toggle { position: relative; flex-shrink: 0; min-width: 52px; min-height: 32px; padding: 0 var(--space-sm); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--color-muted); box-shadow: inset 0 0 0 1.5px var(--color-rule-2); font: 500 var(--fs-label)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
 .toggle[aria-checked="true"] { background: var(--color-accent); color: var(--color-accent-ink); box-shadow: none; }
 .toggle:hover { color: var(--color-ink); }
 .toggle[aria-checked="true"]:hover { background: var(--color-accent-deep); color: var(--color-accent-ink); }
@@ -122,44 +131,44 @@ button { color: inherit; }
 .deck { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap-columns); align-items: center; padding-bottom: var(--space-md); }
 .assist { display: grid; gap: var(--space-sm); }
 .assist .btn { width: 100%; }
-.assist__note { min-height: 3lh; font-size: var(--text-sm); line-height: 1.45; color: var(--color-ink-2); }
+.assist__note { min-height: 3lh; font-size: var(--fs-label); line-height: 1.45; color: var(--color-ink-2); }
 .assist__bar { height: 4px; border-radius: var(--radius-card); background: var(--color-paper-3); overflow: hidden; }
 .assist__bar > i { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transform: scaleX(var(--v, 0)); }
 .assist__undo { justify-self: start; }
 
 .meter { display: grid; gap: var(--space-xs); min-width: 0; }
 .meter__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
-.meter__name { font-size: var(--text-title); }
-.meter__val { font: 400 var(--text-sm)/1 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+.meter__name { font: 500 var(--fs-body)/1.2 var(--font-body); letter-spacing: 0; }
+.meter__val { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
 .meter__track { position: relative; height: 10px; border-radius: var(--radius-card); background: var(--color-paper-3); overflow: hidden; }
 .meter__fill { position: absolute; inset: 0; background: var(--color-accent); transform-origin: left; transform: scaleX(var(--v, 0)); }
 .meter__peak { position: absolute; top: 0; bottom: 0; left: calc(var(--pk, 0) * 100%); width: 2px; background: var(--color-ink); }
 .meter[data-clip="true"] .meter__fill { background: var(--color-error); }
 .meter[data-clip="true"] .meter__val { color: var(--color-error); }
-.meter__scale { position: relative; height: 1lh; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.meter__scale { position: relative; height: 1lh; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); font-variant-numeric: tabular-nums; }
 .meter__scale span { white-space: nowrap; position: absolute; left: calc(var(--p) * 1%); transform: translateX(-50%); }
 .meter__scale span:first-child { transform: none; }
 .meter__scale span:last-child { transform: translateX(-100%); }
 .meter--out { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-lg); align-items: start; }
 .meter--out .meter__main { display: grid; gap: var(--space-xs); min-width: 0; }
 .loud { display: grid; justify-items: end; gap: var(--space-3xs); }
-.loud__label { font-size: var(--text-sm); color: var(--color-muted); }
-.loud__fig { font: 500 var(--text-2xl)/1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; color: var(--color-accent-ink); }
-.loud__unit { font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); }
+.loud__label { font-size: var(--fs-label); color: var(--color-muted); }
+.loud__fig { font: 500 var(--fs-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; color: var(--color-accent-ink); }
+.loud__unit { font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); }
 
 /* ---------- the chain ---------- */
 .chain__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-md); padding-bottom: var(--space-sm); }
 .chain__head h2 { max-width: none; }
-.chain__note { display: flex; align-items: baseline; gap: var(--space-sm); font-size: var(--text-sm); color: var(--color-muted); min-height: 1lh; }
+.chain__note { display: flex; align-items: baseline; gap: var(--space-sm); font-size: var(--fs-label); color: var(--color-muted); min-height: 1lh; }
 
 .lane { display: grid; grid-template-columns: minmax(0, 236px) minmax(0, 1fr) minmax(0, 340px); gap: var(--space-lg); align-items: center; padding-block: var(--space-sm); border-top: var(--rule-hair) solid var(--color-rule); }
 .lane__id { display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
-.lane__id h3 { font-size: var(--text-lg); line-height: 1.1; }
-.lane__hint { margin-top: var(--space-2xs); font-size: var(--text-sm); line-height: 1.3; color: var(--color-muted); }
+.lane__id h3 { font-size: var(--fs-section); line-height: 1.1; }
+.lane__hint { margin-top: var(--space-2xs); font-size: var(--fs-label); line-height: 1.3; color: var(--color-muted); }
 .lane__viz { position: relative; height: 68px; border-radius: var(--radius-card); background: var(--color-paper-2); overflow: hidden; transition: opacity var(--dur-short) var(--ease-out); }
 .lane__viz canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lane__stat { position: absolute; left: var(--space-xs); top: var(--space-xs); padding: var(--space-3xs) var(--space-xs); border-radius: var(--radius-card); background: var(--color-paper-2); font: 400 var(--text-xs)/1.2 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
-.lane__axis { position: absolute; inset: auto 0 var(--space-3xs) 0; height: 1lh; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); pointer-events: none; }
+.lane__stat { position: absolute; left: var(--space-xs); top: var(--space-xs); padding: var(--space-3xs) var(--space-xs); border-radius: var(--radius-card); background: var(--color-paper-2); font: 400 var(--fs-micro)/1.2 var(--font-outlier); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+.lane__axis { position: absolute; inset: auto 0 var(--space-3xs) 0; height: 1lh; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); pointer-events: none; }
 .lane__axis span { white-space: nowrap; position: absolute; left: calc(var(--p) * 1%); transform: translateX(-50%); }
 .lane[data-on="false"] .lane__viz { opacity: 0.45; }
 .lane[data-on="false"] h3 { color: var(--color-muted); }
@@ -170,8 +179,8 @@ button { color: inherit; }
 .lane__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); min-height: var(--hit); }
 
 .field { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-xs); align-items: baseline; min-width: 0; }
-.field label { font-size: var(--text-sm); color: var(--color-ink-2); }
-.field output { font: 400 var(--text-sm)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.field label { font-size: var(--fs-label); color: var(--color-ink-2); }
+.field output { font: 400 var(--fs-label)/1 var(--font-outlier); color: var(--color-ink); font-variant-numeric: tabular-nums; }
 .field input[type="range"] { --fill: 50%; grid-column: 1 / -1; width: 100%; height: var(--hit); margin: 0; background: transparent; border-radius: var(--space-xs); -webkit-appearance: none; appearance: none; cursor: pointer; }
 .field input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: var(--radius-card); background: linear-gradient(to right, var(--color-accent) var(--fill), var(--color-rule-2) var(--fill)); }
 .field input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: var(--thumb); height: var(--thumb); margin-top: calc((var(--space-2xs) - var(--thumb)) / 2); border: 0; border-radius: 50%; background: var(--color-ink); box-shadow: 0 0 0 3px var(--color-paper); transition: transform var(--dur-micro) var(--ease-out); }
@@ -185,27 +194,27 @@ button { color: inherit; }
 
 /* ---------- welcome ---------- */
 .welcome { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: var(--space-2xl); align-items: start; padding-block: var(--space-xl) var(--space-2xl); }
-.welcome h1 { max-width: 16ch; font-size: var(--text-3xl); }
+.welcome h1 { max-width: 16ch; font-size: var(--fs-display); }
 .welcome .lead { margin-top: var(--space-sm); color: var(--color-ink-2); }
 .steps { display: grid; gap: 0; margin: var(--space-xl) 0 0; padding: 0; list-style: none; }
 .step { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-md); padding-block: var(--space-lg); border-top: var(--rule-hair) solid var(--color-rule); }
-.step__n { font: 500 var(--text-2xl)/1 var(--font-display); color: var(--color-muted); font-variant-numeric: tabular-nums; }
-.step h2 { max-width: none; font-size: var(--text-lg); }
-.step__text { margin-top: var(--space-xs); color: var(--color-ink-2); font-size: var(--text-sm); line-height: 1.5; }
-.step__status { margin-top: var(--space-sm); min-height: 1.4lh; font-size: var(--text-sm); color: var(--color-ink); }
+.step__n { font: 500 var(--fs-figure)/1 var(--font-display); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.step h2 { max-width: none; font-size: var(--fs-section); }
+.step__text { margin-top: var(--space-xs); color: var(--color-ink-2); font-size: var(--fs-label); line-height: 1.5; }
+.step__status { margin-top: var(--space-sm); min-height: 1.4lh; font-size: var(--fs-label); color: var(--color-ink); }
 .step__status[data-tone="bad"] { color: var(--color-error); }
 .step__actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-sm); }
 .skeleton { display: block; width: 11rem; height: 1.1em; border-radius: var(--radius-card); background: var(--color-paper-3); }
 .tabs { display: flex; gap: var(--space-xs); margin-top: var(--space-sm); }
 .tabpanel { margin-top: var(--space-sm); }
 .welcome__go { display: grid; gap: var(--space-sm); justify-items: start; padding-top: var(--space-lg); border-top: var(--rule-hair) solid var(--color-rule); }
-.welcome__why { min-height: 1lh; font-size: var(--text-sm); color: var(--color-muted); }
+.welcome__why { min-height: 1lh; font-size: var(--fs-label); color: var(--color-muted); }
 
 .welcome__side { position: sticky; top: calc(64px + var(--space-xl)); display: grid; gap: var(--space-lg); margin-top: var(--space-xl); }
 .route { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 .route__node { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-md); align-items: baseline; padding: var(--space-md) var(--space-lg); border-radius: var(--radius-card); background: var(--color-paper-2); }
-.route__node h3 { font-size: var(--text-xl); }
-.route__state { font-size: var(--text-sm); color: var(--color-ink-2); }
+.route__node h3 { font-size: var(--fs-title); }
+.route__state { font-size: var(--fs-label); color: var(--color-ink-2); }
 .route__state[data-tone="bad"] { color: var(--color-error); }
 .route__link { width: 1px; height: var(--space-lg); margin-left: var(--space-lg); background: var(--color-rule-2); }
 
@@ -216,9 +225,9 @@ dialog.sheet::backdrop { background: color-mix(in oklab, var(--color-paper), tra
 .sheet__head h2 { max-width: none; }
 .sheet__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 14rem); gap: var(--space-md); align-items: center; min-height: var(--hit); padding-block: var(--space-xs); border-top: var(--rule-hair) solid var(--color-rule); }
 .sheet__row .toggle, .sheet__row .pill { justify-self: end; min-width: 6rem; }
-.sheet__row label, .sheet__row .sheet__label { font-size: var(--text-sm); color: var(--color-ink-2); }
-.sheet__help { grid-column: 1 / -1; min-height: 1lh; margin-top: calc(var(--space-xs) * -1); font-size: var(--text-xs); color: var(--color-muted); }
-.input { width: 100%; min-height: var(--hit); padding: 0 var(--space-md); border: 1.5px solid var(--color-rule-2); border-radius: var(--radius-pill); background: var(--color-paper); color: var(--color-ink); font: 400 var(--text-sm)/1 var(--font-body); outline: 2px solid transparent; outline-offset: -3px; }
+.sheet__row label, .sheet__row .sheet__label { font-size: var(--fs-label); color: var(--color-ink-2); }
+.sheet__help { grid-column: 1 / -1; min-height: 1lh; margin-top: calc(var(--space-xs) * -1); font-size: var(--fs-micro); color: var(--color-muted); }
+.input { width: 100%; min-height: var(--hit); padding: 0 var(--space-md); border: 1.5px solid var(--color-rule-2); border-radius: var(--radius-pill); background: var(--color-paper); color: var(--color-ink); font: 400 var(--fs-label)/1 var(--font-body); outline: 2px solid transparent; outline-offset: -3px; }
 .input:hover { background: var(--color-paper-3); }
 .input:focus-visible { outline-color: var(--color-focus); border-color: var(--color-ink); }
 .input:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -230,60 +239,60 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .tray { width: 100%; max-width: 280px; padding: var(--space-md); border-radius: var(--radius-card); background: var(--color-paper-2); box-shadow: var(--shadow-card); }
 .tray__head { display: grid; gap: var(--space-2xs); padding-bottom: var(--space-sm); }
 .tray__head .wordmark { grid-area: auto; min-height: 0; }
-.tray__status { font-size: var(--text-sm); color: var(--color-ink-2); }
+.tray__status { font-size: var(--fs-label); color: var(--color-ink-2); }
 .tray .meter__track { height: 6px; }
 .tray__list { display: grid; gap: 0; margin: var(--space-sm) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: var(--rule-hair) solid var(--color-rule); }
-.tray__item { white-space: nowrap; position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); width: 100%; min-height: var(--hit); padding: 0 var(--space-sm); border: 0; border-radius: var(--space-xs); background: transparent; color: var(--color-ink); font: 400 var(--text-sm)/1 var(--font-body); text-align: left; cursor: pointer; }
+.tray__item { white-space: nowrap; position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); width: 100%; min-height: var(--hit); padding: 0 var(--space-sm); border: 0; border-radius: var(--space-xs); background: transparent; color: var(--color-ink); font: 400 var(--fs-label)/1 var(--font-body); text-align: left; cursor: pointer; }
 .tray__item:hover { background: var(--color-paper-3); }
 .tray__item:active { transform: translateY(1px); }
 .tray__item:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
 .tray__item[aria-checked="true"], .tray__item[aria-pressed="true"] { font-weight: 500; }
-.tray__item .tray__tag { font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-muted); }
-.tray__item[role="radio"][aria-checked="true"]::after { content: "выбран"; font: 400 var(--text-xs)/1 var(--font-outlier); color: var(--color-ink); }
+.tray__item .tray__tag { font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-muted); }
+.tray__item[role="radio"][aria-checked="true"]::after { content: "выбран"; font: 400 var(--fs-micro)/1 var(--font-outlier); color: var(--color-ink); }
 .tray__item[aria-checked="true"] .tray__tag, .tray__item[aria-pressed="true"] .tray__tag { color: var(--color-ink); }
 .tray__group { margin: var(--space-xs) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: var(--rule-hair) solid var(--color-rule); display: grid; gap: 0; }
 
 /* ---------- calibration ---------- */
 .setup { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 0 var(--space-2xl); align-items: start; padding-block: var(--space-lg) var(--space-2xl); }
 .setup__steps { grid-column: 1 / -1; display: flex; gap: var(--space-lg); margin: 0 0 var(--space-xl); padding: 0; list-style: none; counter-reset: s; overflow-x: auto; scrollbar-width: none; border-bottom: var(--rule-hair) solid var(--color-rule); }
-.setup__steps li { counter-increment: s; flex-shrink: 0; padding-block: var(--space-sm); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: var(--text-sm); color: var(--color-muted); white-space: nowrap; }
+.setup__steps li { counter-increment: s; flex-shrink: 0; padding-block: var(--space-sm); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; }
 .setup__steps li::before { content: counter(s) " "; font-family: var(--font-outlier); font-variant-numeric: tabular-nums; }
 .setup__steps li[data-state="done"] { color: var(--color-ink-2); }
 .setup__steps li[data-state="current"] { color: var(--color-ink); border-bottom-color: var(--color-ink); font-weight: 500; }
-.pane__title { max-width: 20ch; font-size: var(--text-3xl); }
+.pane__title { max-width: 20ch; font-size: var(--fs-display); }
 .pane .lead { margin-top: var(--space-sm); color: var(--color-ink-2); }
 .prompt { margin: var(--space-xl) 0 0; }
-.prompt figcaption { margin-bottom: var(--space-xs); font-size: var(--text-sm); color: var(--color-muted); }
-.prompt blockquote { margin: 0; max-width: 28ch; font: 500 var(--text-xl)/1.3 var(--font-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
-.setup__verdict { min-height: 2lh; margin-top: var(--space-lg); font-size: var(--text-md); }
+.prompt figcaption { margin-bottom: var(--space-xs); font-size: var(--fs-label); color: var(--color-muted); }
+.prompt blockquote { margin: 0; max-width: 28ch; font: 500 var(--fs-title)/1.3 var(--font-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
+.setup__verdict { min-height: 2lh; margin-top: var(--space-lg); font-size: var(--fs-body); }
 .setup__demo { margin-top: var(--space-md); }
 .setup__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-md); margin-top: var(--space-lg); }
-.setup__why { min-height: 1lh; margin-top: var(--space-md); font-size: var(--text-sm); color: var(--color-muted); }
+.setup__why { min-height: 1lh; margin-top: var(--space-md); font-size: var(--fs-label); color: var(--color-muted); }
 .pane .assist__bar { margin-top: var(--space-lg); }
 .setup__hud { position: sticky; top: calc(64px + var(--space-lg)); display: grid; gap: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-card); background: var(--color-paper-2); }
 .hud__in, .hud__out { display: grid; gap: var(--space-lg); }
 .hud__in .loud { justify-items: start; }
-.hud__zone-note { font-size: var(--text-sm); color: var(--color-ink-2); }
-.setup__demo-note { font-size: var(--text-xs); color: var(--color-muted); }
+.hud__zone-note { font-size: var(--fs-label); color: var(--color-ink-2); }
+.setup__demo-note { font-size: var(--fs-micro); color: var(--color-muted); }
 .meter__zone { position: absolute; top: 0; bottom: 0; left: calc(var(--a) * 100%); width: calc((var(--b) - var(--a)) * 100%); box-shadow: inset 0 0 0 2px var(--color-ink); pointer-events: none; }
 .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); margin: var(--space-lg) 0 0; padding: 0; list-style: none; }
 .figs li { display: grid; gap: var(--space-3xs); align-content: start; }
 .figs li + li { padding-left: var(--space-md); border-left: var(--rule-hair) solid var(--color-rule); }
-.fig__label { font-size: var(--text-sm); color: var(--color-muted); }
-.fig__val { font: 500 var(--text-xl)/1.1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
+.fig__label { font-size: var(--fs-label); color: var(--color-muted); }
+.fig__val { font: 500 var(--fs-title)/1.1 var(--font-display); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
 .setup__ab { margin-top: var(--space-lg); }
 .rows { margin: var(--space-md) 0 0; padding: 0; list-style: none; }
 .rows li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-3xs) var(--space-md); padding-block: var(--space-sm); border-top: var(--rule-hair) solid var(--color-rule); align-items: baseline; }
 .row__name { font-weight: 500; }
-.row__val { font: 400 var(--text-sm)/1.4 var(--font-outlier); font-variant-numeric: tabular-nums; }
-.row__why { grid-column: 2; font-size: var(--text-sm); line-height: 1.5; color: var(--color-ink-2); }
-.notes { display: grid; gap: var(--space-sm); margin: var(--space-md) 0 0; padding: 0; list-style: none; font-size: var(--text-sm); line-height: 1.5; color: var(--color-ink-2); }
+.row__val { font: 400 var(--fs-label)/1.4 var(--font-outlier); font-variant-numeric: tabular-nums; }
+.row__why { grid-column: 2; font-size: var(--fs-label); line-height: 1.5; color: var(--color-ink-2); }
+.notes { display: grid; gap: var(--space-sm); margin: var(--space-md) 0 0; padding: 0; list-style: none; font-size: var(--fs-label); line-height: 1.5; color: var(--color-ink-2); }
 .notes li[data-kind="warn"] { color: var(--color-error); }
 @media (max-width: 64rem) {
   .setup { grid-template-columns: minmax(0, 1fr); }
   .setup__steps { order: -2; }
   .setup__hud { order: -1; position: static; margin-bottom: var(--space-lg); }
-  .pane__title { font-size: var(--text-2xl); }
+  .pane__title { font-size: var(--fs-figure); }
 }
 @media (max-width: 40rem) {
   .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-md); }
@@ -329,6 +338,14 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mark"; }
 .welcome__side .welcome__go { padding-top: 0; border-top: 0; }
 
+.device { max-width: 16rem; overflow: hidden; text-overflow: ellipsis; }
+.native .setup__demo, .native .setup__demo-note { display: none; }
+
+/* ---------- language link, shown on the screens that have no action row ---------- */
+.bar__lang { grid-area: lang; display: none; }
+.app[data-view="welcome"] .bar__lang, .app[data-view="setup"] .bar__lang { display: inline-block; min-height: var(--hit); }
+.app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "mark lang"; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -347,6 +364,8 @@ select.input { appearance: none; padding-right: var(--space-lg); }
         <input type="radio" name="preset" id="pr-call" value="call"><label for="pr-call">созвон</label>
         <input type="radio" name="preset" id="pr-mine" value="mine" hidden><label for="pr-mine" hidden>мой</label>
       </fieldset>
+
+      <button class="link-btn bar__lang" id="lang-bar" type="button" data-no-i18n></button>
 
       <div class="bar__actions">
         <span class="device" id="device" role="status" data-state="wait">ищем микрофон</span>
@@ -605,6 +624,8 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     </div>
     <div class="sheet__row"><label for="set-mic">микрофон</label><select class="input" id="set-mic" name="mic"><option>AM8, USB</option></select></div>
     <div class="sheet__row"><label for="set-out">вывод</label><select class="input" id="set-out" name="out"><option>CABLE Input</option></select></div>
+    <p class="sheet__help" id="engine-msg" aria-live="polite"></p>
+    <div class="sheet__row"><label for="set-lang">язык</label><select class="input" id="set-lang" name="lang" data-no-i18n><option value="ru">Русский</option><option value="en">English</option></select></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
@@ -612,6 +633,324 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   </dialog>
 </div>
 
+<script>
+/* English dictionary: the Russian text is the key. {} holes become {1}, {2} in the translation. */
+window.I18N_EN = {
+ "тембр: звук для микрофона AM8": "timbre: voice chain for the AM8 microphone",
+ "тембр": "timbre",
+ "Тембр": "Timbre",
+ "пресет": "preset",
+ "новичок": "beginner",
+ "стрим": "stream",
+ "закадр": "voice-over",
+ "созвон": "call",
+ "мой": "mine",
+ "ищем микрофон": "looking for the microphone",
+ "микрофон включён": "microphone on",
+ "микрофон выключен": "microphone off",
+ "без обработки": "bypass",
+ "настройка звука микрофона": "microphone sound setup",
+ "сделать нормально": "make it normal",
+ "Тембр попросит сказать несколько фраз шёпотом, обычным голосом и громко, и подберёт настройки под вас и вашу комнату.": "Timbre will ask you to say a few phrases in a whisper, in a normal voice and loudly, then set everything for you and your room.",
+ "вернуть как было": "undo",
+ "вход": "input",
+ "выход": "output",
+ "громкость": "loudness",
+ "−60 дБ": "−60 dB",
+ "{} дБ": "{1} dB",
+ "дБ": "dB",
+ "{} к 1": "{1}:1",
+ "{} дБ, перегруз": "{1} dB, overload",
+ "цепочка": "chain",
+ "вернуть пресет": "restore preset",
+ "настройки отличаются от пресета «{}».": "settings differ from the “{1}” preset.",
+ "вкл": "on",
+ "выкл": "off",
+ "гейт": "gate",
+ "глушит паузы между словами": "silences the pauses between words",
+ "открыт": "open",
+ "закрыт": "closed",
+ "порог": "threshold",
+ "шумодав": "noise suppression",
+ "убирает фон и стук клавиш": "removes background hiss and keyboard noise",
+ "шума меньше на 0 дБ": "noise down by 0 dB",
+ "шума меньше на {} дБ": "noise down by {1} dB",
+ "лёгкий": "light",
+ "качественный": "quality",
+ "сила": "amount",
+ "эквалайзер": "EQ",
+ "тепло и чёткость голоса": "warmth and clarity of the voice",
+ "100 Гц": "100 Hz",
+ "1 кГц": "1 kHz",
+ "10 кГц": "10 kHz",
+ "низ": "low",
+ "середина": "mid",
+ "верх": "high",
+ "срез низа на 80 Гц": "low cut at 80 Hz",
+ "компрессор": "compressor",
+ "выравнивает громкость": "evens out the volume",
+ "сжатие 0 дБ": "compression 0 dB",
+ "сжатие {} дБ": "compression {1} dB",
+ "степень": "ratio",
+ "лимитер": "limiter",
+ "не даёт звуку перегрузиться": "keeps the sound from clipping",
+ "срезов нет": "no clipping",
+ "срезано {} дБ": "clipped {1} dB",
+ "потолок": "ceiling",
+ "обход": "bypass",
+ "выключен": "off",
+ "подключим микрофон за минуту": "connect your microphone in a minute",
+ "Тембр забирает звук с AM8, обрабатывает и отдаёт программам через виртуальный кабель.": "Timbre takes the sound from the AM8, processes it and hands it to your apps through a virtual cable.",
+ "микрофон": "microphone",
+ "Подключите микрофон к компьютеру кабелем.": "Connect the microphone to the computer with its cable.",
+ "проверить снова": "check again",
+ "виртуальный кабель": "virtual cable",
+ "Через него обработанный звук попадает в Discord, OBS и Zoom. После установки VB-Cable Windows просит перезагрузку.": "The processed sound reaches Discord, OBS and Zoom through it. After installing VB-Cable, Windows asks for a restart.",
+ "скачать VB-Cable": "download VB-Cable",
+ "программа, которая слушает": "the app that listens",
+ "Выберите микрофоном CABLE Output.": "Pick CABLE Output as the microphone.",
+ "Настройки, Голос и видео, Устройство ввода: CABLE Output.": "Settings, Voice & Video, Input Device: CABLE Output.",
+ "Микшер, шестерёнка у «Микрофон/Aux», Свойства, Устройство: CABLE Output.": "Mixer, the gear next to “Mic/Aux”, Properties, Device: CABLE Output.",
+ "Настройки, Звук, Микрофон: CABLE Output.": "Settings, Audio, Microphone: CABLE Output.",
+ "проверяем": "checking",
+ "обрабатывает": "processes",
+ "слушают CABLE Output": "listen to CABLE Output",
+ "открыть тембр": "open timbre",
+ "Ждём результат проверки.": "Waiting for the check.",
+ "{} подключён": "{1} connected",
+ "микрофон не найден": "microphone not found",
+ "микрофон: {}": "microphone: {1}",
+ "{} найден, подключён по {}.": "{1} found, connected over {2}.",
+ "{} найден.": "{1} found.",
+ "AM8 по названию не найден. Сейчас используется «{}», другой микрофон можно выбрать в настройках.": "No device named AM8 was found. “{1}” is in use for now, you can pick another microphone in the settings.",
+ "используется другой": "another one in use",
+ "Микрофон не найден. Подключите AM8 по USB и нажмите «проверить снова».": "No microphone found. Connect the AM8 over USB and press “check again”.",
+ "найден": "found",
+ "не найден": "not found",
+ "VB-Cable не найден.": "VB-Cable not found.",
+ "Нужны микрофон и кабель.": "A microphone and a cable are needed.",
+ "Нужен микрофон.": "A microphone is needed.",
+ "Нужен кабель.": "A cable is needed.",
+ "калибровка микрофона": "microphone calibration",
+ "ручка": "knob",
+ "тишина": "silence",
+ "шёпот": "whisper",
+ "обычно": "normal",
+ "громко": "loud",
+ "итог": "result",
+ "выставим усиление": "set the gain",
+ "Ручка усиления на корпусе микрофона. Тембр её не трогает, поэтому начинаем с неё.": "The gain knob is on the microphone body. Timbre does not touch it, so we start there.",
+ "громко, как в самый азартный момент эфира": "loudly, as in the most exciting moment of a broadcast",
+ "«Раз, два, три, проверка микрофона!»": "“One, two, three, mic check!”",
+ "Скажите фразу громко.": "Say the phrase loudly.",
+ "ручка на микрофоне (в превью это ползунок)": "knob on the microphone (a slider in the preview)",
+ "−8 дБ": "−8 dB",
+ "дальше": "next",
+ "отмена": "cancel",
+ "Дальше можно, когда пик попадёт в рамку на шкале.": "You can continue once the peak reaches the frame on the scale.",
+ "Можно идти дальше. Ручку больше не трогайте.": "You can continue. Do not touch the knob again.",
+ "послушаем комнату": "listen to the room",
+ "Сидите тихо и не двигайтесь, пока идёт запись. Если играет музыка, выключите её.": "Sit quietly and stay still while recording. If music is playing, turn it off.",
+ "теперь шёпотом": "now in a whisper",
+ "Как ночью, когда рядом кто-то спит. Повторяйте фразу, пока идёт запись.": "As at night, when someone is sleeping nearby. Repeat the phrase while recording.",
+ "шёпотом": "in a whisper",
+ "«Ночью в доме все спят, поэтому говорю тихо.»": "“Everyone in the house is asleep tonight, so I am speaking quietly.”",
+ "обычным голосом": "in a normal voice",
+ "Как на созвоне с друзьями, на той дистанции до микрофона, на которой сидите обычно.": "As on a call with friends, at the distance from the microphone where you usually sit.",
+ "«Привет, меня слышно хорошо, а шум остался за кадром.»": "“Hi, you can hear me well, and the noise stays off screen.”",
+ "теперь громко": "now loudly",
+ "Как в самый азартный момент стрима. Перегрузить не страшно: ради этого мы и меряем.": "As in the most exciting moment of a stream. Overloading is fine: that is exactly what we measure for.",
+ "Запись идёт {} секунд.": "Recording takes {1} seconds.",
+ "Запись идёт {} секунд, фразу можно повторять по кругу.": "Recording takes {1} seconds, you can repeat the phrase in a loop.",
+ "начать запись": "start recording",
+ "повторить": "repeat",
+ "назад": "back",
+ "идёт запись…": "recording…",
+ "показать результат": "show the result",
+ "Идёт запись, осталось {} с.": "Recording, {1} s left.",
+ "Пока тишина. Скажите фразу громко.": "Silence so far. Say the phrase loudly.",
+ "Тихо. Прибавьте усиление на микрофоне.": "Too quiet. Turn the gain up on the microphone.",
+ "То что нужно: пик в рамке.": "Just right: the peak is in the frame.",
+ "Близко к перегрузу. Чуть убавьте усиление.": "Close to clipping. Turn the gain down a little.",
+ "Перегруз. Убавьте усиление.": "Overload. Turn the gain down.",
+ "Шум комнаты {} дБ.": "Room noise {1} dB.",
+ "Шум комнаты {} дБ. Шумно, шумодаву придётся работать сильнее.": "Room noise {1} dB. It is noisy, noise suppression will have to work harder.",
+ "Почти не слышно над шумом комнаты. Повторите ближе к микрофону.": "Barely audible above the room noise. Repeat closer to the microphone.",
+ "Шёпот {} дБ, на {} дБ выше шума комнаты.": "Whisper {1} dB, {2} dB above the room noise.",
+ "Обычная речь {} дБ.": "Normal speech {1} dB.",
+ "Громкая речь {} дБ, пик {} дБ.": "Loud speech {1} dB, peak {2} dB.",
+ "Громкая речь {} дБ, пик {} дБ. Звук упёрся в 0 дБ: убавьте усиление ручкой и запишите заново.": "Loud speech {1} dB, peak {2} dB. The sound hit 0 dB: turn the gain knob down and record again.",
+ "готово, вот что получилось": "done, here is the result",
+ "было": "before",
+ "стало": "after",
+ "Если что-то не нравится, любой ползунок можно поправить вручную в цепочке.": "If you do not like something, adjust any slider by hand in the chain.",
+ "сохранить пресет": "save preset",
+ "пройти заново": "start over",
+ "Рамка на шкале: цель для самой громкой фразы, от −9 до −3 дБ.": "The frame on the scale is the target for the loudest phrase, from −9 to −3 dB.",
+ "пик за 4 секунды": "peak over 4 seconds",
+ "В превью голос имитирует демо-сигнал.": "In the preview a demo signal imitates the voice.",
+ "шум комнаты, дБ": "room noise, dB",
+ "шёпот, дБ": "whisper, dB",
+ "обычная речь, дБ": "normal speech, dB",
+ "громко, дБ": "loud, dB",
+ "Внимание:": "Warning:",
+ "Совет:": "Tip:",
+ "Шёпот всего на {} дБ выше шума комнаты, поэтому гейт сделан мягким и может подрезать концы слов. Помогает подвинуть микрофон ближе ко рту или тише включить вентилятор.": "The whisper is only {1} dB above the room noise, so the gate is soft and may clip the ends of words. Moving the microphone closer to your mouth or turning the fan down helps.",
+ "Порог на {} дБ выше шума комнаты ({} дБ) и на {} дБ ниже шёпота, слова не обрежутся.": "The threshold is {1} dB above the room noise ({2} dB) and {3} dB below the whisper, so words will not be cut.",
+ "качественный, {}%": "quality, {1}%",
+ "лёгкий, {}%": "light, {1}%",
+ "Фон в комнате заметный ({} дБ), включён качественный режим.": "The room background is noticeable ({1} dB), so quality mode is on.",
+ "Комната тихая ({} дБ), лёгкого режима хватает и он не трогает голос.": "The room is quiet ({1} dB), light mode is enough and it leaves the voice alone.",
+ "Низа на {} дБ больше нормы, обычно это близко к микрофону.": "There is {1} dB too much low end, usually because you are close to the microphone.",
+ "Отодвиньтесь от микрофона на ширину ладони: вблизи низ раздувается, и эквалайзер лечит это хуже, чем расстояние.": "Move away from the microphone by a hand's width: up close the low end swells, and EQ fixes that worse than distance does.",
+ "Низа на {} дБ меньше нормы, добавлено тепло.": "The low end is {1} dB short, warmth was added.",
+ "Верха не хватает на {} дБ, добавлена чёткость.": "The high end is {1} dB short, clarity was added.",
+ "Верх звенит на {} дБ, приглушён.": "The high end rings {1} dB too much, so it was softened.",
+ "Тембр близок к целевому, правки минимальны.": "The tone is close to the target, so the changes are minimal.",
+ "Срез низа на 80 Гц включён.": "The low cut at 80 Hz is on.",
+ "низ {}, середина {}, верх {} дБ": "low {1}, mid {2}, high {3} dB",
+ "{} дБ, {} к 1": "{1} dB, {2}:1",
+ "Между шёпотом и громкой речью {} дБ. Компрессор берёт всё, что громче обычной речи, и выравнивает.": "There are {1} dB between the whisper and loud speech. The compressor takes everything louder than normal speech and evens it out.",
+ "Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.": "The loud phrase hit 0 dB. Turn the gain knob on the microphone down and calibrate again, otherwise the sound will distort before processing.",
+ "Громкая фраза тихая, пик {} дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.": "The loud phrase is quiet, peak {1} dB. Turn the gain knob on the microphone up: the higher the signal above the noise, the less work for noise suppression.",
+ "Самая громкая фраза доходит до {} дБ, потолок поставлен чуть ниже нуля.": "The loudest phrase reaches {1} dB, so the ceiling is set just below zero.",
+ "настройки": "settings",
+ "вывод": "output",
+ "запускать вместе с Windows": "start with Windows",
+ "горячая клавиша мьюта": "mute hotkey",
+ "Нажмите на поле и сочетание клавиш.": "Click the field and press a key combination.",
+ "нажмите сочетание": "press a combination",
+ "Escape отменяет.": "Escape cancels.",
+ "Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.": "Add Ctrl, Alt or Shift so the key does not get in the way of typing.",
+ "мастер подключения": "setup wizard",
+ "открыть": "open",
+ "закрыть": "close",
+ "Тембр 0.1": "Timbre 0.1",
+ "язык": "language",
+ "Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.": "The “mine” preset was built from the calibration. Pick it at the top, and adjust any slider by hand.",
+ "Прежние настройки возвращены.": "Previous settings restored.",
+ "автоматически": "automatic",
+ "ошибка звука": "sound error",
+ "Гейт, шумодав, эквалайзер, компрессор и лимитер для микрофона AM8 в одном окне, с выводом в Discord, OBS и Zoom.": "Gate, noise suppression, EQ, compressor and limiter for the AM8 microphone in one window, with output to Discord, OBS and Zoom.",
+ "тембр, главный экран": "timbre, main screen",
+ "автонастройка и уровни": "auto setup and levels",
+ "уровень на входе": "input level",
+ "уровень на выходе": "output level",
+ "режим шумодава": "noise suppression mode",
+ "программа": "app",
+ "путь звука": "sound path",
+ "шаги калибровки": "calibration steps",
+ "что измерено": "what was measured",
+ "сравнить звук": "compare the sound",
+ "что настроено": "what was set",
+ "что слышит тембр": "what timbre hears",
+ "цель для самой громкой фразы": "target for the loudest phrase",
+ "закрыть настройки": "close settings",
+ "тембр: меню в трее": "timbre: tray menu",
+ "работает": "running",
+ "работает, пресет «{}»": "running, “{1}” preset",
+ "обработка отключена": "processing is off",
+ "выключить микрофон": "turn the microphone off",
+ "открыть окно": "open window",
+ "выйти": "quit",
+ "Быстрое меню тембра: пресеты, мьют микрофона и обход обработки.": "Quick menu of timbre: presets, microphone mute and bypass.",
+ "Не найден ни один микрофон.": "No microphone was found.",
+ "Не удалось прочитать форматы микрофона «{}».": "Could not read the formats of the microphone “{1}”.",
+ "Формат звука микрофона {} пока не поддерживается.": "The sound format {1} of the microphone is not supported yet.",
+ "Не удалось открыть микрофон «{}»: {}": "Could not open the microphone “{1}”: {2}",
+ "Не удалось прочитать форматы вывода «{}».": "Could not read the formats of the output “{1}”.",
+ "Не удалось открыть вывод «{}»: {}": "Could not open the output “{1}”: {2}",
+ "Микрофон не запускается: {}": "The microphone does not start: {1}",
+ "Работает.": "Running.",
+ "Работает без вывода: виртуальный кабель не найден.": "Running without output: the virtual cable was not found.",
+ "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”."
+};
+
+</script>
+<script>
+/* Localization. The Russian text in the sources is the key; the English dictionary (i18n.en.js) maps it to English.
+   - exact strings are looked up as they are;
+   - strings with numbers or names use templates with {1}, {2} holes, matched by pattern;
+   - the page language is fixed per load: the switch stores the choice and reloads. */
+(function () {
+  'use strict';
+
+  var KEY = 'timbre.lang';
+  var lang = 'ru';
+  try {
+    var saved = localStorage.getItem(KEY);
+    lang = saved === 'ru' || saved === 'en' ? saved : /^ru/i.test(navigator.language || '') ? 'ru' : 'en';
+  } catch (e) { /* storage may be unavailable */ }
+
+  var dict = window.I18N_EN || {};
+  var exact = Object.create(null), templates = [];
+  Object.keys(dict).forEach(function (k) {
+    if (k.indexOf('{}') < 0) { exact[k] = dict[k]; return; }
+    var parts = k.split('{}'), n = parts.length - 1;
+    var re = new RegExp('^' + parts.map(function (p) { return p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('(.+?)') + '$');
+    templates.push({ re: re, n: n, en: dict[k], weight: parts.join('').length });
+  });
+  templates.sort(function (a, b) { return b.weight - a.weight; }); // the most specific template first
+
+  var DEC = lang === 'en' ? '.' : ',';
+  function number(s) { return /^[−+-]?\d+[.,]\d+$/.test(s) ? s.replace(/[.,]/, DEC) : s; }
+
+  function t(s) {
+    if (lang !== 'en' || typeof s !== 'string') return s;
+    if (exact[s] !== undefined) return exact[s];
+    for (var i = 0; i < templates.length; i++) {
+      var m = templates[i].re.exec(s);
+      if (m) return templates[i].en.replace(/\{(\d)\}/g, function (x, d) { var c = m[+d]; return exact[c] !== undefined ? exact[c] : number(c); });
+    }
+    return s;
+  }
+
+  /* "{}" holes filled in order, for strings built from numbers */
+  function f(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
+
+  var originals = new WeakMap();
+  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+
+  function apply(root) {
+    if (lang !== 'en') return;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode;
+        if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || p.closest('[data-no-i18n]')) return NodeFilter.FILTER_REJECT;
+        return /\S/.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (node) {
+      var o = originals.has(node) ? originals.get(node) : node.nodeValue;
+      originals.set(node, o);
+      var core = o.trim(), out = t(core.replace(/\s+/g, ' '));
+      if (out !== core) node.nodeValue = o.replace(core, out);
+    });
+    root.querySelectorAll(ATTRS.map(function (a) { return '[' + a + ']'; }).join(',')).forEach(function (el) {
+      if (el.closest('[data-no-i18n]')) return;
+      ATTRS.forEach(function (a) { if (el.hasAttribute(a)) { var v = el.getAttribute(a), tv = t(v); if (tv !== v) el.setAttribute(a, tv); } });
+    });
+  }
+
+  function set(l) {
+    try { localStorage.setItem(KEY, l); } catch (e) { /* ignore */ }
+    location.reload();
+  }
+
+  document.documentElement.lang = lang;
+  if (lang === 'en') {
+    document.title = t(document.title);
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', t(meta.getAttribute('content')));
+  }
+
+  window.I18N = { t: t, f: f, lang: lang, dec: DEC, apply: apply, set: set };
+  apply(document.body);
+})();
+
+</script>
 <script>
 /* Settings state shared by the main window and the tray window.
    In Tauri, replace the localStorage calls with invoke("get_state") / invoke("set_param") and
@@ -890,10 +1229,13 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   'use strict';
 
   var MINUS = '−';
+  var DEC = typeof I18N !== 'undefined' ? I18N.dec : ',';
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function r(v) { return Math.round(v); }
-  function n(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', ','); return (v < 0 && Number(s.replace(',', '.')) !== 0 ? MINUS : '') + s; }
+  function n(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', DEC); return (v < 0 && Number(s.replace(DEC, '.')) !== 0 ? MINUS : '') + s; }
   function sg(v) { return v > 0 ? '+' + v : v < 0 ? MINUS + Math.abs(v) : '0'; }
+  /* Fills "{}" holes in order. Every template here is a key of the English dictionary. */
+  function F(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
 
   function compute(m) {
     var warnings = [], tips = [], rows = [];
@@ -904,39 +1246,40 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     var gateThr;
     if (snr >= 14) gateThr = noise + 8; else if (snr >= 8) gateThr = noise + 5; else gateThr = noise + 3;
     gateThr = r(clamp(Math.max(Math.min(gateThr, W - 6), noise + 2), -65, -30));
-    if (snr < 8) warnings.push('Шёпот всего на ' + r(snr) + ' дБ выше шума комнаты, поэтому гейт сделан мягким и может подрезать концы слов. Помогает подвинуть микрофон ближе ко рту или тише включить вентилятор.');
-    rows.push({ key: 'gate', name: 'гейт', value: n(gateThr) + ' дБ',
-      why: 'Порог на ' + r(gateThr - noise) + ' дБ выше шума комнаты (' + n(r(noise)) + ' дБ) и на ' + r(W - gateThr) + ' дБ ниже шёпота, слова не обрежутся.' });
+    if (snr < 8) warnings.push(F('Шёпот всего на {} дБ выше шума комнаты, поэтому гейт сделан мягким и может подрезать концы слов. Помогает подвинуть микрофон ближе ко рту или тише включить вентилятор.', r(snr)));
+    rows.push({ key: 'gate', name: 'гейт', value: F('{} дБ', n(gateThr)),
+      why: [F('Порог на {} дБ выше шума комнаты ({} дБ) и на {} дБ ниже шёпота, слова не обрежутся.', r(gateThr - noise), n(r(noise)), r(W - gateThr))] });
 
     /* noise reduction: stronger the louder the room */
     var hq = noise > -58;
     var amount = r(clamp(50 + (noise + 65) * 2.5, 40, 90) / 5) * 5;
-    rows.push({ key: 'nr', name: 'шумодав', value: (hq ? 'качественный' : 'лёгкий') + ', ' + amount + '%',
-      why: hq ? 'Фон в комнате заметный (' + n(r(noise)) + ' дБ), включён качественный режим.' : 'Комната тихая (' + n(r(noise)) + ' дБ), лёгкого режима хватает и он не трогает голос.' });
+    rows.push({ key: 'nr', name: 'шумодав', value: F(hq ? 'качественный, {}%' : 'лёгкий, {}%', amount),
+      why: [hq ? F('Фон в комнате заметный ({} дБ), включён качественный режим.', n(r(noise))) : F('Комната тихая ({} дБ), лёгкого режима хватает и он не трогает голос.', n(r(noise)))] });
 
     /* eq: pull the spectrum toward the target */
     var b = m.bands || { low: 0, mid: 0, high: 0 };
     var eqLow = r(clamp(-0.7 * b.low, -6, 6)), eqMid = r(clamp(-0.5 * b.mid, -4, 4)), eqHigh = r(clamp(-0.7 * b.high, -6, 6));
     var eqWhy = [];
-    if (b.low > 2) { eqWhy.push('Низа на ' + r(b.low) + ' дБ больше нормы, обычно это близко к микрофону.'); tips.push('Отодвиньтесь от микрофона на ширину ладони: вблизи низ раздувается, и эквалайзер лечит это хуже, чем расстояние.'); }
-    else if (b.low < -2) eqWhy.push('Низа на ' + r(-b.low) + ' дБ меньше нормы, добавлено тепло.');
-    if (b.high < -2) eqWhy.push('Верха не хватает на ' + r(-b.high) + ' дБ, добавлена чёткость.');
-    else if (b.high > 2) eqWhy.push('Верх звенит на ' + r(b.high) + ' дБ, приглушён.');
+    if (b.low > 2) { eqWhy.push(F('Низа на {} дБ больше нормы, обычно это близко к микрофону.', r(b.low))); tips.push('Отодвиньтесь от микрофона на ширину ладони: вблизи низ раздувается, и эквалайзер лечит это хуже, чем расстояние.'); }
+    else if (b.low < -2) eqWhy.push(F('Низа на {} дБ меньше нормы, добавлено тепло.', r(-b.low)));
+    if (b.high < -2) eqWhy.push(F('Верха не хватает на {} дБ, добавлена чёткость.', r(-b.high)));
+    else if (b.high > 2) eqWhy.push(F('Верх звенит на {} дБ, приглушён.', r(b.high)));
     if (!eqWhy.length) eqWhy.push('Тембр близок к целевому, правки минимальны.');
-    rows.push({ key: 'eq', name: 'эквалайзер', value: 'низ ' + sg(eqLow) + ', середина ' + sg(eqMid) + ', верх ' + sg(eqHigh) + ' дБ', why: eqWhy.join(' ') + ' Срез низа на 80 Гц включён.' });
+    eqWhy.push('Срез низа на 80 Гц включён.');
+    rows.push({ key: 'eq', name: 'эквалайзер', value: F('низ {}, середина {}, верх {} дБ', sg(eqLow), sg(eqMid), sg(eqHigh)), why: eqWhy });
 
     /* compressor: threshold under normal speech, ratio by the spread */
     var D = L - W;
     var thr = r(clamp(N - 5, -36, -12));
     var ratio = D >= 36 ? 4 : D >= 28 ? 3 : D >= 20 ? 2.5 : 2;
-    rows.push({ key: 'comp', name: 'компрессор', value: n(thr) + ' дБ, ' + String(ratio).replace('.', ',') + ' к 1',
-      why: 'Между шёпотом и громкой речью ' + r(D) + ' дБ. Компрессор берёт всё, что громче обычной речи, и выравнивает.' });
+    rows.push({ key: 'comp', name: 'компрессор', value: F('{} дБ, {} к 1', n(thr), String(ratio).replace('.', DEC)),
+      why: [F('Между шёпотом и громкой речью {} дБ. Компрессор берёт всё, что громче обычной речи, и выравнивает.', r(D))] });
 
     /* limiter: just under the loudest take */
     var ceil = peak > -3 ? -2 : -1;
     if (peak > -1) warnings.push('Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.');
-    if (peak < -14) warnings.push('Громкая фраза тихая, пик ' + n(r(peak)) + ' дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.');
-    rows.push({ key: 'lim', name: 'лимитер', value: n(ceil, 1) + ' дБ', why: 'Самая громкая фраза доходит до ' + n(r(peak)) + ' дБ, потолок поставлен чуть ниже нуля.' });
+    if (peak < -14) warnings.push(F('Громкая фраза тихая, пик {} дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.', n(r(peak))));
+    rows.push({ key: 'lim', name: 'лимитер', value: F('{} дБ', n(ceil, 1)), why: [F('Самая громкая фраза доходит до {} дБ, потолок поставлен чуть ниже нуля.', n(r(peak)))] });
 
     return {
       params: {
@@ -984,9 +1327,10 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 
   var S = null, hudIn = null, hudOut = null, ui = null;
 
+  var tr = I18N.t;
   function num(v, d) { return ui.num(v, d); }
   function pct(arr, q) { if (!arr.length) return Sim.FLOOR; var a = arr.slice().sort(function (x, y) { return x - y; }); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; }
-  function setBtn(btn, text, disabled) { btn.textContent = text; btn.setAttribute('aria-disabled', String(!!disabled)); }
+  function setBtn(btn, text, disabled) { btn.textContent = tr(text); btn.setAttribute('aria-disabled', String(!!disabled)); }
 
   var els = null;
   function grab() {
@@ -1003,7 +1347,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     hudIn = new ui.Meter($('[data-meter="hud-in"]'));
     hudOut = new ui.Meter($('[data-meter="hud-out"]'));
 
-    els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = (els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'; });
+    els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = tr((els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'); });
     els.knobNext.addEventListener('click', function () { if (S.zoneHit) go(1); });
     els.capGo.addEventListener('click', function () {
       if (S.cap.state === 'ready') startRec(); else if (S.cap.state === 'done') go(S.idx + 1);
@@ -1065,14 +1409,14 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     if (st.id === 'knob') {
       Sim.setMode('loud');
       setBtn(els.knobNext, 'дальше', !S.zoneHit);
-      els.knobWhy.textContent = 'Дальше можно, когда пик попадёт в рамку на шкале.';
-      S.lastCat = ''; els.verdict.textContent = 'Скажите фразу громко.';
+      els.knobWhy.textContent = tr('Дальше можно, когда пик попадёт в рамку на шкале.');
+      S.lastCat = ''; els.verdict.textContent = tr('Скажите фразу громко.');
     } else if (st.id === 'result') {
       Sim.setMode('auto'); computeResult();
     } else {
       Sim.setMode(st.mode === 'silence' ? 'silence' : 'normal');
-      els.capTitle.textContent = st.title; els.capLead.textContent = st.lead;
-      els.capPrompt.hidden = !st.phrase; els.capCaption.textContent = st.caption; els.capPhrase.textContent = st.phrase;
+      els.capTitle.textContent = tr(st.title); els.capLead.textContent = tr(st.lead);
+      els.capPrompt.hidden = !st.phrase; els.capCaption.textContent = tr(st.caption); els.capPhrase.textContent = tr(st.phrase);
       renderCap();
     }
   }
@@ -1082,7 +1426,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     els.capBar.hidden = c.state !== 'rec';
     els.capRetry.hidden = c.state !== 'done';
     els.capBack.hidden = c.state === 'rec';
-    if (c.state === 'ready') { setBtn(els.capGo, 'начать запись', false); els.capGo.removeAttribute('aria-busy'); els.capStatus.textContent = st.id === 'quiet' ? 'Запись идёт ' + st.rec + ' секунд.' : 'Запись идёт ' + st.rec + ' секунд, фразу можно повторять по кругу.'; }
+    if (c.state === 'ready') { setBtn(els.capGo, 'начать запись', false); els.capGo.removeAttribute('aria-busy'); els.capStatus.textContent = tr(st.id === 'quiet' ? 'Запись идёт ' + st.rec + ' секунд.' : 'Запись идёт ' + st.rec + ' секунд, фразу можно повторять по кругу.'); }
     else if (c.state === 'rec') { setBtn(els.capGo, 'идёт запись…', true); els.capGo.setAttribute('aria-busy', 'true'); }
     else { setBtn(els.capGo, S.idx === 4 ? 'показать результат' : 'дальше', false); els.capGo.removeAttribute('aria-busy'); }
   }
@@ -1115,7 +1459,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
         if (pk > -1) bad = true;
       }
     }
-    els.capStatus.textContent = line;
+    els.capStatus.textContent = tr(line);
     renderCap();
   }
 
@@ -1129,15 +1473,15 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 
     els.figs.innerHTML = ''; S.res.figures.forEach(function (f) {
       var li = document.createElement('li'); li.innerHTML = '<span class="fig__label"></span><output class="fig__val"></output>';
-      li.firstChild.textContent = f.label + ', дБ'; li.lastChild.textContent = f.value; els.figs.appendChild(li);
+      li.firstChild.textContent = tr(f.label + ', дБ'); li.lastChild.textContent = f.value; els.figs.appendChild(li);
     });
     els.rows.innerHTML = ''; S.res.rows.forEach(function (r) {
       var li = document.createElement('li'); li.innerHTML = '<span class="row__name"></span><span class="row__val"></span><span class="row__why"></span>';
-      li.children[0].textContent = r.name; li.children[1].textContent = r.value; li.children[2].textContent = r.why; els.rows.appendChild(li);
+      li.children[0].textContent = tr(r.name); li.children[1].textContent = tr(r.value); li.children[2].textContent = r.why.map(function (x) { return tr(x); }).join(' '); els.rows.appendChild(li);
     });
     els.notes.innerHTML = '';
-    S.res.warnings.forEach(function (w) { var li = document.createElement('li'); li.dataset.kind = 'warn'; li.textContent = 'Внимание: ' + w; els.notes.appendChild(li); });
-    S.res.tips.forEach(function (w) { var li = document.createElement('li'); li.textContent = 'Совет: ' + w; els.notes.appendChild(li); });
+    S.res.warnings.forEach(function (w) { var li = document.createElement('li'); li.dataset.kind = 'warn'; li.textContent = tr('Внимание:') + ' ' + tr(w); els.notes.appendChild(li); });
+    S.res.tips.forEach(function (w) { var li = document.createElement('li'); li.textContent = tr('Совет:') + ' ' + tr(w); els.notes.appendChild(li); });
   }
 
   /* called by app.js on every frame while the setup view is open */
@@ -1155,22 +1499,127 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     if (S.idx === 0) {
       var lo = ZONE[0], hi = ZONE[1];
       var cat = peak < -45 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
-      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = 'Можно идти дальше. Ручку больше не трогайте.'; }
+      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = tr('Можно идти дальше. Ручку больше не трогайте.'); }
       if (cat !== S.lastCat) {
         S.lastCat = cat;
-        els.verdict.textContent = { quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat];
+        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat]);
       }
     } else if (S.cap.state === 'rec') {
       var c = S.cap, st = STAGES[S.idx];
       c.t += dt; c.samples.push(n.inDb);
       els.capBar.firstElementChild.style.setProperty('--v', Math.min(1, c.t / st.rec).toFixed(3));
       var left = Math.max(1, Math.ceil(st.rec - c.t));
-      if (left !== S.lastSec) { S.lastSec = left; els.capStatus.textContent = 'Идёт запись, осталось ' + left + ' с.'; }
+      if (left !== S.lastSec) { S.lastSec = left; els.capStatus.textContent = tr('Идёт запись, осталось ' + left + ' с.'); }
       if (c.t >= st.rec) finishRec();
     }
   }
 
   window.Wizard = { enter: enter, leave: leave, frame: frame };
+})();
+
+</script>
+<script>
+/* Inside Tauri this file replaces the demo signal with the real engine and connects settings to the Rust side.
+   In a plain browser window.__TAURI__ is missing and the file does nothing, so the preview keeps working. */
+(function () {
+  'use strict';
+  var T = window.__TAURI__;
+  if (!T || !T.core || !T.event) return;
+  var invoke = T.core.invoke, listen = T.event.listen;
+  document.documentElement.classList.add('native');
+
+  /* ---------- the signal: same surface as sim.js, fed by the engine at 50 Hz ---------- */
+  var N = Sim.N, FLOOR = Sim.FLOOR, STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var hist = {}, pos = 0, jit = new Float32Array(N), i;
+  STAGES.forEach(function (s) { hist[s] = new Float32Array(N).fill(FLOOR); });
+  for (i = 0; i < N; i++) jit[i] = 0.74 + 0.26 * Math.random();
+
+  Sim.advance = function () {};
+  Sim.setMode = function () {};
+  Sim.setGain = function () {};
+  Sim.at = function (stage, k) { return hist[stage][(pos + k) % N]; };
+  Sim.jitter = function (k) { return jit[(pos + k) % N]; };
+
+  /* Spectrum balance of speech. The targets are a first guess and have to be tuned on real voices;
+     CAUTION halves the correction until they are. */
+  var TARGET = { low: -8, high: -18 }, CAUTION = 0.5;
+  var ema = { low: 0, high: 0, ready: false };
+  Sim.bands = function () {
+    return ema.ready ? { low: Math.round(ema.low * 10) / 10, mid: 0, high: Math.round(ema.high * 10) / 10 } : { low: 0, mid: 0, high: 0 };
+  };
+
+  listen('engine-frame', function (e) {
+    var f = e.payload, n = Sim.now;
+    hist.raw[pos] = f.raw; hist.gate[pos] = f.gate; hist.nr[pos] = f.nr; hist.comp[pos] = f.comp; hist.lim[pos] = f.lim;
+    jit[pos] = 0.74 + 0.26 * Math.random();
+    pos = (pos + 1) % N;
+    n.inDb = f.raw; n.outDb = f.out; n.gateOpen = f.gateOpen; n.nrDb = f.nrDb; n.grDb = f.grDb; n.limDb = f.limDb; n.loud = Math.max(-70, f.loud);
+    if (f.raw > -40 && f.bands) {
+      var low = (f.bands[0] - f.bands[1] - TARGET.low) * CAUTION, high = (f.bands[2] - f.bands[1] - TARGET.high) * CAUTION;
+      if (!ema.ready) { ema.low = low; ema.high = high; ema.ready = true; } else { ema.low += (low - ema.low) * 0.02; ema.high += (high - ema.high) * 0.02; }
+    }
+  });
+
+  /* ---------- devices ---------- */
+  Bridge.mock = false;
+  Bridge.detect = function () { return invoke('detect_devices'); };
+  Bridge.openUrl = function (url) { invoke('open_url', { url: url }).catch(function () {}); };
+
+  var DEV_KEY = 'timbre.devices';
+  var choice = { input: '', output: '' };
+  try { var saved = JSON.parse(localStorage.getItem(DEV_KEY) || 'null'); if (saved) choice = saved; } catch (err) { /* ignore */ }
+
+  var engineMsg = document.getElementById('engine-msg');
+  /* the Rust side sends its message in Russian, the dictionary holds the same sentences */
+  listen('engine-status', function (e) {
+    var s = e.payload, dev = document.getElementById('device');
+    var text = I18N.t(s.message || '');
+    if (engineMsg) engineMsg.textContent = text;
+    if (s.state === 'error' && dev) { dev.dataset.state = 'none'; dev.textContent = I18N.t('ошибка звука'); dev.title = text; }
+  });
+
+  function fill(sel, names, current) {
+    if (!sel) return;
+    sel.innerHTML = '';
+    var auto = document.createElement('option'); auto.value = ''; auto.textContent = I18N.t('автоматически'); sel.appendChild(auto);
+    names.forEach(function (n) { var o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
+    sel.value = names.indexOf(current) >= 0 ? current : '';
+  }
+  function populate() {
+    Bridge.detect().then(function (r) {
+      fill(document.getElementById('set-mic'), r.inputs, choice.input);
+      fill(document.getElementById('set-out'), r.outputs, choice.output);
+    }).catch(function () {});
+  }
+  function applyChoice() {
+    try { localStorage.setItem(DEV_KEY, JSON.stringify(choice)); } catch (err) { /* ignore */ }
+    return invoke('restart_engine', { input: choice.input, output: choice.output });
+  }
+  document.getElementById('set-mic').addEventListener('change', function (e) { choice.input = e.target.value; applyChoice(); });
+  document.getElementById('set-out').addEventListener('change', function (e) { choice.output = e.target.value; applyChoice(); });
+  document.getElementById('btn-settings').addEventListener('click', populate);
+  /* "check again" on the first-run screen re-opens the streams too */
+  ['btn-recheck-mic', 'btn-recheck-cable'].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { invoke('restart_engine', { input: choice.input, output: choice.output }); }); });
+
+  /* ---------- state to Rust, events from the tray and the global hotkey ---------- */
+  var lastHotkey = '', lastStartup = null;
+  function push(s) {
+    invoke('set_state', { state: { params: s.params, muted: s.muted, bypass: s.bypass } }).catch(function () {});
+    var accel = (s.settings.hotkey || '').replace(/\bWin\b/g, 'Super');
+    if (accel && accel !== lastHotkey) { lastHotkey = accel; invoke('set_hotkey', { accel: accel }).catch(function () {}); }
+    if (lastStartup !== !!s.settings.startup) {
+      var first = lastStartup === null; lastStartup = !!s.settings.startup;
+      if (!first || lastStartup) invoke('set_autostart', { enabled: lastStartup }).catch(function () {});
+    }
+  }
+  Store.subscribe(function (s) { push(s); });
+  push(Store.state);
+  invoke('restart_engine', { input: choice.input, output: choice.output }).catch(function () {});
+
+  invoke('set_lang', { lang: I18N.lang }).catch(function () {});
+  listen('hotkey-mute', function () { Store.setFlag('muted', !Store.state.muted); });
+  listen('tray-flag', function (e) { var k = e.payload; if (k === 'muted' || k === 'bypass') Store.setFlag(k, !Store.state[k]); });
+  listen('tray-preset', function (e) { if (Store.PRESETS[e.payload]) Store.applyPreset(e.payload); });
 })();
 
 </script>
@@ -1183,10 +1632,11 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var tr = I18N.t, DEC = I18N.dec;
 
   /* ---------- text ---------- */
   var MINUS = '−';
-  function num(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', ','); return (v < 0 && Number(s.replace(',', '.')) !== 0 ? MINUS : '') + s; }
+  function num(v, d) { var s = Math.abs(v).toFixed(d || 0).replace('.', DEC); return (v < 0 && Number(s.replace(DEC, '.')) !== 0 ? MINUS : '') + s; }
   function sgn(v) { return v > 0 ? '+' + v : v < 0 ? MINUS + Math.abs(v) : '0'; }
   var fmt = {
     'gate.threshold': function (v) { return num(v) + ' дБ'; },
@@ -1195,7 +1645,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     'eq.mid': function (v) { return sgn(v) + ' дБ'; },
     'eq.high': function (v) { return sgn(v) + ' дБ'; },
     'comp.threshold': function (v) { return num(v) + ' дБ'; },
-    'comp.ratio': function (v) { return String(v).replace('.', ',') + ' к 1'; },
+    'comp.ratio': function (v) { return String(v).replace('.', DEC) + ' к 1'; },
     'lim.ceiling': function (v) { return num(v, 1) + ' дБ'; }
   };
 
@@ -1211,22 +1661,22 @@ select.input { appearance: none; padding-right: var(--space-lg); }
         el.style.setProperty('--fill', ((v - el.min) / (el.max - el.min)) * 100 + '%');
       } else if (el.type === 'radio') el.checked = el.value === v;
     });
-    $$('[data-out]').forEach(function (o) { var p = o.dataset.out; o.textContent = (fmt[p] || String)(Store.get(p)); });
+    $$('[data-out]').forEach(function (o) { var p = o.dataset.out; o.textContent = tr((fmt[p] || String)(Store.get(p))); });
     $$('[data-toggle]').forEach(function (b) {
       var on = Store.get(b.dataset.toggle);
-      b.setAttribute('aria-checked', String(on)); b.textContent = on ? 'вкл' : 'выкл';
+      b.setAttribute('aria-checked', String(on)); b.textContent = tr(on ? 'вкл' : 'выкл');
       var lane = b.closest('.lane'); if (lane) lane.dataset.on = String(on);
     });
     $$('[data-chip]').forEach(function (b) { b.setAttribute('aria-pressed', String(Store.get(b.dataset.chip))); });
 
-    var mute = $('#btn-mute'); mute.setAttribute('aria-pressed', String(s.muted)); mute.textContent = s.muted ? 'микрофон выключен' : 'микрофон включён';
+    var mute = $('#btn-mute'); mute.setAttribute('aria-pressed', String(s.muted)); mute.textContent = tr(s.muted ? 'микрофон выключен' : 'микрофон включён');
     $('#btn-bypass').setAttribute('aria-pressed', String(s.bypass));
 
     var dirty = Store.isDirty();
-    $('#dirty-text').textContent = dirty ? 'настройки отличаются от пресета «' + Store.PRESETS[s.preset].name + '». ' : '';
+    $('#dirty-text').textContent = dirty ? tr('настройки отличаются от пресета «' + Store.PRESETS[s.preset].name + '».') : '';
     $('#btn-reset').hidden = !dirty;
 
-    var st = $('#set-startup'); st.setAttribute('aria-checked', String(!!s.settings.startup)); st.textContent = s.settings.startup ? 'вкл' : 'выкл';
+    var st = $('#set-startup'); st.setAttribute('aria-checked', String(!!s.settings.startup)); st.textContent = tr(s.settings.startup ? 'вкл' : 'выкл');
     if (!capturing) $('#set-hotkey').value = s.settings.hotkey;
   }
 
@@ -1339,12 +1789,12 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     this.el.dataset.clip = String(this.clip > 0);
     if (text) {
       var shown = db <= -60 ? MINUS + '60 дБ' : num(Math.round(db)) + ' дБ';
-      this.val.textContent = this.clip > 0 ? shown + ', перегруз' : shown;
+      this.val.textContent = tr(this.clip > 0 ? shown + ', перегруз' : shown);
       this.track.setAttribute('aria-valuenow', String(Math.round(clamp(db, -60, 0))));
     }
   };
   window.UI = { Meter: Meter, num: num, clamp: clamp, MINUS: MINUS, afterSetup: function (before) {
-    undoTo = before; autoNote.textContent = 'Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.'; autoUndo.hidden = false;
+    undoTo = before; autoNote.textContent = tr('Пресет «мой» собран по калибровке. Его можно выбрать наверху, а любой ползунок поправить вручную.'); autoUndo.hidden = false;
     clearTimeout(undoTimer); undoTimer = setTimeout(function () { autoUndo.hidden = true; }, 10000);
   } };
   var mIn = new Meter($('[data-meter="in"]')), mOut = new Meter($('[data-meter="out"]'));
@@ -1352,7 +1802,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 
   function updateStats() {
     var s = Store.state, p = s.params, n = Sim.now, by = s.bypass;
-    var set = function (k, t) { var el = $('[data-stat="' + k + '"]'); if (el && el.textContent !== t) el.textContent = t; };
+    var set = function (k, txt) { var el = $('[data-stat="' + k + '"]'), v = tr(txt); if (el && el.textContent !== v) el.textContent = v; };
     set('gate', by ? 'обход' : !p.gate.on ? 'выключен' : n.gateOpen ? 'открыт' : 'закрыт');
     set('nr', by ? 'обход' : !p.nr.on ? 'выключен' : 'шума меньше на ' + num(n.nrDb) + ' дБ');
     set('comp', by ? 'обход' : !p.comp.on ? 'выключен' : 'сжатие ' + num(n.grDb, 1) + ' дБ');
@@ -1362,12 +1812,12 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   /* ---------- the calibration wizard lives in wizard.js; this is its entry and its undo ---------- */
   var DEFAULT_NOTE = 'Тембр попросит сказать несколько фраз шёпотом, обычным голосом и громко, и подберёт настройки под вас и вашу комнату.';
   var btnAuto = $('#btn-auto'), autoNote = $('#auto-note'), autoUndo = $('#auto-undo'), undoTimer = 0, undoTo = null;
-  autoNote.textContent = DEFAULT_NOTE;
+  autoNote.textContent = tr(DEFAULT_NOTE);
   btnAuto.addEventListener('click', function () { location.hash = '#/setup'; });
   autoUndo.addEventListener('click', function () {
     if (!undoTo) return;
     Store.state.preset = undoTo.preset; Store.replaceParams(undoTo.params);
-    autoUndo.hidden = true; clearTimeout(undoTimer); autoNote.textContent = 'Прежние настройки возвращены.';
+    autoUndo.hidden = true; clearTimeout(undoTimer); autoNote.textContent = tr('Прежние настройки возвращены.');
   });
 
   /* ---------- loop ---------- */
@@ -1406,31 +1856,34 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   /* ---------- devices and first run ---------- */
   var deviceEl = $('#device');
   function detectMain() {
-    deviceEl.dataset.state = 'wait'; deviceEl.textContent = 'ищем микрофон';
+    deviceEl.dataset.state = 'wait'; deviceEl.textContent = tr('ищем микрофон');
     Bridge.detect().then(function (r) {
-      deviceEl.dataset.state = r.mic.found ? 'ok' : 'none';
-      deviceEl.textContent = r.mic.found ? r.mic.name + ' подключён' : 'микрофон не найден';
+      var used = r.mic.found || !!r.mic.name;
+      deviceEl.dataset.state = used ? 'ok' : 'none';
+      deviceEl.textContent = tr(r.mic.found ? r.mic.name + ' подключён' : used ? 'микрофон: ' + r.mic.name : 'микрофон не найден');
     });
   }
 
   var stMic = $('#st-mic'), stCable = $('#st-cable'), btnStart = $('#btn-start'), startWhy = $('#start-why');
   var ready = false;
-  function setStatus(el, text, bad) { el.removeAttribute('aria-busy'); el.textContent = text; if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
-  function setRoute(el, text, bad) { el.textContent = text; if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
+  function setStatus(el, text, bad) { el.removeAttribute('aria-busy'); el.textContent = tr(text); if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
+  function setRoute(el, text, bad) { el.textContent = tr(text); if (bad) el.dataset.tone = 'bad'; else delete el.dataset.tone; }
 
   function runDetect() {
     [stMic, stCable].forEach(function (el) { el.setAttribute('aria-busy', 'true'); el.innerHTML = '<span class="skeleton"></span>'; delete el.dataset.tone; });
     $('#btn-recheck-mic').hidden = true; $('#cable-actions').hidden = true;
     setRoute($('#rt-mic'), 'проверяем'); setRoute($('#rt-cable'), 'проверяем');
-    ready = false; btnStart.setAttribute('aria-disabled', 'true'); startWhy.textContent = 'Ждём результат проверки.';
+    ready = false; btnStart.setAttribute('aria-disabled', 'true'); startWhy.textContent = tr('Ждём результат проверки.');
     Bridge.detect().then(function (r) {
-      if (r.mic.found) { setStatus(stMic, r.mic.name + ' найден, подключён по ' + r.mic.transport + '.'); setRoute($('#rt-mic'), 'найден'); }
+      var micOk = r.mic.found || !!r.mic.name;
+      if (r.mic.found) { setStatus(stMic, r.mic.name + ' найден' + (r.mic.transport ? ', подключён по ' + r.mic.transport : '') + '.'); setRoute($('#rt-mic'), 'найден'); }
+      else if (micOk) { setStatus(stMic, 'AM8 по названию не найден. Сейчас используется «' + r.mic.name + '», другой микрофон можно выбрать в настройках.'); setRoute($('#rt-mic'), 'используется другой'); }
       else { setStatus(stMic, 'Микрофон не найден. Подключите AM8 по USB и нажмите «проверить снова».', true); setRoute($('#rt-mic'), 'не найден', true); $('#btn-recheck-mic').hidden = false; }
       if (r.cable.found) { setStatus(stCable, r.cable.name + ' найден.'); setRoute($('#rt-cable'), 'найден'); }
       else { setStatus(stCable, 'VB-Cable не найден.', true); setRoute($('#rt-cable'), 'не найден', true); $('#cable-actions').hidden = false; }
-      ready = r.mic.found && r.cable.found;
+      ready = micOk && r.cable.found;
       btnStart.setAttribute('aria-disabled', String(!ready));
-      startWhy.textContent = ready ? '' : !r.mic.found && !r.cable.found ? 'Нужны микрофон и кабель.' : !r.mic.found ? 'Нужен микрофон.' : 'Нужен кабель.';
+      startWhy.textContent = ready ? '' : tr(!micOk && !r.cable.found ? 'Нужны микрофон и кабель.' : !micOk ? 'Нужен микрофон.' : 'Нужен кабель.');
     });
   }
   $('#btn-recheck-mic').addEventListener('click', runDetect);
@@ -1475,8 +1928,8 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   $('#open-wizard').addEventListener('click', function () { dlg.close(); });
   $('#set-startup').addEventListener('click', function () { Store.setSetting('startup', !Store.state.settings.startup); });
 
-  hotkey.addEventListener('click', function () { capturing = true; hotkey.value = 'нажмите сочетание'; hotkeyHelp.textContent = 'Escape отменяет.'; });
-  hotkey.addEventListener('blur', function () { if (capturing) { capturing = false; render(); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; } });
+  hotkey.addEventListener('click', function () { capturing = true; hotkey.value = tr('нажмите сочетание'); hotkeyHelp.textContent = tr('Escape отменяет.'); });
+  hotkey.addEventListener('blur', function () { if (capturing) { capturing = false; render(); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); } });
   function combo(e) {
     var k = e.key.length === 1 ? e.key.toUpperCase() : e.key, m = [];
     if (e.ctrlKey) m.push('Ctrl'); if (e.altKey) m.push('Alt'); if (e.shiftKey) m.push('Shift'); if (e.metaKey) m.push('Win');
@@ -1485,17 +1938,23 @@ select.input { appearance: none; padding-right: var(--space-lg); }
   window.addEventListener('keydown', function (e) {
     if (capturing) {
       e.preventDefault();
-      if (e.key === 'Escape') { capturing = false; render(); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; return; }
+      if (e.key === 'Escape') { capturing = false; render(); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); return; }
       if (['Control', 'Alt', 'Shift', 'Meta'].indexOf(e.key) >= 0) return;
       var c = combo(e);
-      if (!c.mods) { hotkeyHelp.textContent = 'Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.'; return; }
-      capturing = false; Store.setSetting('hotkey', c.text); hotkeyHelp.textContent = 'Нажмите на поле и сочетание клавиш.'; return;
+      if (!c.mods) { hotkeyHelp.textContent = tr('Добавьте Ctrl, Alt или Shift, чтобы клавиша не мешала набору текста.'); return; }
+      capturing = false; Store.setSetting('hotkey', c.text); hotkeyHelp.textContent = tr('Нажмите на поле и сочетание клавиш.'); return;
     }
+    if (document.documentElement.classList.contains('native')) return; // the global shortcut handles it
     if (dlg.open || vMain.hidden) return;
     if (e.repeat) return;
     var cc = combo(e);
     if (cc.mods && cc.text === Store.state.settings.hotkey) { e.preventDefault(); Store.setFlag('muted', !Store.state.muted); }
   });
+
+  /* ---------- language ---------- */
+  var langSel = $('#set-lang'), langBar = $('#lang-bar');
+  if (langSel) { langSel.value = I18N.lang; langSel.addEventListener('change', function () { I18N.set(langSel.value); }); }
+  if (langBar) { langBar.textContent = I18N.lang === 'ru' ? 'English' : 'Русский'; langBar.addEventListener('click', function () { I18N.set(I18N.lang === 'ru' ? 'en' : 'ru'); }); }
 
   /* ---------- go ---------- */
   for (var w = 0; w < 28; w++) Sim.advance(0.25, Store.state.params, Store.state);

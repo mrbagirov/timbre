@@ -5,12 +5,13 @@
 <title>timbre: banner</title>
 <link rel="stylesheet" href="../src/tokens.css">
 <style>
+  /* type scale 1.25 from the 20px base: 20 text, 25 lead, 31 wordmark, 61 title. Geologica for titles, Onest for text. */
   * { box-sizing: border-box; }
   html, body { margin: 0; width: 1600px; height: 820px; overflow: hidden; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
   .banner { position: relative; width: 1600px; height: 820px; }
   .text { position: absolute; left: 88px; top: 100px; width: 700px; }
-  .mark { margin: 0; font: 500 32px/1 var(--font-display); letter-spacing: var(--tracking-display); }
-  h1 { margin: 44px 0 0; font: 500 64px/1.06 var(--font-display); letter-spacing: var(--tracking-display); }
+  .mark { margin: 0; font: 500 31px/1 var(--font-display); letter-spacing: var(--tracking-display); }
+  h1 { margin: 44px 0 0; font: 500 61px/1.06 var(--font-display); letter-spacing: var(--tracking-display); }
   .lead { margin: 24px 0 0; max-width: 32ch; font-size: 25px; line-height: 1.45; color: var(--color-ink-2); }
   .list { margin: 38px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-rule); }
   .list li { display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--color-rule); font-size: 20px; line-height: 1.35; }
@@ -33,7 +34,7 @@
       <li><b>output</b><span>to Discord, OBS and Zoom via VB-Cable</span></li>
     </ul>
   </div>
-  <img class="shot" src="screen-main.png" alt="Main window: presets, meters, a chain of five lanes">
+  <img class="shot" src="screen-main.en.png" alt="Main window: presets, meters, a chain of five lanes">
 </div>
 </body>
 </html>

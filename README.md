@@ -17,15 +17,16 @@ The AM8 has no software of its own. Gain, mute and lighting live on the body of 
 - **Calibration wizard.** Six steps: gain knob, room silence, whisper, normal speech, loud speech, result. Every value in the result is explained, and a before/after switch lets you compare.
 - **Runs in the background.** Tray icon, autostart with Windows, a global hotkey for mute, and a one-click bypass.
 - **Output to your apps.** Sound goes into the VB-Cable virtual cable. In Discord, OBS or Zoom you pick `CABLE Output` as the microphone.
+- **English and Russian.** The interface follows the system language and can be switched in the settings, on the first-run screen and in the wizard. The tray menu follows too.
 - **Small and local.** The installer is about 2 MB and the noise model about 85 KB. Audio is processed on your computer and nothing is sent over the network.
 
 ## Screenshots
 
-The interface is currently in Russian, and English is next. The screenshots were taken on a demo signal, so the numbers only show what the interface looks like.
+The screenshots were taken on a demo signal, so the numbers only show what the interface looks like.
 
-![Main window: presets, meters and a chain of five lanes](docs/screen-main.png)
+![Main window: presets, meters and a chain of five lanes](docs/screen-main.en.png)
 
-![Calibration result: what was measured and what was set](docs/screen-wizard.png)
+![Calibration result: what was measured and what was set](docs/screen-wizard.en.png)
 
 ## Install
 
@@ -44,6 +45,22 @@ The core is covered by tests on a synthetic signal and the app builds for Window
 - Loudness is shown in LUFS without calibrating the signal path, as a guide only.
 
 If something breaks, attach the error text from the settings or the build log.
+
+## Typography
+
+Three families, two weights and one scale, so every level of the interface reads at a glance. Sizes follow a 1.2 scale from the 16 px body, weights are 400 and 500 only, and measured values (dB, Hz) are always monospaced.
+
+| Role | Size | Font | Used for |
+| --- | --- | --- | --- |
+| Display | 33 px | Geologica 500 | page and wizard titles |
+| Figure | 28 px | Geologica 500 | the one big number, loudness |
+| Title | 23 px | Geologica 500 | section titles, quoted phrases, result figures |
+| Section | 19 px | Geologica 500 | lane and step titles, the wordmark |
+| Body | 16 px | Onest 400, 500 | text, verdicts, buttons |
+| Label | 14 px | Onest 400, 500 | hints, field labels, pills |
+| Micro | 12 px | JetBrains Mono 400 | scales, lane stats, units |
+
+The roles live in `src/tokens.css` as `--fs-*`. The banner follows the same idea on a 1.25 scale: 61 px title, 31 px wordmark, 25 px lead and 20 px text.
 
 ## Build from source
 
@@ -65,7 +82,7 @@ The installer appears in `target/release/bundle/nsis`. On GitHub the same steps 
 | `src-tauri` | The Tauri app: capture (cpal, WASAPI), output to the cable, tray, hotkey, autostart |
 | `src` | The interface in HTML, CSS and JS. Outside Tauri it runs on a demo signal, inside Tauri `js/native.js` connects the real engine |
 | `preview` | The interface as single files for a browser, built with `node build-preview.mjs` |
-| `docs` | The banner and screenshots for this README |
+| `docs` | The banners and screenshots for the READMEs, banner sources in HTML |
 
 ## Licenses
 

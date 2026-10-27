@@ -49,16 +49,18 @@
   try { var saved = JSON.parse(localStorage.getItem(DEV_KEY) || 'null'); if (saved) choice = saved; } catch (err) { /* ignore */ }
 
   var engineMsg = document.getElementById('engine-msg');
+  /* the Rust side sends its message in Russian, the dictionary holds the same sentences */
   listen('engine-status', function (e) {
     var s = e.payload, dev = document.getElementById('device');
-    if (engineMsg) engineMsg.textContent = s.message || '';
-    if (s.state === 'error' && dev) { dev.dataset.state = 'none'; dev.textContent = 'ошибка звука'; dev.title = s.message; }
+    var text = I18N.t(s.message || '');
+    if (engineMsg) engineMsg.textContent = text;
+    if (s.state === 'error' && dev) { dev.dataset.state = 'none'; dev.textContent = I18N.t('ошибка звука'); dev.title = text; }
   });
 
   function fill(sel, names, current) {
     if (!sel) return;
     sel.innerHTML = '';
-    var auto = document.createElement('option'); auto.value = ''; auto.textContent = 'автоматически'; sel.appendChild(auto);
+    var auto = document.createElement('option'); auto.value = ''; auto.textContent = I18N.t('автоматически'); sel.appendChild(auto);
     names.forEach(function (n) { var o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
     sel.value = names.indexOf(current) >= 0 ? current : '';
   }
@@ -93,6 +95,7 @@
   push(Store.state);
   invoke('restart_engine', { input: choice.input, output: choice.output }).catch(function () {});
 
+  invoke('set_lang', { lang: I18N.lang }).catch(function () {});
   listen('hotkey-mute', function () { Store.setFlag('muted', !Store.state.muted); });
   listen('tray-flag', function (e) { var k = e.payload; if (k === 'muted' || k === 'bypass') Store.setFlag(k, !Store.state[k]); });
   listen('tray-preset', function (e) { if (Store.PRESETS[e.payload]) Store.applyPreset(e.payload); });

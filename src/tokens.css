@@ -10,6 +10,15 @@
   --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
   --text-display-s: 1.44rem; --text-display: 1.728rem; --text-section: 1.2rem; --text-title: 1rem; --text-lead: 1rem;
+  /* Type roles. Families: Geologica (titles and the one big number), Onest (text, labels, controls), JetBrains Mono (measured values).
+     Sizes follow a 1.2 scale from the 16px body. Weights: 400 and 500 only. */
+  --fs-display: var(--text-3xl);  /* 33px  page and wizard titles, Geologica 500 */
+  --fs-figure: var(--text-2xl);   /* 28px  the one big number, Geologica 500, tabular */
+  --fs-title: var(--text-xl);     /* 23px  section titles, quoted phrases, result figures, Geologica 500 */
+  --fs-section: var(--text-lg);   /* 19px  item titles: lanes, steps, the wordmark, Geologica 500 */
+  --fs-body: var(--text-md);      /* 16px  running text, verdicts, buttons, Onest 400 and 500 */
+  --fs-label: var(--text-sm);     /* 14px  hints, field labels, pills, Onest 400 and 500 */
+  --fs-micro: var(--text-xs);     /* 12px  scales, lane stats, units, JetBrains Mono 400 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
   --color-error: oklch(72% 0.17 25); --color-success: oklch(76% 0.12 160);

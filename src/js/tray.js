@@ -12,7 +12,7 @@
     $('#tray-mine').hidden = !Store.PRESETS.mine;
     $$('[data-preset]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.preset === s.preset)); });
     $$('[data-flag]').forEach(function (b) { b.setAttribute('aria-pressed', String(!!s[b.dataset.flag])); });
-    $('#tray-status').textContent = s.muted ? 'микрофон выключен' : s.bypass ? 'обработка отключена' : 'работает, пресет «' + Store.PRESETS[s.preset].name + '»';
+    $('#tray-status').textContent = I18N.t(s.muted ? 'микрофон выключен' : s.bypass ? 'обработка отключена' : 'работает, пресет «' + Store.PRESETS[s.preset].name + '»');
     $('#tray-hotkey').textContent = s.settings.hotkey;
   }
 
