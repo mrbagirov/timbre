@@ -39,7 +39,7 @@
   function f(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
 
   var originals = new WeakMap();
-  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'label'];
 
   function apply(root) {
     if (lang !== 'en') return;

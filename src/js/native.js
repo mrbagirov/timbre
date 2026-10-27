@@ -8,7 +8,7 @@
   document.documentElement.classList.add('native');
 
   /* ---------- the signal: same surface as sim.js, fed by the engine at 50 Hz ---------- */
-  var N = Sim.N, FLOOR = Sim.FLOOR, STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var N = Sim.N, FLOOR = Sim.FLOOR, STAGES = ['raw', 'gate', 'nr', 'ch', 'comp', 'lim'];
   var hist = {}, pos = 0, jit = new Float32Array(N), i;
   STAGES.forEach(function (s) { hist[s] = new Float32Array(N).fill(FLOOR); });
   for (i = 0; i < N; i++) jit[i] = 0.74 + 0.26 * Math.random();
@@ -29,11 +29,11 @@
 
   listen('engine-frame', function (e) {
     var f = e.payload, n = Sim.now;
-    hist.raw[pos] = f.raw; hist.gate[pos] = f.gate; hist.nr[pos] = f.nr; hist.comp[pos] = f.comp; hist.lim[pos] = f.lim;
+    hist.raw[pos] = f.raw; hist.gate[pos] = f.gate; hist.nr[pos] = f.nr; hist.ch[pos] = f.ch; hist.comp[pos] = f.comp; hist.lim[pos] = f.lim;
     jit[pos] = 0.74 + 0.26 * Math.random();
     pos = (pos + 1) % N;
-    n.inDb = f.raw; n.outDb = f.out; n.gateOpen = f.gateOpen; n.nrDb = f.nrDb; n.grDb = f.grDb; n.limDb = f.limDb; n.loud = Math.max(-70, f.loud);
-    if (f.raw > -40 && f.bands) {
+    n.inDb = f.pre; /* the meter and the wizard look at the microphone itself, before the software gain */ n.outDb = f.out; n.gateOpen = f.gateOpen; n.nrDb = f.nrDb; n.grDb = f.grDb; n.limDb = f.limDb; n.loud = Math.max(-70, f.loud);
+    if (f.pre > -40 && f.bands) {
       var low = (f.bands[0] - f.bands[1] - TARGET.low) * CAUTION, high = (f.bands[2] - f.bands[1] - TARGET.high) * CAUTION;
       if (!ema.ready) { ema.low = low; ema.high = high; ema.ready = true; } else { ema.low += (low - ema.low) * 0.02; ema.high += (high - ema.high) * 0.02; }
     }
@@ -79,6 +79,17 @@
   document.getElementById('btn-settings').addEventListener('click', populate);
   /* "check again" on the first-run screen re-opens the streams too */
   ['btn-recheck-mic', 'btn-recheck-cable'].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { invoke('restart_engine', { input: choice.input, output: choice.output }); }); });
+
+  /* ---------- diagnostics for support ---------- */
+  var diagBtn = document.getElementById('btn-diag'), diagHelp = document.getElementById('diag-help');
+  if (diagBtn) diagBtn.addEventListener('click', function () {
+    diagHelp.textContent = I18N.t('Собираю отчёт…');
+    invoke('diagnostics').then(function (text) {
+      var done = function () { diagHelp.textContent = I18N.t('Отчёт скопирован, вставьте его в чат.'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { diagHelp.textContent = text.slice(0, 600); });
+      else diagHelp.textContent = text.slice(0, 600);
+    }).catch(function (e) { diagHelp.textContent = String(e); });
+  });
 
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */
   var lastHotkey = '', lastStartup = null;

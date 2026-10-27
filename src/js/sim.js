@@ -7,7 +7,7 @@
   var RATE = 50;            // ticks per second
   var N = 360;              // history length, 7.2 seconds
   var FLOOR = -90;
-  var STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var STAGES = ['raw', 'gate', 'nr', 'ch', 'comp', 'lim'];
 
   function db(a) { return a > 1e-5 ? 20 * Math.log10(a) : FLOOR; }
   function lin(d) { return Math.pow(10, d / 20); }
@@ -57,7 +57,10 @@
     var gk = lin(gainDb);
     v *= gk; n *= gk; c *= gk;
     var inAmp = v + n + c;
-    var rawDb = db(inAmp);
+    var preDb = db(inAmp);                 // what the microphone delivers
+    var sg = lin(p.input ? p.input.gain : 0); // the software gain in front of the chain
+    v *= sg; n *= sg; c *= sg; inAmp *= sg;
+    var rawDb = db(inAmp);                 // the signal every stage is compared with
 
     // gate
     var open = rawDb > p.gate.threshold;
@@ -75,6 +78,7 @@
     // eq only nudges the overall level here; the curve itself is drawn from the same parameters
     var eqGain = p.eq.on ? 0.25 * p.eq.low + 0.45 * p.eq.mid + 0.25 * p.eq.high - (p.eq.lowcut ? 0.4 : 0) : 0;
     var L = db(nrAmp * lin(eqGain));
+    var chDb = L;
 
     // compressor
     var Lout = L, grT = 0;
@@ -94,6 +98,7 @@
       raw: rawDb,
       gate: bypass ? rawDb : gateDb,
       nr: bypass ? rawDb : nrDb,
+      ch: bypass ? rawDb : chDb,
       comp: bypass ? rawDb : Lout,
       lim: bypass ? rawDb : cl
     };
@@ -106,7 +111,7 @@
     powerRing[powerPos] = pw; powerPos = (powerPos + 1) % powerRing.length;
     var mean = 0; for (var i = 0; i < powerRing.length; i++) mean += powerRing[i]; mean /= powerRing.length;
 
-    now.inDb = rawDb;
+    now.inDb = preDb;
     now.outDb = outDb;
     now.gateOpen = open || !p.gate.on;
     now.nrDb = s > 0 ? 20 * Math.log10(1 / (1 - s)) : 0;

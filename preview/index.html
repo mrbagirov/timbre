@@ -83,8 +83,6 @@ button { color: inherit; }
 .bar { position: sticky; top: 0; z-index: var(--z-sticky-nav); background: var(--color-paper); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .bar__in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "mark presets actions"; align-items: center; gap: var(--space-lg); max-width: var(--container); min-height: 64px; margin-inline: auto; padding-inline: var(--gutter); }
 .wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--fs-section)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
-.presets { grid-area: presets; display: flex; gap: var(--space-xs); margin: 0; padding: var(--space-3xs) var(--space-3xs); border: 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.presets::-webkit-scrollbar { display: none; }
 .bar__actions { grid-area: actions; display: flex; align-items: center; gap: var(--space-xs); }
 .device { font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
 .device[data-state="none"] { color: var(--color-error); }
@@ -346,6 +344,20 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .app[data-view="welcome"] .bar__lang, .app[data-view="setup"] .bar__lang { display: inline-block; min-height: var(--hit); }
 .app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "mark lang"; }
 
+/* ---------- preset dropdown ---------- */
+.presets { grid-area: presets; display: flex; margin: 0; min-width: 0; }
+.select-wrap { position: relative; display: inline-flex; align-items: center; }
+.select-wrap svg { position: absolute; right: var(--space-sm); width: 16px; height: 16px; pointer-events: none; color: var(--color-ink-2); }
+.pill-select { appearance: none; min-height: var(--control-h); padding: 0 var(--space-xl) 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: var(--color-paper-3); color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); font: 500 var(--fs-label)/1 var(--font-body); cursor: pointer; min-width: 11rem; transition: background-color var(--dur-short) var(--ease-out); }
+.pill-select:hover { background: var(--color-paper-2); }
+.pill-select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.pill-select option, .pill-select optgroup { background: var(--color-paper-2); color: var(--color-ink); font: 400 var(--fs-label) var(--font-body); }
+.pill-select optgroup { font-weight: 500; color: var(--color-ink-2); }
+.field--gain { margin-top: var(--space-xs); }
+.hud__figs { display: flex; flex-wrap: wrap; gap: var(--space-lg); }
+.sheet__row--native { display: none; }
+.native .sheet__row--native { display: grid; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -356,14 +368,30 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     <div class="bar__in">
       <a class="wordmark" href="#/" aria-label="тембр, главный экран">тембр</a>
 
-      <fieldset class="seg presets" id="presets">
-        <legend class="visually-hidden">пресет</legend>
-        <input type="radio" name="preset" id="pr-novice" value="novice"><label for="pr-novice">новичок</label>
-        <input type="radio" name="preset" id="pr-stream" value="stream"><label for="pr-stream">стрим</label>
-        <input type="radio" name="preset" id="pr-voiceover" value="voiceover"><label for="pr-voiceover">закадр</label>
-        <input type="radio" name="preset" id="pr-call" value="call"><label for="pr-call">созвон</label>
-        <input type="radio" name="preset" id="pr-mine" value="mine" hidden><label for="pr-mine" hidden>мой</label>
-      </fieldset>
+      <div class="presets">
+        <label class="visually-hidden" for="preset-select">пресет</label>
+        <span class="select-wrap">
+          <select class="pill-select" id="preset-select" name="preset">
+            <optgroup label="для задач">
+              <option value="novice">новичок</option>
+              <option value="stream">стрим</option>
+              <option value="voiceover">закадр</option>
+              <option value="call">созвон</option>
+              <option value="mine" hidden disabled>мой</option>
+            </optgroup>
+            <optgroup label="голоса">
+              <option value="warm">тёплый эфир</option>
+              <option value="deep">глубокий</option>
+              <option value="bright">яркий подкаст</option>
+              <option value="thick">объёмный</option>
+              <option value="radio">радио</option>
+              <option value="robot">робот</option>
+              <option value="chipmunk">высокий</option>
+            </optgroup>
+          </select>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+      </div>
 
       <button class="link-btn bar__lang" id="lang-bar" type="button" data-no-i18n></button>
 
@@ -393,6 +421,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
         <div class="meter__head"><h2 class="meter__name">вход</h2><output class="meter__val" data-val>−60 дБ</output></div>
         <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
         <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
+        <div class="field field--gain"><label for="f-in-gain">усиление в программе</label><output for="f-in-gain" data-out="input.gain"></output><input id="f-in-gain" type="range" min="0" max="36" step="1" data-param="input.gain"></div>
       </div>
 
       <div class="meter meter--out" data-meter="out">
@@ -457,6 +486,22 @@ select.input { appearance: none; padding-right: var(--space-lg); }
           <div class="field"><label for="f-eq-mid">середина</label><output for="f-eq-mid" data-out="eq.mid"></output><input id="f-eq-mid" type="range" min="-12" max="12" step="1" data-param="eq.mid"></div>
           <div class="field"><label for="f-eq-high">верх</label><output for="f-eq-high" data-out="eq.high"></output><input id="f-eq-high" type="range" min="-12" max="12" step="1" data-param="eq.high"></div>
           <div class="lane__row span-all"><button class="pill" type="button" aria-pressed="true" data-chip="eq.lowcut">срез низа на 80 Гц</button></div>
+        </div>
+      </section>
+
+      <!-- character -->
+      <section class="lane" data-lane="ch" data-on="true" aria-labelledby="l-ch">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-ch" data-toggle="ch.on">вкл</button>
+          <div><h3 id="l-ch">характер</h3><p class="lane__hint">глубже, теплее, ярче или необычнее</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="ch" aria-hidden="true"></canvas><output class="lane__stat" data-stat="ch">без эффекта</output></div>
+        <div class="lane__ctl lane__ctl--3">
+          <div class="field"><label for="f-ch-pitch" title="пт: полутоны">высота</label><output for="f-ch-pitch" data-out="ch.pitch"></output><input id="f-ch-pitch" type="range" min="-12" max="12" step="0.5" data-param="ch.pitch"></div>
+          <div class="field"><label for="f-ch-warmth">тепло</label><output for="f-ch-warmth" data-out="ch.warmth"></output><input id="f-ch-warmth" type="range" min="0" max="100" step="5" data-param="ch.warmth"></div>
+          <div class="field"><label for="f-ch-thick">объём</label><output for="f-ch-thick" data-out="ch.thick"></output><input id="f-ch-thick" type="range" min="0" max="100" step="5" data-param="ch.thick"></div>
+          <div class="field"><label for="f-ch-radio">радио</label><output for="f-ch-radio" data-out="ch.radio"></output><input id="f-ch-radio" type="range" min="0" max="100" step="5" data-param="ch.radio"></div>
+          <div class="field"><label for="f-ch-robot">робот</label><output for="f-ch-robot" data-out="ch.robot"></output><input id="f-ch-robot" type="range" min="0" max="100" step="5" data-param="ch.robot"></div>
         </div>
       </section>
 
@@ -561,13 +606,13 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 
     <div class="setup__main">
       <section class="pane" id="pane-knob" aria-labelledby="knob-title">
-        <h2 class="pane__title" id="knob-title">выставим усиление</h2>
-        <p class="lead">Ручка усиления на корпусе микрофона. Тембр её не трогает, поэтому начинаем с неё.</p>
+        <h2 class="pane__title" id="knob-title">проверим громкость</h2>
+        <p class="lead">Ручка усиления на корпусе микрофона. Выставьте её так, чтобы громкая фраза не перегружала, остальное Тембр добавит сам.</p>
         <figure class="prompt"><figcaption>громко, как в самый азартный момент эфира</figcaption><blockquote>«Раз, два, три, проверка микрофона!»</blockquote></figure>
         <p class="setup__verdict" id="knob-verdict" aria-live="polite">Скажите фразу громко.</p>
         <div class="field setup__demo"><label for="demo-gain">ручка на микрофоне (в превью это ползунок)</label><output for="demo-gain" id="demo-gain-out">−8 дБ</output><input id="demo-gain" type="range" min="-20" max="12" step="1" value="-8"></div>
         <div class="setup__nav"><button class="btn" id="knob-next" type="button" aria-disabled="true">дальше</button><button class="link-btn" type="button" data-cancel>отмена</button></div>
-        <p class="setup__why" id="knob-why" aria-live="polite">Дальше можно, когда пик попадёт в рамку на шкале.</p>
+        <p class="setup__why" id="knob-why" aria-live="polite">Дальше можно, когда фразу слышно и нет перегруза.</p>
       </section>
 
       <section class="pane" id="pane-capture" aria-labelledby="cap-title" hidden>
@@ -600,8 +645,8 @@ select.input { appearance: none; padding-right: var(--space-lg); }
           <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div><div class="meter__zone" id="hud-zone" style="--a:0.85;--b:0.95" title="цель для самой громкой фразы"></div></div>
           <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
         </div>
-        <p class="hud__zone-note" id="hud-zone-note">Рамка на шкале: цель для самой громкой фразы, от −9 до −3 дБ.</p>
-        <div class="loud"><span class="loud__label">пик за 4 секунды</span><output class="loud__fig" id="hud-peak">−60</output><span class="loud__unit">дБ</span></div>
+        <p class="hud__zone-note" id="hud-zone-note">Рамка на шкале: идеальный пик, от −9 до −3 дБ. Ниже рамки тоже можно, Тембр добавит усиление в программе.</p>
+        <div class="hud__figs"><div class="loud"><span class="loud__label">пик за 4 секунды</span><output class="loud__fig" id="hud-peak">−60</output><span class="loud__unit">дБ</span></div><div class="loud" id="hud-gain-box"><span class="loud__label">усиление в программе</span><output class="loud__fig" id="hud-gain">0</output><span class="loud__unit">дБ</span></div></div>
       </div>
       <div class="hud__out" hidden>
         <div class="meter" data-meter="hud-out">
@@ -628,6 +673,7 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     <div class="sheet__row"><label for="set-lang">язык</label><select class="input" id="set-lang" name="lang" data-no-i18n><option value="ru">Русский</option><option value="en">English</option></select></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
+    <div class="sheet__row sheet__row--native"><span class="sheet__label" id="lbl-diag">диагностика</span><button class="pill" type="button" id="btn-diag">скопировать отчёт</button><p class="sheet__help" id="diag-help" aria-live="polite">Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
     <div class="sheet__foot"><p class="sheet__help">Тембр 0.1</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>
   </dialog>
@@ -863,7 +909,49 @@ window.I18N_EN = {
  "Микрофон не запускается: {}": "The microphone does not start: {1}",
  "Работает.": "Running.",
  "Работает без вывода: виртуальный кабель не найден.": "Running without output: the virtual cable was not found.",
- "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”."
+ "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”.",
+ "для задач": "for tasks",
+ "голоса": "voices",
+ "тёплый эфир": "warm broadcast",
+ "глубокий": "deep",
+ "яркий подкаст": "bright podcast",
+ "объёмный": "thick",
+ "радио": "radio",
+ "робот": "robot",
+ "высокий": "high",
+ "усиление в программе": "software gain",
+ "усиление": "gain",
+ "+{} дБ": "+{1} dB",
+ "+0 дБ": "+0 dB",
+ "характер": "character",
+ "глубже, теплее, ярче или необычнее": "deeper, warmer, brighter or stranger",
+ "высота": "pitch",
+ "тепло": "warmth",
+ "объём": "thickness",
+ "пт: полутоны": "st: semitones",
+ "без эффекта": "no effect",
+ "эффект включён": "effect on",
+ "высота {} пт": "pitch {1} st",
+ "{} пт": "{1} st",
+ "−{} пт": "−{1} st",
+ "+{} пт": "+{1} st",
+ "0 пт": "0 st",
+ "{}%": "{1}%",
+ "проверим громкость": "check the level",
+ "Ручка усиления на корпусе микрофона. Выставьте её так, чтобы громкая фраза не перегружала, остальное Тембр добавит сам.": "The gain knob is on the microphone body. Set it so a loud phrase does not clip, and Timbre adds the rest by itself.",
+ "Дальше можно, когда фразу слышно и нет перегруза.": "You can continue once the phrase is audible and there is no clipping.",
+ "Рамка на шкале: идеальный пик, от −9 до −3 дБ. Ниже рамки тоже можно, Тембр добавит усиление в программе.": "The frame on the scale is the ideal peak, from −9 to −3 dB. Below the frame is fine too, Timbre adds software gain.",
+ "Тихо, но это не страшно: Тембр добавит усиление в программе. Можно прибавить и ручкой.": "Quiet, but that is fine: Timbre will add gain in software. You can turn the knob up too.",
+ "Близко к перегрузу. Чуть убавьте усиление ручкой.": "Close to clipping. Turn the gain knob down a little.",
+ "Перегруз. Убавьте усиление ручкой.": "Overload. Turn the gain knob down.",
+ "Микрофон тихий: чтобы вывести громкую фразу на нормальный уровень, нужно +{} дБ программного усиления, а вместе с голосом растёт и шум. Прибавьте усиление ручкой на микрофоне и пройдите калибровку заново.": "The microphone is quiet: bringing the loud phrase to a normal level takes +{1} dB of software gain, and the noise grows with the voice. Turn the gain knob on the microphone up and calibrate again.",
+ "Самая громкая фраза доходила до {} дБ, программное усиление выводит её примерно на −6 дБ.": "The loudest phrase reached {1} dB, and the software gain brings it to about −6 dB.",
+ "Самая громкая фраза доходила до {} дБ, этого достаточно, программное усиление не нужно.": "The loudest phrase reached {1} dB, which is enough, so no software gain is needed.",
+ "диагностика": "diagnostics",
+ "скопировать отчёт": "copy the report",
+ "Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.": "It takes about ten seconds: while the report runs, touch the mute button and turn the knobs on the microphone.",
+ "Собираю отчёт…": "Collecting the report…",
+ "Отчёт скопирован, вставьте его в чат.": "The report is copied, paste it into the chat."
 };
 
 </script>
@@ -909,7 +997,7 @@ window.I18N_EN = {
   function f(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
 
   var originals = new WeakMap();
-  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'label'];
 
   function apply(root) {
     if (lang !== 'en') return;
@@ -958,35 +1046,31 @@ window.I18N_EN = {
 (function () {
   'use strict';
 
+  /* Presets are a base chain plus an optional voice character. Order matters: it is the order in the list. */
+  function chain(o) {
+    return {
+      input: { gain: o.gain === undefined ? 12 : o.gain },
+      gate: { on: true, threshold: o.gate === undefined ? -48 : o.gate },
+      nr: { on: true, mode: o.nr || 'light', amount: o.nrAmt === undefined ? 60 : o.nrAmt },
+      eq: { on: true, lowcut: true, low: o.low || 0, mid: o.mid || 0, high: o.high || 0 },
+      ch: { on: true, pitch: o.pitch || 0, warmth: o.warmth || 0, thick: o.thick || 0, radio: o.radio || 0, robot: o.robot || 0 },
+      comp: { on: true, threshold: o.comp === undefined ? -22 : o.comp, ratio: o.ratio || 3 },
+      lim: { on: true, ceiling: o.ceil === undefined ? -1 : o.ceil }
+    };
+  }
+
   var PRESETS = {
-    novice: { name: 'новичок', params: {
-      gate: { on: true, threshold: -50 },
-      nr:   { on: true, mode: 'light', amount: 60 },
-      eq:   { on: true, lowcut: true, low: 0, mid: 1, high: 2 },
-      comp: { on: true, threshold: -22, ratio: 3 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    stream: { name: 'стрим', params: {
-      gate: { on: true, threshold: -45 },
-      nr:   { on: true, mode: 'hq', amount: 75 },
-      eq:   { on: true, lowcut: true, low: 2, mid: 0, high: 3 },
-      comp: { on: true, threshold: -20, ratio: 4 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    voiceover: { name: 'закадр', params: {
-      gate: { on: true, threshold: -55 },
-      nr:   { on: true, mode: 'light', amount: 40 },
-      eq:   { on: true, lowcut: true, low: 1, mid: 0, high: 1 },
-      comp: { on: true, threshold: -24, ratio: 2.5 },
-      lim:  { on: true, ceiling: -2 }
-    } },
-    call: { name: 'созвон', params: {
-      gate: { on: true, threshold: -40 },
-      nr:   { on: true, mode: 'hq', amount: 90 },
-      eq:   { on: true, lowcut: true, low: -1, mid: 2, high: 1 },
-      comp: { on: true, threshold: -18, ratio: 3 },
-      lim:  { on: true, ceiling: -2 }
-    } }
+    novice:    { group: 'tasks', name: 'новичок', params: chain({ low: 0, mid: 1, high: 2 }) },
+    stream:    { group: 'tasks', name: 'стрим', params: chain({ gate: -45, nr: 'hq', nrAmt: 75, low: 2, high: 3, comp: -20, ratio: 4 }) },
+    voiceover: { group: 'tasks', name: 'закадр', params: chain({ gate: -52, nrAmt: 40, low: 1, high: 1, comp: -24, ratio: 2.5, ceil: -2, gain: 10 }) },
+    call:      { group: 'tasks', name: 'созвон', params: chain({ gate: -42, nr: 'hq', nrAmt: 90, low: -1, mid: 2, high: 1, ratio: 3, comp: -18, ceil: -2 }) },
+    warm:      { group: 'voices', name: 'тёплый эфир', params: chain({ low: 3, mid: 1, high: 1, warmth: 60, thick: 15, comp: -22, ratio: 3.5 }) },
+    deep:      { group: 'voices', name: 'глубокий', params: chain({ pitch: -3, low: 4, high: -1, warmth: 25, comp: -22, ratio: 3.5 }) },
+    bright:    { group: 'voices', name: 'яркий подкаст', params: chain({ low: -1, mid: 1, high: 4, warmth: 15, comp: -20, ratio: 3 }) },
+    thick:     { group: 'voices', name: 'объёмный', params: chain({ low: 2, thick: 70, warmth: 30, comp: -22, ratio: 3 }) },
+    radio:     { group: 'voices', name: 'радио', params: chain({ radio: 100, warmth: 40, comp: -24, ratio: 4 }) },
+    robot:     { group: 'voices', name: 'робот', params: chain({ robot: 80, pitch: -1, comp: -22, ratio: 3 }) },
+    chipmunk:  { group: 'voices', name: 'высокий', params: chain({ pitch: 5, high: 1, comp: -22, ratio: 3 }) }
   };
 
   var KEY = 'timbre.v1';
@@ -1004,7 +1088,7 @@ window.I18N_EN = {
     return target;
   }
 
-  function ensureCustom() { if (state.custom) PRESETS.mine = { name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
+  function ensureCustom() { if (state.custom) PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
 
   try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) merge(state, saved); } catch (e) { /* storage may be unavailable */ }
 
@@ -1023,7 +1107,7 @@ window.I18N_EN = {
 
   function replaceParams(params) { state.params = clone(params); save(); emit('local'); }
   function applyPreset(id) { if (!PRESETS[id]) return; state.preset = id; state.params = clone(PRESETS[id].params); save(); emit('local'); }
-  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
+  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
   function setFlag(name, value) { state[name] = value; save(); emit('local'); }
   function setSetting(name, value) { state.settings[name] = value; save(); emit('local'); }
   function isDirty() { return JSON.stringify(state.params) !== JSON.stringify(PRESETS[state.preset].params); }
@@ -1086,7 +1170,7 @@ window.I18N_EN = {
   var RATE = 50;            // ticks per second
   var N = 360;              // history length, 7.2 seconds
   var FLOOR = -90;
-  var STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var STAGES = ['raw', 'gate', 'nr', 'ch', 'comp', 'lim'];
 
   function db(a) { return a > 1e-5 ? 20 * Math.log10(a) : FLOOR; }
   function lin(d) { return Math.pow(10, d / 20); }
@@ -1136,7 +1220,10 @@ window.I18N_EN = {
     var gk = lin(gainDb);
     v *= gk; n *= gk; c *= gk;
     var inAmp = v + n + c;
-    var rawDb = db(inAmp);
+    var preDb = db(inAmp);                 // what the microphone delivers
+    var sg = lin(p.input ? p.input.gain : 0); // the software gain in front of the chain
+    v *= sg; n *= sg; c *= sg; inAmp *= sg;
+    var rawDb = db(inAmp);                 // the signal every stage is compared with
 
     // gate
     var open = rawDb > p.gate.threshold;
@@ -1154,6 +1241,7 @@ window.I18N_EN = {
     // eq only nudges the overall level here; the curve itself is drawn from the same parameters
     var eqGain = p.eq.on ? 0.25 * p.eq.low + 0.45 * p.eq.mid + 0.25 * p.eq.high - (p.eq.lowcut ? 0.4 : 0) : 0;
     var L = db(nrAmp * lin(eqGain));
+    var chDb = L;
 
     // compressor
     var Lout = L, grT = 0;
@@ -1173,6 +1261,7 @@ window.I18N_EN = {
       raw: rawDb,
       gate: bypass ? rawDb : gateDb,
       nr: bypass ? rawDb : nrDb,
+      ch: bypass ? rawDb : chDb,
       comp: bypass ? rawDb : Lout,
       lim: bypass ? rawDb : cl
     };
@@ -1185,7 +1274,7 @@ window.I18N_EN = {
     powerRing[powerPos] = pw; powerPos = (powerPos + 1) % powerRing.length;
     var mean = 0; for (var i = 0; i < powerRing.length; i++) mean += powerRing[i]; mean /= powerRing.length;
 
-    now.inDb = rawDb;
+    now.inDb = preDb;
     now.outDb = outDb;
     now.gateOpen = open || !p.gate.on;
     now.nrDb = s > 0 ? 20 * Math.log10(1 / (1 - s)) : 0;
@@ -1239,8 +1328,16 @@ window.I18N_EN = {
 
   function compute(m) {
     var warnings = [], tips = [], rows = [];
-    var noise = m.noise, W = m.whisper.lvl, N = m.normal.lvl, L = m.loud.lvl, peak = m.loud.peak;
+    /* The levels were measured before the software gain. The gain brings the loudest phrase to about -6 dB,
+       and every later decision is taken on the levels after it. */
+    var peak0 = m.loud.peak;
+    var g = clamp(r(-6 - peak0), 0, 36);
+    var noise = m.noise + g, W = m.whisper.lvl + g, N = m.normal.lvl + g, L = m.loud.lvl + g, peak = peak0 + g;
     var snr = W - noise;
+
+    if (g > 24) warnings.push(F('Микрофон тихий: чтобы вывести громкую фразу на нормальный уровень, нужно +{} дБ программного усиления, а вместе с голосом растёт и шум. Прибавьте усиление ручкой на микрофоне и пройдите калибровку заново.', g));
+    rows.push({ key: 'input', name: 'усиление', value: F('+{} дБ', g),
+      why: [g > 0 ? F('Самая громкая фраза доходила до {} дБ, программное усиление выводит её примерно на −6 дБ.', n(r(peak0))) : F('Самая громкая фраза доходила до {} дБ, этого достаточно, программное усиление не нужно.', n(r(peak0)))] });
 
     /* gate: above the room, below the whisper */
     var gateThr;
@@ -1277,24 +1374,25 @@ window.I18N_EN = {
 
     /* limiter: just under the loudest take */
     var ceil = peak > -3 ? -2 : -1;
-    if (peak > -1) warnings.push('Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.');
-    if (peak < -14) warnings.push(F('Громкая фраза тихая, пик {} дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.', n(r(peak))));
+    if (peak0 > -1) warnings.push('Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.');
     rows.push({ key: 'lim', name: 'лимитер', value: F('{} дБ', n(ceil, 1)), why: [F('Самая громкая фраза доходит до {} дБ, потолок поставлен чуть ниже нуля.', n(r(peak)))] });
 
     return {
       params: {
+        input: { gain: g },
         gate: { on: true, threshold: gateThr },
         nr: { on: true, mode: hq ? 'hq' : 'light', amount: amount },
         eq: { on: true, lowcut: true, low: eqLow, mid: eqMid, high: eqHigh },
+        ch: { on: true, pitch: 0, warmth: 0, thick: 0, radio: 0, robot: 0 },
         comp: { on: true, threshold: thr, ratio: ratio },
         lim: { on: true, ceiling: ceil }
       },
       rows: rows,
       figures: [
-        { label: 'шум комнаты', value: n(r(noise)) },
-        { label: 'шёпот', value: n(r(W)) },
-        { label: 'обычная речь', value: n(r(N)) },
-        { label: 'громко', value: n(r(L)) }
+        { label: 'шум комнаты', value: n(r(m.noise)) },
+        { label: 'шёпот', value: n(r(m.whisper.lvl)) },
+        { label: 'обычная речь', value: n(r(m.normal.lvl)) },
+        { label: 'громко', value: n(r(m.loud.lvl)) }
       ],
       warnings: warnings,
       tips: tips
@@ -1341,14 +1439,14 @@ window.I18N_EN = {
       verdict: $('#knob-verdict'), knobNext: $('#knob-next'), knobWhy: $('#knob-why'), gain: $('#demo-gain'), gainOut: $('#demo-gain-out'),
       capTitle: $('#cap-title'), capLead: $('#cap-lead'), capPrompt: $('#cap-prompt'), capCaption: $('#cap-caption'), capPhrase: $('#cap-phrase'),
       capBar: $('#cap-bar'), capStatus: $('#cap-status'), capGo: $('#cap-go'), capRetry: $('#cap-retry'), capBack: $('#cap-back'),
-      hudZone: $('#hud-zone'), hudPeak: $('#hud-peak'), hudInBox: $('.hud__in'), hudOutBox: $('.hud__out'),
+      hudZone: $('#hud-zone'), hudPeak: $('#hud-peak'), hudGain: $('#hud-gain'), hudInBox: $('.hud__in'), hudOutBox: $('.hud__out'),
       figs: $('#res-figs'), rows: $('#res-rows'), notes: $('#res-notes')
     };
     hudIn = new ui.Meter($('[data-meter="hud-in"]'));
     hudOut = new ui.Meter($('[data-meter="hud-out"]'));
 
     els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = tr((els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'); });
-    els.knobNext.addEventListener('click', function () { if (S.zoneHit) go(1); });
+    els.knobNext.addEventListener('click', function () { if (S.canGo) go(1); });
     els.capGo.addEventListener('click', function () {
       if (S.cap.state === 'ready') startRec(); else if (S.cap.state === 'done') go(S.idx + 1);
     });
@@ -1366,7 +1464,7 @@ window.I18N_EN = {
   }
 
   function fresh(before) {
-    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, zoneHit: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1 };
+    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
   }
 
   function enter() {
@@ -1408,8 +1506,8 @@ window.I18N_EN = {
     els.hudZone.hidden = st.id !== 'knob'; $('#hud-zone-note').hidden = st.id !== 'knob';
     if (st.id === 'knob') {
       Sim.setMode('loud');
-      setBtn(els.knobNext, 'дальше', !S.zoneHit);
-      els.knobWhy.textContent = tr('Дальше можно, когда пик попадёт в рамку на шкале.');
+      setBtn(els.knobNext, 'дальше', !S.canGo);
+      els.knobWhy.textContent = tr('Дальше можно, когда фразу слышно и нет перегруза.');
       S.lastCat = ''; els.verdict.textContent = tr('Скажите фразу громко.');
     } else if (st.id === 'result') {
       Sim.setMode('auto'); computeResult();
@@ -1498,11 +1596,17 @@ window.I18N_EN = {
 
     if (S.idx === 0) {
       var lo = ZONE[0], hi = ZONE[1];
-      var cat = peak < -45 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
-      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = tr('Можно идти дальше. Ручку больше не трогайте.'); }
+      var cat = peak < -42 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
+      if (text) els.hudGain.textContent = peak < -42 ? '0' : String(ui.clamp(Math.round(-6 - peak), 0, 36));
+      if (cat === 'clip') S.canGo = false; else if (cat !== 'quiet') S.canGo = true;
+      var live = S.canGo;
+      if (live !== S.shownGo) {
+        S.shownGo = live; setBtn(els.knobNext, 'дальше', !live);
+        els.knobWhy.textContent = tr(live ? 'Можно идти дальше. Ручку больше не трогайте.' : 'Дальше можно, когда фразу слышно и нет перегруза.');
+      }
       if (cat !== S.lastCat) {
         S.lastCat = cat;
-        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat]);
+        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо, но это не страшно: Тембр добавит усиление в программе. Можно прибавить и ручкой.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление ручкой.', clip: 'Перегруз. Убавьте усиление ручкой.' }[cat]);
       }
     } else if (S.cap.state === 'rec') {
       var c = S.cap, st = STAGES[S.idx];
@@ -1529,7 +1633,7 @@ window.I18N_EN = {
   document.documentElement.classList.add('native');
 
   /* ---------- the signal: same surface as sim.js, fed by the engine at 50 Hz ---------- */
-  var N = Sim.N, FLOOR = Sim.FLOOR, STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var N = Sim.N, FLOOR = Sim.FLOOR, STAGES = ['raw', 'gate', 'nr', 'ch', 'comp', 'lim'];
   var hist = {}, pos = 0, jit = new Float32Array(N), i;
   STAGES.forEach(function (s) { hist[s] = new Float32Array(N).fill(FLOOR); });
   for (i = 0; i < N; i++) jit[i] = 0.74 + 0.26 * Math.random();
@@ -1550,11 +1654,11 @@ window.I18N_EN = {
 
   listen('engine-frame', function (e) {
     var f = e.payload, n = Sim.now;
-    hist.raw[pos] = f.raw; hist.gate[pos] = f.gate; hist.nr[pos] = f.nr; hist.comp[pos] = f.comp; hist.lim[pos] = f.lim;
+    hist.raw[pos] = f.raw; hist.gate[pos] = f.gate; hist.nr[pos] = f.nr; hist.ch[pos] = f.ch; hist.comp[pos] = f.comp; hist.lim[pos] = f.lim;
     jit[pos] = 0.74 + 0.26 * Math.random();
     pos = (pos + 1) % N;
-    n.inDb = f.raw; n.outDb = f.out; n.gateOpen = f.gateOpen; n.nrDb = f.nrDb; n.grDb = f.grDb; n.limDb = f.limDb; n.loud = Math.max(-70, f.loud);
-    if (f.raw > -40 && f.bands) {
+    n.inDb = f.pre; /* the meter and the wizard look at the microphone itself, before the software gain */ n.outDb = f.out; n.gateOpen = f.gateOpen; n.nrDb = f.nrDb; n.grDb = f.grDb; n.limDb = f.limDb; n.loud = Math.max(-70, f.loud);
+    if (f.pre > -40 && f.bands) {
       var low = (f.bands[0] - f.bands[1] - TARGET.low) * CAUTION, high = (f.bands[2] - f.bands[1] - TARGET.high) * CAUTION;
       if (!ema.ready) { ema.low = low; ema.high = high; ema.ready = true; } else { ema.low += (low - ema.low) * 0.02; ema.high += (high - ema.high) * 0.02; }
     }
@@ -1601,6 +1705,17 @@ window.I18N_EN = {
   /* "check again" on the first-run screen re-opens the streams too */
   ['btn-recheck-mic', 'btn-recheck-cable'].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { invoke('restart_engine', { input: choice.input, output: choice.output }); }); });
 
+  /* ---------- diagnostics for support ---------- */
+  var diagBtn = document.getElementById('btn-diag'), diagHelp = document.getElementById('diag-help');
+  if (diagBtn) diagBtn.addEventListener('click', function () {
+    diagHelp.textContent = I18N.t('Собираю отчёт…');
+    invoke('diagnostics').then(function (text) {
+      var done = function () { diagHelp.textContent = I18N.t('Отчёт скопирован, вставьте его в чат.'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { diagHelp.textContent = text.slice(0, 600); });
+      else diagHelp.textContent = text.slice(0, 600);
+    }).catch(function (e) { diagHelp.textContent = String(e); });
+  });
+
   /* ---------- state to Rust, events from the tray and the global hotkey ---------- */
   var lastHotkey = '', lastStartup = null;
   function push(s) {
@@ -1640,7 +1755,13 @@ window.I18N_EN = {
   function sgn(v) { return v > 0 ? '+' + v : v < 0 ? MINUS + Math.abs(v) : '0'; }
   var fmt = {
     'gate.threshold': function (v) { return num(v) + ' дБ'; },
+    'input.gain': function (v) { return '+' + v + ' дБ'; },
     'nr.amount': function (v) { return v + '%'; },
+    'ch.pitch': function (v) { return sgn(v).replace('.', DEC) + ' пт'; },
+    'ch.warmth': function (v) { return v + '%'; },
+    'ch.thick': function (v) { return v + '%'; },
+    'ch.radio': function (v) { return v + '%'; },
+    'ch.robot': function (v) { return v + '%'; },
     'eq.low': function (v) { return sgn(v) + ' дБ'; },
     'eq.mid': function (v) { return sgn(v) + ' дБ'; },
     'eq.high': function (v) { return sgn(v) + ' дБ'; },
@@ -1652,8 +1773,9 @@ window.I18N_EN = {
   /* ---------- controls ---------- */
   function render() {
     var s = Store.state;
-    var mine = !!Store.PRESETS.mine; $('#pr-mine').hidden = !mine; $('label[for="pr-mine"]').hidden = !mine;
-    $$('#presets input').forEach(function (i) { i.checked = i.value === s.preset; });
+    var mine = !!Store.PRESETS.mine, opt = $('#preset-select option[value="mine"]');
+    opt.hidden = !mine; opt.disabled = !mine;
+    $('#preset-select').value = s.preset;
     $$('[data-param]').forEach(function (el) {
       var v = Store.get(el.dataset.param);
       if (el.type === 'range') {
@@ -1687,7 +1809,7 @@ window.I18N_EN = {
   });
   $$('[data-toggle]').forEach(function (b) { b.addEventListener('click', function () { Store.set(b.dataset.toggle, !Store.get(b.dataset.toggle)); }); });
   $$('[data-chip]').forEach(function (b) { b.addEventListener('click', function () { Store.set(b.dataset.chip, !Store.get(b.dataset.chip)); }); });
-  $$('#presets input').forEach(function (i) { i.addEventListener('change', function () { if (i.checked) Store.applyPreset(i.value); }); });
+  $('#preset-select').addEventListener('change', function () { Store.applyPreset(this.value); });
   $('#btn-reset').addEventListener('click', function () { Store.applyPreset(Store.state.preset); });
   $('#btn-mute').addEventListener('click', function () { Store.setFlag('muted', !Store.state.muted); });
   $('#btn-bypass').addEventListener('click', function () { Store.setFlag('bypass', !Store.state.bypass); });
@@ -1805,6 +1927,8 @@ window.I18N_EN = {
     var set = function (k, txt) { var el = $('[data-stat="' + k + '"]'), v = tr(txt); if (el && el.textContent !== v) el.textContent = v; };
     set('gate', by ? 'обход' : !p.gate.on ? 'выключен' : n.gateOpen ? 'открыт' : 'закрыт');
     set('nr', by ? 'обход' : !p.nr.on ? 'выключен' : 'шума меньше на ' + num(n.nrDb) + ' дБ');
+    var ch = p.ch, any = ch.warmth > 0 || ch.thick > 0 || ch.radio > 0 || ch.robot > 0;
+    set('ch', by ? 'обход' : !ch.on ? 'выключен' : Math.abs(ch.pitch) > 0.05 ? 'высота ' + sgn(ch.pitch).replace('.', DEC) + ' пт' : any ? 'эффект включён' : 'без эффекта');
     set('comp', by ? 'обход' : !p.comp.on ? 'выключен' : 'сжатие ' + num(n.grDb, 1) + ' дБ');
     set('lim', by ? 'обход' : !p.lim.on ? 'выключен' : n.limDb > 0.1 ? 'срезано ' + num(n.limDb, 1) + ' дБ' : 'срезов нет');
   }

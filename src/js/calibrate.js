@@ -22,8 +22,16 @@
 
   function compute(m) {
     var warnings = [], tips = [], rows = [];
-    var noise = m.noise, W = m.whisper.lvl, N = m.normal.lvl, L = m.loud.lvl, peak = m.loud.peak;
+    /* The levels were measured before the software gain. The gain brings the loudest phrase to about -6 dB,
+       and every later decision is taken on the levels after it. */
+    var peak0 = m.loud.peak;
+    var g = clamp(r(-6 - peak0), 0, 36);
+    var noise = m.noise + g, W = m.whisper.lvl + g, N = m.normal.lvl + g, L = m.loud.lvl + g, peak = peak0 + g;
     var snr = W - noise;
+
+    if (g > 24) warnings.push(F('Микрофон тихий: чтобы вывести громкую фразу на нормальный уровень, нужно +{} дБ программного усиления, а вместе с голосом растёт и шум. Прибавьте усиление ручкой на микрофоне и пройдите калибровку заново.', g));
+    rows.push({ key: 'input', name: 'усиление', value: F('+{} дБ', g),
+      why: [g > 0 ? F('Самая громкая фраза доходила до {} дБ, программное усиление выводит её примерно на −6 дБ.', n(r(peak0))) : F('Самая громкая фраза доходила до {} дБ, этого достаточно, программное усиление не нужно.', n(r(peak0)))] });
 
     /* gate: above the room, below the whisper */
     var gateThr;
@@ -60,24 +68,25 @@
 
     /* limiter: just under the loudest take */
     var ceil = peak > -3 ? -2 : -1;
-    if (peak > -1) warnings.push('Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.');
-    if (peak < -14) warnings.push(F('Громкая фраза тихая, пик {} дБ. Прибавьте усиление ручкой на микрофоне: чем выше сигнал над шумом, тем меньше работы у шумодава.', n(r(peak))));
+    if (peak0 > -1) warnings.push('Громкая фраза упёрлась в 0 дБ. Убавьте усиление ручкой на микрофоне и пройдите калибровку заново, иначе звук будет хрипеть до обработки.');
     rows.push({ key: 'lim', name: 'лимитер', value: F('{} дБ', n(ceil, 1)), why: [F('Самая громкая фраза доходит до {} дБ, потолок поставлен чуть ниже нуля.', n(r(peak)))] });
 
     return {
       params: {
+        input: { gain: g },
         gate: { on: true, threshold: gateThr },
         nr: { on: true, mode: hq ? 'hq' : 'light', amount: amount },
         eq: { on: true, lowcut: true, low: eqLow, mid: eqMid, high: eqHigh },
+        ch: { on: true, pitch: 0, warmth: 0, thick: 0, radio: 0, robot: 0 },
         comp: { on: true, threshold: thr, ratio: ratio },
         lim: { on: true, ceiling: ceil }
       },
       rows: rows,
       figures: [
-        { label: 'шум комнаты', value: n(r(noise)) },
-        { label: 'шёпот', value: n(r(W)) },
-        { label: 'обычная речь', value: n(r(N)) },
-        { label: 'громко', value: n(r(L)) }
+        { label: 'шум комнаты', value: n(r(m.noise)) },
+        { label: 'шёпот', value: n(r(m.whisper.lvl)) },
+        { label: 'обычная речь', value: n(r(m.normal.lvl)) },
+        { label: 'громко', value: n(r(m.loud.lvl)) }
       ],
       warnings: warnings,
       tips: tips

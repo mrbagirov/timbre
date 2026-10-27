@@ -4,35 +4,31 @@
 (function () {
   'use strict';
 
+  /* Presets are a base chain plus an optional voice character. Order matters: it is the order in the list. */
+  function chain(o) {
+    return {
+      input: { gain: o.gain === undefined ? 12 : o.gain },
+      gate: { on: true, threshold: o.gate === undefined ? -48 : o.gate },
+      nr: { on: true, mode: o.nr || 'light', amount: o.nrAmt === undefined ? 60 : o.nrAmt },
+      eq: { on: true, lowcut: true, low: o.low || 0, mid: o.mid || 0, high: o.high || 0 },
+      ch: { on: true, pitch: o.pitch || 0, warmth: o.warmth || 0, thick: o.thick || 0, radio: o.radio || 0, robot: o.robot || 0 },
+      comp: { on: true, threshold: o.comp === undefined ? -22 : o.comp, ratio: o.ratio || 3 },
+      lim: { on: true, ceiling: o.ceil === undefined ? -1 : o.ceil }
+    };
+  }
+
   var PRESETS = {
-    novice: { name: 'новичок', params: {
-      gate: { on: true, threshold: -50 },
-      nr:   { on: true, mode: 'light', amount: 60 },
-      eq:   { on: true, lowcut: true, low: 0, mid: 1, high: 2 },
-      comp: { on: true, threshold: -22, ratio: 3 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    stream: { name: 'стрим', params: {
-      gate: { on: true, threshold: -45 },
-      nr:   { on: true, mode: 'hq', amount: 75 },
-      eq:   { on: true, lowcut: true, low: 2, mid: 0, high: 3 },
-      comp: { on: true, threshold: -20, ratio: 4 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    voiceover: { name: 'закадр', params: {
-      gate: { on: true, threshold: -55 },
-      nr:   { on: true, mode: 'light', amount: 40 },
-      eq:   { on: true, lowcut: true, low: 1, mid: 0, high: 1 },
-      comp: { on: true, threshold: -24, ratio: 2.5 },
-      lim:  { on: true, ceiling: -2 }
-    } },
-    call: { name: 'созвон', params: {
-      gate: { on: true, threshold: -40 },
-      nr:   { on: true, mode: 'hq', amount: 90 },
-      eq:   { on: true, lowcut: true, low: -1, mid: 2, high: 1 },
-      comp: { on: true, threshold: -18, ratio: 3 },
-      lim:  { on: true, ceiling: -2 }
-    } }
+    novice:    { group: 'tasks', name: 'новичок', params: chain({ low: 0, mid: 1, high: 2 }) },
+    stream:    { group: 'tasks', name: 'стрим', params: chain({ gate: -45, nr: 'hq', nrAmt: 75, low: 2, high: 3, comp: -20, ratio: 4 }) },
+    voiceover: { group: 'tasks', name: 'закадр', params: chain({ gate: -52, nrAmt: 40, low: 1, high: 1, comp: -24, ratio: 2.5, ceil: -2, gain: 10 }) },
+    call:      { group: 'tasks', name: 'созвон', params: chain({ gate: -42, nr: 'hq', nrAmt: 90, low: -1, mid: 2, high: 1, ratio: 3, comp: -18, ceil: -2 }) },
+    warm:      { group: 'voices', name: 'тёплый эфир', params: chain({ low: 3, mid: 1, high: 1, warmth: 60, thick: 15, comp: -22, ratio: 3.5 }) },
+    deep:      { group: 'voices', name: 'глубокий', params: chain({ pitch: -3, low: 4, high: -1, warmth: 25, comp: -22, ratio: 3.5 }) },
+    bright:    { group: 'voices', name: 'яркий подкаст', params: chain({ low: -1, mid: 1, high: 4, warmth: 15, comp: -20, ratio: 3 }) },
+    thick:     { group: 'voices', name: 'объёмный', params: chain({ low: 2, thick: 70, warmth: 30, comp: -22, ratio: 3 }) },
+    radio:     { group: 'voices', name: 'радио', params: chain({ radio: 100, warmth: 40, comp: -24, ratio: 4 }) },
+    robot:     { group: 'voices', name: 'робот', params: chain({ robot: 80, pitch: -1, comp: -22, ratio: 3 }) },
+    chipmunk:  { group: 'voices', name: 'высокий', params: chain({ pitch: 5, high: 1, comp: -22, ratio: 3 }) }
   };
 
   var KEY = 'timbre.v1';
@@ -50,7 +46,7 @@
     return target;
   }
 
-  function ensureCustom() { if (state.custom) PRESETS.mine = { name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
+  function ensureCustom() { if (state.custom) PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
 
   try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) merge(state, saved); } catch (e) { /* storage may be unavailable */ }
 
@@ -69,7 +65,7 @@
 
   function replaceParams(params) { state.params = clone(params); save(); emit('local'); }
   function applyPreset(id) { if (!PRESETS[id]) return; state.preset = id; state.params = clone(PRESETS[id].params); save(); emit('local'); }
-  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
+  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
   function setFlag(name, value) { state[name] = value; save(); emit('local'); }
   function setSetting(name, value) { state.settings[name] = value; save(); emit('local'); }
   function isDirty() { return JSON.stringify(state.params) !== JSON.stringify(PRESETS[state.preset].params); }

@@ -5,7 +5,7 @@ use arc_swap::ArcSwap;
 use devices::{Choice, Detect};
 use serde::Deserialize;
 use std::sync::{Arc, Mutex};
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 use tauri_plugin_autostart::ManagerExt as _;
@@ -26,6 +26,8 @@ pub struct UiState {
 struct Labels {
     show: &'static str,
     presets: [&'static str; 5],
+    voices_title: &'static str,
+    voices: [&'static str; 7],
     mute_off: &'static str,
     mute_on: &'static str,
     bypass_off: &'static str,
@@ -38,6 +40,16 @@ fn labels(lang: &str) -> Labels {
     if lang == "ru" {
         Labels {
             show: "Открыть окно",
+            voices_title: "Голоса",
+            voices: [
+                "Тёплый эфир",
+                "Глубокий",
+                "Яркий подкаст",
+                "Объёмный",
+                "Радио",
+                "Робот",
+                "Высокий",
+            ],
             presets: [
                 "Пресет: новичок",
                 "Пресет: стрим",
@@ -55,6 +67,16 @@ fn labels(lang: &str) -> Labels {
     } else {
         Labels {
             show: "Open window",
+            voices_title: "Voices",
+            voices: [
+                "Warm broadcast",
+                "Deep",
+                "Bright podcast",
+                "Thick",
+                "Radio",
+                "Robot",
+                "High",
+            ],
             presets: [
                 "Preset: beginner",
                 "Preset: stream",
@@ -75,6 +97,8 @@ fn labels(lang: &str) -> Labels {
 struct TrayItems {
     show: MenuItem<tauri::Wry>,
     presets: Vec<MenuItem<tauri::Wry>>,
+    voices: Submenu<tauri::Wry>,
+    voice_items: Vec<MenuItem<tauri::Wry>>,
     mute: MenuItem<tauri::Wry>,
     bypass: MenuItem<tauri::Wry>,
     quit: MenuItem<tauri::Wry>,
@@ -100,6 +124,15 @@ fn restart(app: &AppHandle, state: &AppState) {
 #[tauri::command]
 fn detect_devices() -> Detect {
     devices::detect()
+}
+
+#[tauri::command]
+async fn diagnostics(app_state: State<'_, AppState>) -> Result<String, String> {
+    let choice = app_state.choice.lock().unwrap().clone();
+    // the report listens to the microphone buttons for a few seconds, so it must not run on the UI thread
+    tauri::async_runtime::spawn_blocking(move || devices::report(&choice))
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -137,6 +170,10 @@ fn set_lang(lang: String, app_state: State<'_, AppState>) {
             .bypass
             .set_text(if st.bypass { l.bypass_on } else { l.bypass_off });
         let _ = t.quit.set_text(l.quit);
+        let _ = t.voices.set_text(l.voices_title);
+        for (item, text) in t.voice_items.iter().zip(l.voices.iter()) {
+            let _ = item.set_text(*text);
+        }
     }
 }
 
@@ -210,6 +247,24 @@ fn build_tray(app: &AppHandle, lang: &str) -> tauri::Result<TrayItems> {
     for (id, text) in ids.iter().zip(l.presets.iter()) {
         presets.push(MenuItem::with_id(app, *id, *text, true, None::<&str>)?);
     }
+    let voice_ids = [
+        "preset:warm",
+        "preset:deep",
+        "preset:bright",
+        "preset:thick",
+        "preset:radio",
+        "preset:robot",
+        "preset:chipmunk",
+    ];
+    let mut voice_items = Vec::new();
+    for (id, text) in voice_ids.iter().zip(l.voices.iter()) {
+        voice_items.push(MenuItem::with_id(app, *id, *text, true, None::<&str>)?);
+    }
+    let voice_refs: Vec<&dyn tauri::menu::IsMenuItem<tauri::Wry>> = voice_items
+        .iter()
+        .map(|i| i as &dyn tauri::menu::IsMenuItem<tauri::Wry>)
+        .collect();
+    let voices = Submenu::with_items(app, l.voices_title, true, &voice_refs)?;
     let mute = MenuItem::with_id(app, "mute", l.mute_off, true, None::<&str>)?;
     let bypass = MenuItem::with_id(app, "bypass", l.bypass_off, true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", l.quit, true, None::<&str>)?;
@@ -226,6 +281,7 @@ fn build_tray(app: &AppHandle, lang: &str) -> tauri::Result<TrayItems> {
             &presets[2],
             &presets[3],
             &presets[4],
+            &voices,
             &sep2,
             &mute,
             &bypass,
@@ -277,6 +333,8 @@ fn build_tray(app: &AppHandle, lang: &str) -> tauri::Result<TrayItems> {
     Ok(TrayItems {
         show,
         presets,
+        voices,
+        voice_items,
         mute,
         bypass,
         quit,
@@ -300,6 +358,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             detect_devices,
+            diagnostics,
             set_state,
             set_lang,
             restart_engine,

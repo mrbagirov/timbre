@@ -2,11 +2,13 @@
 //! Order: gate, noise suppression, EQ, compressor, limiter. Latency is constant whatever is switched on.
 
 pub mod biquad;
+pub mod character;
 pub mod dynamics;
 pub mod loudness;
 pub mod resample;
 
 use biquad::{Biquad, Coeffs};
+use character::{Character, CH_DELAY};
 use dynamics::{db_to_lin, lin_to_db, peak_db, Compressor, Gate, Limiter, LOOKAHEAD};
 use loudness::Loudness;
 use nnnoiseless::DenoiseState;
@@ -16,7 +18,7 @@ pub const SAMPLE_RATE: u32 = 48_000;
 pub const FRAME: usize = DenoiseState::FRAME_SIZE; // 480
 /// Samples between input and the output of the chain.
 pub const NR_DELAY: usize = FRAME;
-pub const LATENCY: usize = NR_DELAY + LOOKAHEAD;
+pub const LATENCY: usize = NR_DELAY + CH_DELAY + LOOKAHEAD;
 const FLOOR: f32 = -90.0;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -50,12 +52,57 @@ pub struct LimP {
     pub ceiling: f32,
 }
 
+#[derive(Clone, Debug, Deserialize, PartialEq, Default)]
+pub struct InputP {
+    /// Software gain in dB, before everything else.
+    #[serde(default)]
+    pub gain: f32,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct CharP {
+    #[serde(default = "yes")]
+    pub on: bool,
+    /// Semitones.
+    #[serde(default)]
+    pub pitch: f32,
+    #[serde(default)]
+    pub warmth: f32,
+    #[serde(default)]
+    pub thick: f32,
+    #[serde(default)]
+    pub radio: f32,
+    #[serde(default)]
+    pub robot: f32,
+}
+
+fn yes() -> bool {
+    true
+}
+
+impl Default for CharP {
+    fn default() -> Self {
+        CharP {
+            on: true,
+            pitch: 0.0,
+            warmth: 0.0,
+            thick: 0.0,
+            radio: 0.0,
+            robot: 0.0,
+        }
+    }
+}
+
 /// The same shape the interface keeps in `Store.state.params`.
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Params {
+    #[serde(default)]
+    pub input: InputP,
     pub gate: GateP,
     pub nr: NrP,
     pub eq: EqP,
+    #[serde(default)]
+    pub ch: CharP,
     pub comp: CompP,
     pub lim: LimP,
 }
@@ -63,6 +110,8 @@ pub struct Params {
 impl Default for Params {
     fn default() -> Self {
         Params {
+            input: InputP { gain: 0.0 },
+            ch: CharP::default(),
             gate: GateP {
                 on: true,
                 threshold: -50.0,
@@ -100,9 +149,13 @@ pub struct Flags {
 /// What one block tells the interface. Levels are peak dB, -90 is silence.
 #[derive(Clone, Debug, Default)]
 pub struct FrameMeters {
+    /// Peak of the microphone before the software gain.
+    pub pre: f32,
+    /// Peak after the software gain: the signal every stage is compared with.
     pub raw: f32,
     pub gate: f32,
     pub nr: f32,
+    pub ch: f32,
     pub comp: f32,
     pub lim: f32,
     pub gate_open: bool,
@@ -145,6 +198,8 @@ pub struct Chain {
     mid: Biquad,
     high: Biquad,
     eq_cache: Option<EqP>,
+    gain_cur: f32,
+    character: Character,
     comp: Compressor,
     lim: Limiter,
     raw_delay: Ring,
@@ -167,6 +222,8 @@ impl Chain {
             mid: Biquad::new(Coeffs::identity()),
             high: Biquad::new(Coeffs::identity()),
             eq_cache: None,
+            gain_cur: 1.0,
+            character: Character::new(),
             comp: Compressor::new(sr),
             lim: Limiter::new(sr),
             raw_delay: Ring::new(LATENCY),
@@ -208,7 +265,7 @@ impl Chain {
         assert_eq!(input.len(), FRAME);
         assert_eq!(out.len(), FRAME);
         let mut m = FrameMeters {
-            raw: peak_db(input),
+            pre: peak_db(input),
             ..Default::default()
         };
 
@@ -222,8 +279,14 @@ impl Chain {
             m.bands[k] = (10.0 * (ms / FRAME as f32).max(1e-12).log10()).max(FLOOR);
         }
 
+        // software gain, smoothed so a moving slider does not click
+        let target_gain = db_to_lin(p.input.gain.clamp(0.0, 40.0));
         let mut x = [0.0f32; FRAME];
-        x.copy_from_slice(input);
+        for i in 0..FRAME {
+            self.gain_cur += (target_gain - self.gain_cur) * 0.002;
+            x[i] = input[i] * self.gain_cur;
+        }
+        m.raw = peak_db(&x);
 
         // gate
         m.gate_open = self.gate.process(&mut x, p.gate.threshold, p.gate.on);
@@ -273,6 +336,18 @@ impl Chain {
             }
         }
 
+        // voice character
+        let cs = character::Settings {
+            on: p.ch.on,
+            pitch: p.ch.pitch.clamp(-12.0, 12.0),
+            warmth: p.ch.warmth,
+            thick: p.ch.thick,
+            radio: p.ch.radio,
+            robot: p.ch.robot,
+        };
+        self.character.process(&mut x, &cs);
+        m.ch = peak_db(&x);
+
         // compressor
         m.gr = self
             .comp
@@ -289,6 +364,7 @@ impl Chain {
             out.copy_from_slice(&r);
             m.gate = m.raw;
             m.nr = m.raw;
+            m.ch = m.raw;
             m.comp = m.raw;
             m.lim = m.raw;
             m.gr = 0.0;

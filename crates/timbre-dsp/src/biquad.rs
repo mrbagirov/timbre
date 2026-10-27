@@ -45,6 +45,20 @@ impl Coeffs {
         )
     }
 
+    pub fn lowpass(sr: f32, f: f32, q: f32) -> Self {
+        let w = 2.0 * PI * f as f64 / sr as f64;
+        let (c, s) = (w.cos(), w.sin());
+        let al = s / (2.0 * q as f64);
+        norm(
+            (1.0 - c) / 2.0,
+            1.0 - c,
+            (1.0 - c) / 2.0,
+            1.0 + al,
+            -2.0 * c,
+            1.0 - al,
+        )
+    }
+
     pub fn low_shelf(sr: f32, f: f32, gain_db: f32, slope: f32) -> Self {
         let a = 10f64.powf(gain_db as f64 / 40.0);
         let w = 2.0 * PI * f as f64 / sr as f64;

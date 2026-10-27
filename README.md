@@ -13,8 +13,10 @@ The AM8 has no software of its own. Gain, mute and lighting live on the body of 
 ## Features
 
 - **Processing chain.** Gate, noise suppression (RNNoise), EQ, compressor and limiter. Every lane draws the signal after that step against the original one.
-- **Presets.** Beginner, stream, voice-over, call, and your own "mine". Any slider can be adjusted by hand, and "restore preset" undoes the changes.
-- **Calibration wizard.** Six steps: gain knob, room silence, whisper, normal speech, loud speech, result. Every value in the result is explained, and a before/after switch lets you compare.
+- **Presets in a drop-down.** Four task presets (beginner, stream, voice-over, call), your own "mine", and seven voices: warm broadcast, deep, bright podcast, thick, radio, robot and high. Any slider can be adjusted by hand, and "restore preset" undoes the changes.
+- **Voice character.** A pitch shifter, warmth (soft saturation), thickness (chorus), a radio band and a robot ring modulator, all in one lane and all with sliders.
+- **Software gain.** The AM8 is a dynamic microphone and quiet, so Timbre adds the missing level itself, up to +36 dB. The calibration works it out.
+- **Calibration wizard.** Six steps: level check, room silence, whisper, normal speech, loud speech, result. The first step only checks that nothing clips, and the software gain is calculated for you. Every value in the result is explained, and a before/after switch lets you compare.
 - **Runs in the background.** Tray icon, autostart with Windows, a global hotkey for mute, and a one-click bypass.
 - **Output to your apps.** Sound goes into the VB-Cable virtual cable. In Discord, OBS or Zoom you pick `CABLE Output` as the microphone.
 - **English and Russian.** The interface follows the system language and can be switched in the settings, on the first-run screen and in the wizard. The tray menu follows too.
@@ -42,9 +44,10 @@ The core is covered by tests on a synthetic signal and the app builds for Window
 - Capturing the AM8 and writing to the cable can fail on unusual device formats. The reason is shown in the settings, under the device pickers.
 - Noise suppression has only been checked on synthetic input, so judge it by ear on real speech. The "quality" mode currently uses the same RNNoise, and DeepFilterNet is planned.
 - The target curve for automatic EQ is a rough guess to be tuned on real voices (`src/js/native.js`, constants `TARGET` and `CAUTION`).
+- Pitch shifting is a simple granular shifter: fine for ±5 semitones, with some warble beyond that.
 - Loudness is shown in LUFS without calibrating the signal path, as a guide only.
 
-If something breaks, attach the error text from the settings or the build log.
+If something breaks, open Settings, press "copy the report" and paste it into the issue. The report lists the audio devices and, for the AM8, the read-only description of its USB control interfaces.
 
 ## Typography
 
@@ -78,7 +81,7 @@ The installer appears in `target/release/bundle/nsis`. On GitHub the same steps 
 
 | Folder | What is inside |
 | --- | --- |
-| `crates/timbre-dsp` | The processing chain in Rust, independent of the window, with 11 tests |
+| `crates/timbre-dsp` | The processing chain in Rust, independent of the window, with 18 tests |
 | `src-tauri` | The Tauri app: capture (cpal, WASAPI), output to the cable, tray, hotkey, autostart |
 | `src` | The interface in HTML, CSS and JS. Outside Tauri it runs on a demo signal, inside Tauri `js/native.js` connects the real engine |
 | `preview` | The interface as single files for a browser, built with `node build-preview.mjs` |

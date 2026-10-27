@@ -32,9 +32,11 @@ impl EngineHandle {
 #[derive(Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct FrameOut {
+    pre: f32,
     raw: f32,
     gate: f32,
     nr: f32,
+    ch: f32,
     comp: f32,
     lim: f32,
     out: f32,
@@ -188,9 +190,11 @@ where
 
 fn merge(a: &FrameMeters, b: &FrameMeters) -> FrameMeters {
     FrameMeters {
+        pre: a.pre.max(b.pre),
         raw: a.raw.max(b.raw),
         gate: a.gate.max(b.gate),
         nr: a.nr.max(b.nr),
+        ch: a.ch.max(b.ch),
         comp: a.comp.max(b.comp),
         lim: a.lim.max(b.lim),
         gate_open: b.gate_open,
@@ -399,9 +403,11 @@ fn run(app: AppHandle, shared: Arc<ArcSwap<UiState>>, choice: Choice, stop: Arc<
             Some(a) => {
                 let c = merge(&a, &m);
                 let frame = FrameOut {
+                    pre: c.pre,
                     raw: c.raw,
                     gate: c.gate,
                     nr: c.nr,
+                    ch: c.ch,
                     comp: c.comp,
                     lim: c.lim,
                     out: if st.muted { -90.0 } else { c.lim },

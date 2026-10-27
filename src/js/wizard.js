@@ -32,14 +32,14 @@
       verdict: $('#knob-verdict'), knobNext: $('#knob-next'), knobWhy: $('#knob-why'), gain: $('#demo-gain'), gainOut: $('#demo-gain-out'),
       capTitle: $('#cap-title'), capLead: $('#cap-lead'), capPrompt: $('#cap-prompt'), capCaption: $('#cap-caption'), capPhrase: $('#cap-phrase'),
       capBar: $('#cap-bar'), capStatus: $('#cap-status'), capGo: $('#cap-go'), capRetry: $('#cap-retry'), capBack: $('#cap-back'),
-      hudZone: $('#hud-zone'), hudPeak: $('#hud-peak'), hudInBox: $('.hud__in'), hudOutBox: $('.hud__out'),
+      hudZone: $('#hud-zone'), hudPeak: $('#hud-peak'), hudGain: $('#hud-gain'), hudInBox: $('.hud__in'), hudOutBox: $('.hud__out'),
       figs: $('#res-figs'), rows: $('#res-rows'), notes: $('#res-notes')
     };
     hudIn = new ui.Meter($('[data-meter="hud-in"]'));
     hudOut = new ui.Meter($('[data-meter="hud-out"]'));
 
     els.gain.addEventListener('input', function () { Sim.setGain(parseFloat(els.gain.value)); els.gainOut.textContent = tr((els.gain.value > 0 ? '+' : els.gain.value < 0 ? ui.MINUS : '') + Math.abs(els.gain.value) + ' дБ'); });
-    els.knobNext.addEventListener('click', function () { if (S.zoneHit) go(1); });
+    els.knobNext.addEventListener('click', function () { if (S.canGo) go(1); });
     els.capGo.addEventListener('click', function () {
       if (S.cap.state === 'ready') startRec(); else if (S.cap.state === 'done') go(S.idx + 1);
     });
@@ -57,7 +57,7 @@
   }
 
   function fresh(before) {
-    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, zoneHit: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1 };
+    return { before: before, idx: 0, meas: {}, cap: { state: 'ready', t: 0, samples: [] }, canGo: false, win: [], clock: 0, lastCat: '', res: null, lastSec: -1, shownGo: null };
   }
 
   function enter() {
@@ -99,8 +99,8 @@
     els.hudZone.hidden = st.id !== 'knob'; $('#hud-zone-note').hidden = st.id !== 'knob';
     if (st.id === 'knob') {
       Sim.setMode('loud');
-      setBtn(els.knobNext, 'дальше', !S.zoneHit);
-      els.knobWhy.textContent = tr('Дальше можно, когда пик попадёт в рамку на шкале.');
+      setBtn(els.knobNext, 'дальше', !S.canGo);
+      els.knobWhy.textContent = tr('Дальше можно, когда фразу слышно и нет перегруза.');
       S.lastCat = ''; els.verdict.textContent = tr('Скажите фразу громко.');
     } else if (st.id === 'result') {
       Sim.setMode('auto'); computeResult();
@@ -189,11 +189,17 @@
 
     if (S.idx === 0) {
       var lo = ZONE[0], hi = ZONE[1];
-      var cat = peak < -45 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
-      if (cat === 'ok' && !S.zoneHit) { S.zoneHit = true; setBtn(els.knobNext, 'дальше', false); els.knobWhy.textContent = tr('Можно идти дальше. Ручку больше не трогайте.'); }
+      var cat = peak < -42 ? 'quiet' : peak < lo ? 'low' : peak <= hi ? 'ok' : peak <= -1 ? 'hot' : 'clip';
+      if (text) els.hudGain.textContent = peak < -42 ? '0' : String(ui.clamp(Math.round(-6 - peak), 0, 36));
+      if (cat === 'clip') S.canGo = false; else if (cat !== 'quiet') S.canGo = true;
+      var live = S.canGo;
+      if (live !== S.shownGo) {
+        S.shownGo = live; setBtn(els.knobNext, 'дальше', !live);
+        els.knobWhy.textContent = tr(live ? 'Можно идти дальше. Ручку больше не трогайте.' : 'Дальше можно, когда фразу слышно и нет перегруза.');
+      }
       if (cat !== S.lastCat) {
         S.lastCat = cat;
-        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо. Прибавьте усиление на микрофоне.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление.', clip: 'Перегруз. Убавьте усиление.' }[cat]);
+        els.verdict.textContent = tr({ quiet: 'Пока тишина. Скажите фразу громко.', low: 'Тихо, но это не страшно: Тембр добавит усиление в программе. Можно прибавить и ручкой.', ok: 'То что нужно: пик в рамке.', hot: 'Близко к перегрузу. Чуть убавьте усиление ручкой.', clip: 'Перегруз. Убавьте усиление ручкой.' }[cat]);
       }
     } else if (S.cap.state === 'rec') {
       var c = S.cap, st = STAGES[S.idx];

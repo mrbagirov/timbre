@@ -83,8 +83,6 @@ button { color: inherit; }
 .bar { position: sticky; top: 0; z-index: var(--z-sticky-nav); background: var(--color-paper); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .bar__in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "mark presets actions"; align-items: center; gap: var(--space-lg); max-width: var(--container); min-height: 64px; margin-inline: auto; padding-inline: var(--gutter); }
 .wordmark { grid-area: mark; display: inline-flex; align-items: center; min-height: var(--hit); font: 500 var(--fs-section)/1 var(--font-display); letter-spacing: var(--tracking-display); text-decoration: none; color: var(--color-ink); }
-.presets { grid-area: presets; display: flex; gap: var(--space-xs); margin: 0; padding: var(--space-3xs) var(--space-3xs); border: 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.presets::-webkit-scrollbar { display: none; }
 .bar__actions { grid-area: actions; display: flex; align-items: center; gap: var(--space-xs); }
 .device { font-size: var(--fs-label); color: var(--color-muted); white-space: nowrap; padding-inline: var(--space-xs); }
 .device[data-state="none"] { color: var(--color-error); }
@@ -346,6 +344,20 @@ select.input { appearance: none; padding-right: var(--space-lg); }
 .app[data-view="welcome"] .bar__lang, .app[data-view="setup"] .bar__lang { display: inline-block; min-height: var(--hit); }
 .app[data-view="welcome"] .bar__in, .app[data-view="setup"] .bar__in { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "mark lang"; }
 
+/* ---------- preset dropdown ---------- */
+.presets { grid-area: presets; display: flex; margin: 0; min-width: 0; }
+.select-wrap { position: relative; display: inline-flex; align-items: center; }
+.select-wrap svg { position: absolute; right: var(--space-sm); width: 16px; height: 16px; pointer-events: none; color: var(--color-ink-2); }
+.pill-select { appearance: none; min-height: var(--control-h); padding: 0 var(--space-xl) 0 var(--space-md); border: 0; border-radius: var(--radius-pill); background: var(--color-paper-3); color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); font: 500 var(--fs-label)/1 var(--font-body); cursor: pointer; min-width: 11rem; transition: background-color var(--dur-short) var(--ease-out); }
+.pill-select:hover { background: var(--color-paper-2); }
+.pill-select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.pill-select option, .pill-select optgroup { background: var(--color-paper-2); color: var(--color-ink); font: 400 var(--fs-label) var(--font-body); }
+.pill-select optgroup { font-weight: 500; color: var(--color-ink-2); }
+.field--gain { margin-top: var(--space-xs); }
+.hud__figs { display: flex; flex-wrap: wrap; gap: var(--space-lg); }
+.sheet__row--native { display: none; }
+.native .sheet__row--native { display: grid; }
+
 </style>
 <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -366,6 +378,16 @@ select.input { appearance: none; padding-right: var(--space-lg); }
     <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="voiceover"><span>закадр</span></button>
     <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="call"><span>созвон</span></button>
     <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="mine" id="tray-mine" hidden><span>мой</span></button>
+  </div>
+
+  <div class="tray__group" role="radiogroup" aria-label="голоса">
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="warm"><span>тёплый эфир</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="deep"><span>глубокий</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="bright"><span>яркий подкаст</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="thick"><span>объёмный</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="radio"><span>радио</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="robot"><span>робот</span></button>
+    <button class="tray__item" type="button" role="radio" aria-checked="false" data-preset="chipmunk"><span>высокий</span></button>
   </div>
 
   <div class="tray__group">
@@ -609,7 +631,49 @@ window.I18N_EN = {
  "Микрофон не запускается: {}": "The microphone does not start: {1}",
  "Работает.": "Running.",
  "Работает без вывода: виртуальный кабель не найден.": "Running without output: the virtual cable was not found.",
- "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”."
+ "Поток звука прервался, возможно, устройство отключено. Нажмите «проверить снова».": "The audio stream stopped, perhaps the device was unplugged. Press “check again”.",
+ "для задач": "for tasks",
+ "голоса": "voices",
+ "тёплый эфир": "warm broadcast",
+ "глубокий": "deep",
+ "яркий подкаст": "bright podcast",
+ "объёмный": "thick",
+ "радио": "radio",
+ "робот": "robot",
+ "высокий": "high",
+ "усиление в программе": "software gain",
+ "усиление": "gain",
+ "+{} дБ": "+{1} dB",
+ "+0 дБ": "+0 dB",
+ "характер": "character",
+ "глубже, теплее, ярче или необычнее": "deeper, warmer, brighter or stranger",
+ "высота": "pitch",
+ "тепло": "warmth",
+ "объём": "thickness",
+ "пт: полутоны": "st: semitones",
+ "без эффекта": "no effect",
+ "эффект включён": "effect on",
+ "высота {} пт": "pitch {1} st",
+ "{} пт": "{1} st",
+ "−{} пт": "−{1} st",
+ "+{} пт": "+{1} st",
+ "0 пт": "0 st",
+ "{}%": "{1}%",
+ "проверим громкость": "check the level",
+ "Ручка усиления на корпусе микрофона. Выставьте её так, чтобы громкая фраза не перегружала, остальное Тембр добавит сам.": "The gain knob is on the microphone body. Set it so a loud phrase does not clip, and Timbre adds the rest by itself.",
+ "Дальше можно, когда фразу слышно и нет перегруза.": "You can continue once the phrase is audible and there is no clipping.",
+ "Рамка на шкале: идеальный пик, от −9 до −3 дБ. Ниже рамки тоже можно, Тембр добавит усиление в программе.": "The frame on the scale is the ideal peak, from −9 to −3 dB. Below the frame is fine too, Timbre adds software gain.",
+ "Тихо, но это не страшно: Тембр добавит усиление в программе. Можно прибавить и ручкой.": "Quiet, but that is fine: Timbre will add gain in software. You can turn the knob up too.",
+ "Близко к перегрузу. Чуть убавьте усиление ручкой.": "Close to clipping. Turn the gain knob down a little.",
+ "Перегруз. Убавьте усиление ручкой.": "Overload. Turn the gain knob down.",
+ "Микрофон тихий: чтобы вывести громкую фразу на нормальный уровень, нужно +{} дБ программного усиления, а вместе с голосом растёт и шум. Прибавьте усиление ручкой на микрофоне и пройдите калибровку заново.": "The microphone is quiet: bringing the loud phrase to a normal level takes +{1} dB of software gain, and the noise grows with the voice. Turn the gain knob on the microphone up and calibrate again.",
+ "Самая громкая фраза доходила до {} дБ, программное усиление выводит её примерно на −6 дБ.": "The loudest phrase reached {1} dB, and the software gain brings it to about −6 dB.",
+ "Самая громкая фраза доходила до {} дБ, этого достаточно, программное усиление не нужно.": "The loudest phrase reached {1} dB, which is enough, so no software gain is needed.",
+ "диагностика": "diagnostics",
+ "скопировать отчёт": "copy the report",
+ "Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.": "It takes about ten seconds: while the report runs, touch the mute button and turn the knobs on the microphone.",
+ "Собираю отчёт…": "Collecting the report…",
+ "Отчёт скопирован, вставьте его в чат.": "The report is copied, paste it into the chat."
 };
 
 </script>
@@ -655,7 +719,7 @@ window.I18N_EN = {
   function f(tpl) { var a = Array.prototype.slice.call(arguments, 1), i = 0; return tpl.replace(/\{\}/g, function () { return a[i++]; }); }
 
   var originals = new WeakMap();
-  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+  var ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'label'];
 
   function apply(root) {
     if (lang !== 'en') return;
@@ -704,35 +768,31 @@ window.I18N_EN = {
 (function () {
   'use strict';
 
+  /* Presets are a base chain plus an optional voice character. Order matters: it is the order in the list. */
+  function chain(o) {
+    return {
+      input: { gain: o.gain === undefined ? 12 : o.gain },
+      gate: { on: true, threshold: o.gate === undefined ? -48 : o.gate },
+      nr: { on: true, mode: o.nr || 'light', amount: o.nrAmt === undefined ? 60 : o.nrAmt },
+      eq: { on: true, lowcut: true, low: o.low || 0, mid: o.mid || 0, high: o.high || 0 },
+      ch: { on: true, pitch: o.pitch || 0, warmth: o.warmth || 0, thick: o.thick || 0, radio: o.radio || 0, robot: o.robot || 0 },
+      comp: { on: true, threshold: o.comp === undefined ? -22 : o.comp, ratio: o.ratio || 3 },
+      lim: { on: true, ceiling: o.ceil === undefined ? -1 : o.ceil }
+    };
+  }
+
   var PRESETS = {
-    novice: { name: 'новичок', params: {
-      gate: { on: true, threshold: -50 },
-      nr:   { on: true, mode: 'light', amount: 60 },
-      eq:   { on: true, lowcut: true, low: 0, mid: 1, high: 2 },
-      comp: { on: true, threshold: -22, ratio: 3 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    stream: { name: 'стрим', params: {
-      gate: { on: true, threshold: -45 },
-      nr:   { on: true, mode: 'hq', amount: 75 },
-      eq:   { on: true, lowcut: true, low: 2, mid: 0, high: 3 },
-      comp: { on: true, threshold: -20, ratio: 4 },
-      lim:  { on: true, ceiling: -1 }
-    } },
-    voiceover: { name: 'закадр', params: {
-      gate: { on: true, threshold: -55 },
-      nr:   { on: true, mode: 'light', amount: 40 },
-      eq:   { on: true, lowcut: true, low: 1, mid: 0, high: 1 },
-      comp: { on: true, threshold: -24, ratio: 2.5 },
-      lim:  { on: true, ceiling: -2 }
-    } },
-    call: { name: 'созвон', params: {
-      gate: { on: true, threshold: -40 },
-      nr:   { on: true, mode: 'hq', amount: 90 },
-      eq:   { on: true, lowcut: true, low: -1, mid: 2, high: 1 },
-      comp: { on: true, threshold: -18, ratio: 3 },
-      lim:  { on: true, ceiling: -2 }
-    } }
+    novice:    { group: 'tasks', name: 'новичок', params: chain({ low: 0, mid: 1, high: 2 }) },
+    stream:    { group: 'tasks', name: 'стрим', params: chain({ gate: -45, nr: 'hq', nrAmt: 75, low: 2, high: 3, comp: -20, ratio: 4 }) },
+    voiceover: { group: 'tasks', name: 'закадр', params: chain({ gate: -52, nrAmt: 40, low: 1, high: 1, comp: -24, ratio: 2.5, ceil: -2, gain: 10 }) },
+    call:      { group: 'tasks', name: 'созвон', params: chain({ gate: -42, nr: 'hq', nrAmt: 90, low: -1, mid: 2, high: 1, ratio: 3, comp: -18, ceil: -2 }) },
+    warm:      { group: 'voices', name: 'тёплый эфир', params: chain({ low: 3, mid: 1, high: 1, warmth: 60, thick: 15, comp: -22, ratio: 3.5 }) },
+    deep:      { group: 'voices', name: 'глубокий', params: chain({ pitch: -3, low: 4, high: -1, warmth: 25, comp: -22, ratio: 3.5 }) },
+    bright:    { group: 'voices', name: 'яркий подкаст', params: chain({ low: -1, mid: 1, high: 4, warmth: 15, comp: -20, ratio: 3 }) },
+    thick:     { group: 'voices', name: 'объёмный', params: chain({ low: 2, thick: 70, warmth: 30, comp: -22, ratio: 3 }) },
+    radio:     { group: 'voices', name: 'радио', params: chain({ radio: 100, warmth: 40, comp: -24, ratio: 4 }) },
+    robot:     { group: 'voices', name: 'робот', params: chain({ robot: 80, pitch: -1, comp: -22, ratio: 3 }) },
+    chipmunk:  { group: 'voices', name: 'высокий', params: chain({ pitch: 5, high: 1, comp: -22, ratio: 3 }) }
   };
 
   var KEY = 'timbre.v1';
@@ -750,7 +810,7 @@ window.I18N_EN = {
     return target;
   }
 
-  function ensureCustom() { if (state.custom) PRESETS.mine = { name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
+  function ensureCustom() { if (state.custom) PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(state.custom) }; else if (state.preset === 'mine') state.preset = 'novice'; }
 
   try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) merge(state, saved); } catch (e) { /* storage may be unavailable */ }
 
@@ -769,7 +829,7 @@ window.I18N_EN = {
 
   function replaceParams(params) { state.params = clone(params); save(); emit('local'); }
   function applyPreset(id) { if (!PRESETS[id]) return; state.preset = id; state.params = clone(PRESETS[id].params); save(); emit('local'); }
-  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
+  function saveCustom(p) { state.custom = clone(p); PRESETS.mine = { group: 'tasks', name: 'мой', params: clone(p) }; state.preset = 'mine'; state.params = clone(p); save(); emit('local'); }
   function setFlag(name, value) { state[name] = value; save(); emit('local'); }
   function setSetting(name, value) { state.settings[name] = value; save(); emit('local'); }
   function isDirty() { return JSON.stringify(state.params) !== JSON.stringify(PRESETS[state.preset].params); }
@@ -794,7 +854,7 @@ window.I18N_EN = {
   var RATE = 50;            // ticks per second
   var N = 360;              // history length, 7.2 seconds
   var FLOOR = -90;
-  var STAGES = ['raw', 'gate', 'nr', 'comp', 'lim'];
+  var STAGES = ['raw', 'gate', 'nr', 'ch', 'comp', 'lim'];
 
   function db(a) { return a > 1e-5 ? 20 * Math.log10(a) : FLOOR; }
   function lin(d) { return Math.pow(10, d / 20); }
@@ -844,7 +904,10 @@ window.I18N_EN = {
     var gk = lin(gainDb);
     v *= gk; n *= gk; c *= gk;
     var inAmp = v + n + c;
-    var rawDb = db(inAmp);
+    var preDb = db(inAmp);                 // what the microphone delivers
+    var sg = lin(p.input ? p.input.gain : 0); // the software gain in front of the chain
+    v *= sg; n *= sg; c *= sg; inAmp *= sg;
+    var rawDb = db(inAmp);                 // the signal every stage is compared with
 
     // gate
     var open = rawDb > p.gate.threshold;
@@ -862,6 +925,7 @@ window.I18N_EN = {
     // eq only nudges the overall level here; the curve itself is drawn from the same parameters
     var eqGain = p.eq.on ? 0.25 * p.eq.low + 0.45 * p.eq.mid + 0.25 * p.eq.high - (p.eq.lowcut ? 0.4 : 0) : 0;
     var L = db(nrAmp * lin(eqGain));
+    var chDb = L;
 
     // compressor
     var Lout = L, grT = 0;
@@ -881,6 +945,7 @@ window.I18N_EN = {
       raw: rawDb,
       gate: bypass ? rawDb : gateDb,
       nr: bypass ? rawDb : nrDb,
+      ch: bypass ? rawDb : chDb,
       comp: bypass ? rawDb : Lout,
       lim: bypass ? rawDb : cl
     };
@@ -893,7 +958,7 @@ window.I18N_EN = {
     powerRing[powerPos] = pw; powerPos = (powerPos + 1) % powerRing.length;
     var mean = 0; for (var i = 0; i < powerRing.length; i++) mean += powerRing[i]; mean /= powerRing.length;
 
-    now.inDb = rawDb;
+    now.inDb = preDb;
     now.outDb = outDb;
     now.gateOpen = open || !p.gate.on;
     now.nrDb = s > 0 ? 20 * Math.log10(1 / (1 - s)) : 0;

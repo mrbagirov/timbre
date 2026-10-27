@@ -15,14 +15,30 @@
     <div class="bar__in">
       <a class="wordmark" href="#/" aria-label="тембр, главный экран">тембр</a>
 
-      <fieldset class="seg presets" id="presets">
-        <legend class="visually-hidden">пресет</legend>
-        <input type="radio" name="preset" id="pr-novice" value="novice"><label for="pr-novice">новичок</label>
-        <input type="radio" name="preset" id="pr-stream" value="stream"><label for="pr-stream">стрим</label>
-        <input type="radio" name="preset" id="pr-voiceover" value="voiceover"><label for="pr-voiceover">закадр</label>
-        <input type="radio" name="preset" id="pr-call" value="call"><label for="pr-call">созвон</label>
-        <input type="radio" name="preset" id="pr-mine" value="mine" hidden><label for="pr-mine" hidden>мой</label>
-      </fieldset>
+      <div class="presets">
+        <label class="visually-hidden" for="preset-select">пресет</label>
+        <span class="select-wrap">
+          <select class="pill-select" id="preset-select" name="preset">
+            <optgroup label="для задач">
+              <option value="novice">новичок</option>
+              <option value="stream">стрим</option>
+              <option value="voiceover">закадр</option>
+              <option value="call">созвон</option>
+              <option value="mine" hidden disabled>мой</option>
+            </optgroup>
+            <optgroup label="голоса">
+              <option value="warm">тёплый эфир</option>
+              <option value="deep">глубокий</option>
+              <option value="bright">яркий подкаст</option>
+              <option value="thick">объёмный</option>
+              <option value="radio">радио</option>
+              <option value="robot">робот</option>
+              <option value="chipmunk">высокий</option>
+            </optgroup>
+          </select>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+      </div>
 
       <button class="link-btn bar__lang" id="lang-bar" type="button" data-no-i18n></button>
 
@@ -52,6 +68,7 @@
         <div class="meter__head"><h2 class="meter__name">вход</h2><output class="meter__val" data-val>−60 дБ</output></div>
         <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div></div>
         <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
+        <div class="field field--gain"><label for="f-in-gain">усиление в программе</label><output for="f-in-gain" data-out="input.gain"></output><input id="f-in-gain" type="range" min="0" max="36" step="1" data-param="input.gain"></div>
       </div>
 
       <div class="meter meter--out" data-meter="out">
@@ -116,6 +133,22 @@
           <div class="field"><label for="f-eq-mid">середина</label><output for="f-eq-mid" data-out="eq.mid"></output><input id="f-eq-mid" type="range" min="-12" max="12" step="1" data-param="eq.mid"></div>
           <div class="field"><label for="f-eq-high">верх</label><output for="f-eq-high" data-out="eq.high"></output><input id="f-eq-high" type="range" min="-12" max="12" step="1" data-param="eq.high"></div>
           <div class="lane__row span-all"><button class="pill" type="button" aria-pressed="true" data-chip="eq.lowcut">срез низа на 80 Гц</button></div>
+        </div>
+      </section>
+
+      <!-- character -->
+      <section class="lane" data-lane="ch" data-on="true" aria-labelledby="l-ch">
+        <div class="lane__id">
+          <button class="toggle" type="button" role="switch" aria-checked="true" aria-labelledby="l-ch" data-toggle="ch.on">вкл</button>
+          <div><h3 id="l-ch">характер</h3><p class="lane__hint">глубже, теплее, ярче или необычнее</p></div>
+        </div>
+        <div class="lane__viz"><canvas data-viz="ch" aria-hidden="true"></canvas><output class="lane__stat" data-stat="ch">без эффекта</output></div>
+        <div class="lane__ctl lane__ctl--3">
+          <div class="field"><label for="f-ch-pitch" title="пт: полутоны">высота</label><output for="f-ch-pitch" data-out="ch.pitch"></output><input id="f-ch-pitch" type="range" min="-12" max="12" step="0.5" data-param="ch.pitch"></div>
+          <div class="field"><label for="f-ch-warmth">тепло</label><output for="f-ch-warmth" data-out="ch.warmth"></output><input id="f-ch-warmth" type="range" min="0" max="100" step="5" data-param="ch.warmth"></div>
+          <div class="field"><label for="f-ch-thick">объём</label><output for="f-ch-thick" data-out="ch.thick"></output><input id="f-ch-thick" type="range" min="0" max="100" step="5" data-param="ch.thick"></div>
+          <div class="field"><label for="f-ch-radio">радио</label><output for="f-ch-radio" data-out="ch.radio"></output><input id="f-ch-radio" type="range" min="0" max="100" step="5" data-param="ch.radio"></div>
+          <div class="field"><label for="f-ch-robot">робот</label><output for="f-ch-robot" data-out="ch.robot"></output><input id="f-ch-robot" type="range" min="0" max="100" step="5" data-param="ch.robot"></div>
         </div>
       </section>
 
@@ -220,13 +253,13 @@
 
     <div class="setup__main">
       <section class="pane" id="pane-knob" aria-labelledby="knob-title">
-        <h2 class="pane__title" id="knob-title">выставим усиление</h2>
-        <p class="lead">Ручка усиления на корпусе микрофона. Тембр её не трогает, поэтому начинаем с неё.</p>
+        <h2 class="pane__title" id="knob-title">проверим громкость</h2>
+        <p class="lead">Ручка усиления на корпусе микрофона. Выставьте её так, чтобы громкая фраза не перегружала, остальное Тембр добавит сам.</p>
         <figure class="prompt"><figcaption>громко, как в самый азартный момент эфира</figcaption><blockquote>«Раз, два, три, проверка микрофона!»</blockquote></figure>
         <p class="setup__verdict" id="knob-verdict" aria-live="polite">Скажите фразу громко.</p>
         <div class="field setup__demo"><label for="demo-gain">ручка на микрофоне (в превью это ползунок)</label><output for="demo-gain" id="demo-gain-out">−8 дБ</output><input id="demo-gain" type="range" min="-20" max="12" step="1" value="-8"></div>
         <div class="setup__nav"><button class="btn" id="knob-next" type="button" aria-disabled="true">дальше</button><button class="link-btn" type="button" data-cancel>отмена</button></div>
-        <p class="setup__why" id="knob-why" aria-live="polite">Дальше можно, когда пик попадёт в рамку на шкале.</p>
+        <p class="setup__why" id="knob-why" aria-live="polite">Дальше можно, когда фразу слышно и нет перегруза.</p>
       </section>
 
       <section class="pane" id="pane-capture" aria-labelledby="cap-title" hidden>
@@ -259,8 +292,8 @@
           <div class="meter__track" role="meter" aria-label="уровень на входе" aria-valuemin="-60" aria-valuemax="0" aria-valuenow="-60"><div class="meter__fill" data-fill></div><div class="meter__peak" data-peak></div><div class="meter__zone" id="hud-zone" style="--a:0.85;--b:0.95" title="цель для самой громкой фразы"></div></div>
           <div class="meter__scale" aria-hidden="true"><span style="--p:0">−60</span><span style="--p:33.3">−40</span><span style="--p:66.6">−20</span><span style="--p:100">0</span></div>
         </div>
-        <p class="hud__zone-note" id="hud-zone-note">Рамка на шкале: цель для самой громкой фразы, от −9 до −3 дБ.</p>
-        <div class="loud"><span class="loud__label">пик за 4 секунды</span><output class="loud__fig" id="hud-peak">−60</output><span class="loud__unit">дБ</span></div>
+        <p class="hud__zone-note" id="hud-zone-note">Рамка на шкале: идеальный пик, от −9 до −3 дБ. Ниже рамки тоже можно, Тембр добавит усиление в программе.</p>
+        <div class="hud__figs"><div class="loud"><span class="loud__label">пик за 4 секунды</span><output class="loud__fig" id="hud-peak">−60</output><span class="loud__unit">дБ</span></div><div class="loud" id="hud-gain-box"><span class="loud__label">усиление в программе</span><output class="loud__fig" id="hud-gain">0</output><span class="loud__unit">дБ</span></div></div>
       </div>
       <div class="hud__out" hidden>
         <div class="meter" data-meter="hud-out">
@@ -287,6 +320,7 @@
     <div class="sheet__row"><label for="set-lang">язык</label><select class="input" id="set-lang" name="lang" data-no-i18n><option value="ru">Русский</option><option value="en">English</option></select></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-startup">запускать вместе с Windows</span><button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lbl-startup" id="set-startup">выкл</button></div>
     <div class="sheet__row"><label for="set-hotkey">горячая клавиша мьюта</label><input class="input" id="set-hotkey" name="hotkey" readonly value="Ctrl+Alt+M" autocomplete="off"><p class="sheet__help" id="hotkey-help" aria-live="polite">Нажмите на поле и сочетание клавиш.</p></div>
+    <div class="sheet__row sheet__row--native"><span class="sheet__label" id="lbl-diag">диагностика</span><button class="pill" type="button" id="btn-diag">скопировать отчёт</button><p class="sheet__help" id="diag-help" aria-live="polite">Сбор занимает около десяти секунд: пока идёт отчёт, коснитесь кнопки мьюта и покрутите ручки на микрофоне.</p></div>
     <div class="sheet__row"><span class="sheet__label" id="lbl-wizard">мастер подключения</span><a class="pill" href="#/welcome" id="open-wizard">открыть</a></div>
     <div class="sheet__foot"><p class="sheet__help">Тембр 0.1</p><button class="btn btn--quiet" type="button" id="settings-close">закрыть</button></div>
   </dialog>

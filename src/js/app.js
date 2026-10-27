@@ -14,7 +14,13 @@
   function sgn(v) { return v > 0 ? '+' + v : v < 0 ? MINUS + Math.abs(v) : '0'; }
   var fmt = {
     'gate.threshold': function (v) { return num(v) + ' дБ'; },
+    'input.gain': function (v) { return '+' + v + ' дБ'; },
     'nr.amount': function (v) { return v + '%'; },
+    'ch.pitch': function (v) { return sgn(v).replace('.', DEC) + ' пт'; },
+    'ch.warmth': function (v) { return v + '%'; },
+    'ch.thick': function (v) { return v + '%'; },
+    'ch.radio': function (v) { return v + '%'; },
+    'ch.robot': function (v) { return v + '%'; },
     'eq.low': function (v) { return sgn(v) + ' дБ'; },
     'eq.mid': function (v) { return sgn(v) + ' дБ'; },
     'eq.high': function (v) { return sgn(v) + ' дБ'; },
@@ -26,8 +32,9 @@
   /* ---------- controls ---------- */
   function render() {
     var s = Store.state;
-    var mine = !!Store.PRESETS.mine; $('#pr-mine').hidden = !mine; $('label[for="pr-mine"]').hidden = !mine;
-    $$('#presets input').forEach(function (i) { i.checked = i.value === s.preset; });
+    var mine = !!Store.PRESETS.mine, opt = $('#preset-select option[value="mine"]');
+    opt.hidden = !mine; opt.disabled = !mine;
+    $('#preset-select').value = s.preset;
     $$('[data-param]').forEach(function (el) {
       var v = Store.get(el.dataset.param);
       if (el.type === 'range') {
@@ -61,7 +68,7 @@
   });
   $$('[data-toggle]').forEach(function (b) { b.addEventListener('click', function () { Store.set(b.dataset.toggle, !Store.get(b.dataset.toggle)); }); });
   $$('[data-chip]').forEach(function (b) { b.addEventListener('click', function () { Store.set(b.dataset.chip, !Store.get(b.dataset.chip)); }); });
-  $$('#presets input').forEach(function (i) { i.addEventListener('change', function () { if (i.checked) Store.applyPreset(i.value); }); });
+  $('#preset-select').addEventListener('change', function () { Store.applyPreset(this.value); });
   $('#btn-reset').addEventListener('click', function () { Store.applyPreset(Store.state.preset); });
   $('#btn-mute').addEventListener('click', function () { Store.setFlag('muted', !Store.state.muted); });
   $('#btn-bypass').addEventListener('click', function () { Store.setFlag('bypass', !Store.state.bypass); });
@@ -179,6 +186,8 @@
     var set = function (k, txt) { var el = $('[data-stat="' + k + '"]'), v = tr(txt); if (el && el.textContent !== v) el.textContent = v; };
     set('gate', by ? 'обход' : !p.gate.on ? 'выключен' : n.gateOpen ? 'открыт' : 'закрыт');
     set('nr', by ? 'обход' : !p.nr.on ? 'выключен' : 'шума меньше на ' + num(n.nrDb) + ' дБ');
+    var ch = p.ch, any = ch.warmth > 0 || ch.thick > 0 || ch.radio > 0 || ch.robot > 0;
+    set('ch', by ? 'обход' : !ch.on ? 'выключен' : Math.abs(ch.pitch) > 0.05 ? 'высота ' + sgn(ch.pitch).replace('.', DEC) + ' пт' : any ? 'эффект включён' : 'без эффекта');
     set('comp', by ? 'обход' : !p.comp.on ? 'выключен' : 'сжатие ' + num(n.grDb, 1) + ' дБ');
     set('lim', by ? 'обход' : !p.lim.on ? 'выключен' : n.limDb > 0.1 ? 'срезано ' + num(n.limDb, 1) + ' дБ' : 'срезов нет');
   }
