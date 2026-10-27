@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>timbre: banner</title>
+<link rel="stylesheet" href="../src/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1600px; height: 820px; overflow: hidden; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .banner { position: relative; width: 1600px; height: 820px; }
+  .text { position: absolute; left: 88px; top: 100px; width: 700px; }
+  .mark { margin: 0; font: 500 32px/1 var(--font-display); letter-spacing: var(--tracking-display); }
+  h1 { margin: 44px 0 0; font: 500 64px/1.06 var(--font-display); letter-spacing: var(--tracking-display); }
+  .lead { margin: 24px 0 0; max-width: 32ch; font-size: 25px; line-height: 1.45; color: var(--color-ink-2); }
+  .list { margin: 38px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-rule); }
+  .list li { display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--color-rule); font-size: 20px; line-height: 1.35; }
+  .list b { font-weight: 500; color: var(--color-ink); }
+  .list span { color: var(--color-ink-2); }
+  .shot { position: absolute; left: 820px; top: 150px; width: 1000px; border-radius: 20px 0 0 0; box-shadow: 0 0 0 1.5px var(--color-rule-2); display: block; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="text">
+    <p class="mark">timbre</p>
+    <h1>clean AM8 voice<br>in one window</h1>
+    <p class="lead">Voice processing for the Fifine AM8 microphone on Windows, no OBS needed.</p>
+    <ul class="list">
+      <li><b>chain</b><span>gate, noise suppression, EQ, compressor, limiter</span></li>
+      <li><b>presets</b><span>beginner, stream, voice-over, call</span></li>
+      <li><b>calibration</b><span>from whispered, normal and loud speech</span></li>
+      <li><b>background</b><span>tray, autostart, global mute hotkey</span></li>
+      <li><b>output</b><span>to Discord, OBS and Zoom via VB-Cable</span></li>
+    </ul>
+  </div>
+  <img class="shot" src="screen-main.png" alt="Main window: presets, meters, a chain of five lanes">
+</div>
+</body>
+</html>

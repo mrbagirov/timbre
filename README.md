@@ -1,53 +1,53 @@
+<p align="right">English · <a href="README.ru.md">Русский</a></p>
+
 <p align="center">
-  <img src="docs/banner.png" alt="тембр: чистый голос с AM8 в одном окне. Цепочка из гейта, шумодава, эквалайзера, компрессора и лимитера, пресеты и мастер калибровки." width="100%">
+  <img src="docs/banner.en.png" alt="timbre: clean AM8 voice in one window. A chain of gate, noise suppression, EQ, compressor and limiter, presets and a calibration wizard." width="100%">
 </p>
 
-**тембр** собирает звук микрофона Fifine AM8 в одном окне на Windows: гейт, шумодав, эквалайзер, компрессор и лимитер, пресеты под стрим, закадр и созвон, а также мастер калибровки, который подбирает настройки по вашему голосу и комнате. Обработанный звук уходит в Discord, OBS и Zoom через виртуальный кабель, запускать OBS ради этого не нужно.
+**Timbre** puts the voice processing for the Fifine AM8 microphone into one window on Windows: gate, noise suppression, EQ, compressor and limiter, presets for streaming, voice-over and calls, and a calibration wizard that sets everything from your voice and your room. The processed sound goes to Discord, OBS and Zoom through a virtual cable, so you do not need to run OBS just to clean up your microphone.
 
-*Voice chain for the Fifine AM8 microphone on Windows: gate, noise suppression, EQ, compressor, limiter, presets and a calibration wizard. Alpha.*
+## Why
 
-## Зачем это нужно
+The AM8 has no software of its own. Gain, mute and lighting live on the body of the microphone, and everything else, from a gate to a compressor, has to be wired up by hand in OBS or Voicemeeter, which is where beginners get lost. Timbre replaces that setup with one window where every step shows its signal live and has a plain name, and one button, "make it normal", that picks the values for you.
 
-У AM8 нет собственного софта. Усиление, мьют и подсветка живут на корпусе, а всё остальное, от гейта до компрессора, приходится собирать вручную в OBS или Voicemeeter, и новичок в этом теряется. Тембр заменяет эту сборку одним окном, где у каждого шага есть живая картинка сигнала и понятное название, а «сделать нормально» подбирает значения за вас.
+## Features
 
-## Что умеет
+- **Processing chain.** Gate, noise suppression (RNNoise), EQ, compressor and limiter. Every lane draws the signal after that step against the original one.
+- **Presets.** Beginner, stream, voice-over, call, and your own "mine". Any slider can be adjusted by hand, and "restore preset" undoes the changes.
+- **Calibration wizard.** Six steps: gain knob, room silence, whisper, normal speech, loud speech, result. Every value in the result is explained, and a before/after switch lets you compare.
+- **Runs in the background.** Tray icon, autostart with Windows, a global hotkey for mute, and a one-click bypass.
+- **Output to your apps.** Sound goes into the VB-Cable virtual cable. In Discord, OBS or Zoom you pick `CABLE Output` as the microphone.
+- **Small and local.** The installer is about 2 MB and the noise model about 85 KB. Audio is processed on your computer and nothing is sent over the network.
 
-- **Цепочка обработки.** Гейт, шумодав на RNNoise, эквалайзер, компрессор, лимитер. На каждой дорожке видно сигнал после этого шага на фоне исходного.
-- **Пресеты.** «Новичок», «стрим», «закадр», «созвон» и ваш собственный «мой». Любой ползунок можно поправить руками, а «вернуть пресет» откатывает правки.
-- **Мастер калибровки.** Шесть шагов: ручка усиления, тишина в комнате, шёпот, обычная речь, громко, итог. Каждое значение в итоге объяснено, а переключатель «было / стало» позволяет сравнить.
-- **Работает в фоне.** Иконка в трее, автозапуск вместе с Windows, глобальная горячая клавиша для мьюта, «без обработки» одним нажатием.
-- **Вывод в программы.** Звук идёт в виртуальный кабель VB-Cable, в Discord, OBS или Zoom выбирается `CABLE Output`.
-- **Лёгкий и локальный.** Установщик около 2 МБ, модель шумодава около 85 КБ. Звук обрабатывается на компьютере, в сеть ничего не отправляется.
+## Screenshots
 
-## Как это выглядит
+The interface is currently in Russian, and English is next. The screenshots were taken on a demo signal, so the numbers only show what the interface looks like.
 
-Скриншоты сняты на демо-сигнале, поэтому цифры на них только показывают, как выглядит интерфейс.
+![Main window: presets, meters and a chain of five lanes](docs/screen-main.png)
 
-![Главный экран: пресеты, метры, цепочка из пяти дорожек](docs/screen-main.png)
+![Calibration result: what was measured and what was set](docs/screen-wizard.png)
 
-![Итог мастера калибровки: что измерено и что настроено](docs/screen-wizard.png)
+## Install
 
-## Установка
+1. Install [VB-Cable](https://vb-audio.com/Cable/) and restart the computer.
+2. Download the installer: the **Actions** tab, the latest successful `windows-installer` run, section **Artifacts**, `timbre-windows-installer`.
+3. Run `Timbre_*_x64-setup.exe`. It does not need administrator rights. SmartScreen warns about an unknown publisher because the installer is not signed yet: click "More info", then "Run anyway".
+4. In Discord, OBS or Zoom choose `CABLE Output` as the microphone, and in Timbre press the big button.
 
-1. Поставьте [VB-Cable](https://vb-audio.com/Cable/) и перезагрузите компьютер.
-2. Скачайте установщик: вкладка **Actions**, последняя успешная сборка `windows-installer`, раздел **Artifacts**, `timbre-windows-installer`.
-3. Запустите `Timbre_*_x64-setup.exe`. Установщик не требует прав администратора. SmartScreen предупредит о неизвестном издателе: «Подробнее», «Выполнить в любом случае», потому что установщик пока без подписи.
-4. В Discord, OBS или Zoom выберите микрофоном `CABLE Output`, в тембре нажмите «сделать нормально».
+## Status: alpha
 
-## Статус: альфа
+The core is covered by tests on a synthetic signal and the app builds for Windows on GitHub Actions. Nobody has listened to live audio from an AM8 yet, so expect rough edges:
 
-Ядро покрыто тестами на синтетическом сигнале, приложение собирается под Windows на GitHub Actions. Живой звук с AM8 пока никто не слушал, поэтому ожидаемы шероховатости:
+- Capturing the AM8 and writing to the cable can fail on unusual device formats. The reason is shown in the settings, under the device pickers.
+- Noise suppression has only been checked on synthetic input, so judge it by ear on real speech. The "quality" mode currently uses the same RNNoise, and DeepFilterNet is planned.
+- The target curve for automatic EQ is a rough guess to be tuned on real voices (`src/js/native.js`, constants `TARGET` and `CAUTION`).
+- Loudness is shown in LUFS without calibrating the signal path, as a guide only.
 
-- Захват AM8 и вывод в кабель могут не открыться на нестандартных форматах устройства. Причина показывается в настройках под выбором устройств.
-- Подавление шума проверено только на синтетике, на реальной речи его нужно оценить ушами. Режим «качественный» пока использует тот же RNNoise, подключение DeepFilterNet запланировано.
-- Целевая кривая для автонастройки эквалайзера прикидочная и подбирается на живых голосах (`src/js/native.js`, константы `TARGET` и `CAUTION`).
-- Громкость показывается в LUFS без калибровки тракта, как ориентир.
+If something breaks, attach the error text from the settings or the build log.
 
-Нашли проблему, приложите текст ошибки из настроек или лог сборки.
+## Build from source
 
-## Сборка из исходников
-
-Нужны Rust, Node 22 и на Windows Visual Studio Build Tools.
+You need Rust, Node 22 and, on Windows, the Visual Studio Build Tools.
 
 ```
 npm ci
@@ -55,18 +55,18 @@ cargo test -p timbre-dsp --release
 npm run build
 ```
 
-Установщик появится в `target/release/bundle/nsis`. На GitHub то же самое делает `.github/workflows/build.yml` при каждом пуше в `main`.
+The installer appears in `target/release/bundle/nsis`. On GitHub the same steps run from `.github/workflows/build.yml` on every push to `main`.
 
-## Устройство репозитория
+## Repository layout
 
-| Папка | Что внутри |
+| Folder | What is inside |
 | --- | --- |
-| `crates/timbre-dsp` | Цепочка обработки на Rust без привязки к окну, 11 тестов |
-| `src-tauri` | Приложение на Tauri: захват (cpal, WASAPI), вывод в кабель, трей, горячая клавиша, автозапуск |
-| `src` | Интерфейс на HTML, CSS и JS. Вне Tauri работает на демо-сигнале, внутри `js/native.js` подключает реальный движок |
-| `preview` | Интерфейс одним файлом для просмотра в браузере, собирается `node build-preview.mjs` |
-| `docs` | Баннер и скриншоты для этого README |
+| `crates/timbre-dsp` | The processing chain in Rust, independent of the window, with 11 tests |
+| `src-tauri` | The Tauri app: capture (cpal, WASAPI), output to the cable, tray, hotkey, autostart |
+| `src` | The interface in HTML, CSS and JS. Outside Tauri it runs on a demo signal, inside Tauri `js/native.js` connects the real engine |
+| `preview` | The interface as single files for a browser, built with `node build-preview.mjs` |
+| `docs` | The banner and screenshots for this README |
 
-## Лицензии
+## Licenses
 
-Шрифты Geologica, Onest и JetBrains Mono распространяются по SIL OFL. Шумодав RNNoise подключён через крейт `nnnoiseless`. VB-Cable устанавливается пользователем отдельно по условиям VB-Audio. Лицензия самого проекта пока не выбрана.
+The fonts Geologica, Onest and JetBrains Mono are under the SIL OFL. The RNNoise noise suppressor comes through the `nnnoiseless` crate (BSD-3-Clause). VB-Cable is installed by the user separately under VB-Audio terms. The project's own license has not been chosen yet.
