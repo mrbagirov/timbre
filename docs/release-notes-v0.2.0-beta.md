@@ -3,6 +3,8 @@
 
 ## Timbre 0.2.0, beta 1
 
+![Timbre beta 1](https://raw.githubusercontent.com/mrbagirov/timbre/main/docs/banner.en.png)
+
 The big change: Timbre now talks to the AM8's own signal processor, so settings work in every program, not only through the virtual cable.
 
 **New**
@@ -15,6 +17,8 @@ The big change: Timbre now talks to the AM8's own signal processor, so settings 
 
 **How it works.** The control channel is the microphone's vendor HID interface (the same MVsilicon protocol that the [fifine-am8](https://github.com/Austrum-lab/fifine-am8) project documented, MIT). Timbre only writes to three known blocks and never touches the firmware, the Feature report or the bootloader commands.
 
+![Main window with the microphone panel](https://raw.githubusercontent.com/mrbagirov/timbre/main/docs/screen-main.en.png)
+
 **Known limits.** RGB lighting cannot be controlled over USB on this firmware. The mute button on the body is not tied to the program on purpose. Hardware settings are not restored when you replug the microphone. The installer is not signed, so SmartScreen asks: "More info", then "Run anyway".
 
 **Install.** Run `Timbre_0.2.0_x64-setup.exe` over the old version. You still need [VB-Cable](https://vb-audio.com/Cable/) for Discord, OBS or Zoom, with `CABLE Output` as the microphone.
@@ -25,6 +29,8 @@ The big change: Timbre now talks to the AM8's own signal processor, so settings 
 <summary><b>Русский</b></summary>
 
 ## Тембр 0.2.0, бета 1
+
+![Тембр, бета 1](https://raw.githubusercontent.com/mrbagirov/timbre/main/docs/banner.ru.png)
 
 Главное: Тембр теперь работает с собственным процессором AM8, поэтому настройки действуют в любой программе, а не только через виртуальный кабель.
 
@@ -38,8 +44,13 @@ The big change: Timbre now talks to the AM8's own signal processor, so settings 
 
 **Как это устроено.** Канал управления — вендорский HID-интерфейс микрофона (тот же протокол MVsilicon, который описал проект [fifine-am8](https://github.com/Austrum-lab/fifine-am8), MIT). Тембр пишет только в три известных блока и не трогает прошивку, Feature-репорт и команды загрузчика.
 
+![Главный экран с панелью микрофона](https://raw.githubusercontent.com/mrbagirov/timbre/main/docs/screen-main.ru.png)
+
 **Известные ограничения.** Подсветкой RGB по USB на этой прошивке управлять нельзя. Кнопка mute на корпусе специально не связана с программой. Железные настройки не восстанавливаются после переподключения микрофона. Установщик не подписан, поэтому SmartScreen спросит: «Подробнее», затем «Выполнить в любом случае».
 
 **Установка.** Запустите `Timbre_0.2.0_x64-setup.exe` поверх старой версии. Для Discord, OBS и Zoom по-прежнему нужен [VB-Cable](https://vb-audio.com/Cable/), микрофоном выбирается `CABLE Output`.
 
 </details>
+
+---
+Changelog: [CHANGELOG.md](https://github.com/mrbagirov/timbre/blob/main/CHANGELOG.md). Screenshots were taken on a demo signal. / Скриншоты сняты на демо-сигнале.
